@@ -6,7 +6,7 @@
     <title>통신병 암기노트</title>
     <style>
         :root {
-            --primary-color: #2e4f39; /* 국방색 느낌의 다크 그린 */
+            --primary-color: #2e4f39; /* 국방색 */
             --secondary-color: #4a7256;
             --bg-color: #f4f6f4;
             --card-bg: #ffffff;
@@ -15,39 +15,32 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Malgun Gothic', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 60px; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; }
         
-        /* 헤더 스타일 */
-        header { background-color: var(--primary-color); color: white; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; sticky: top; }
+        header { background-color: var(--primary-color); color: white; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; position: sticky; top: 0; z-index: 100; }
 
-        /* 메인 컨텐츠 영역 */
         .container { padding: 15px; max-width: 600px; margin: 0 auto; }
         .page { display: none; }
         .page.active { display: block; }
 
-        /* 카드 및 레이아웃 스타일 */
         .card { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .card h3 { margin-bottom: 10px; color: var(--primary-color); border-bottom: 2px solid var(--bg-color); padding-bottom: 5px; }
         
-        /* 네비게이션 바 (하단 고정) */
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); }
-        nav button { background: none; border: none; color: #b3cbba; padding: 12px 5px; font-size: 0.85rem; flex-content: 1; cursor: pointer; transition: 0.2s; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; }
+        nav button { background: none; border: none; color: #b3cbba; padding: 15px 5px; font-size: 0.85rem; flex: 1; cursor: pointer; transition: 0.2s; }
         nav button.active { color: white; font-weight: bold; background-color: var(--secondary-color); }
 
-        /* 입력 및 버튼 스타일 */
         input, textarea, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem; }
         button.btn { background: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 0.95rem; }
         button.btn:hover { background: var(--secondary-color); }
-        button.delete-btn { background: var(--accent-color); color: white; border: none; padding: 3px 8px; border-radius: 4px; float: right; cursor: pointer; font-size: 0.8rem; }
+        .delete-btn { background: var(--accent-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; float: right; cursor: pointer; font-size: 0.8rem; }
 
-        /* 리스트 스타일 */
         .item-list { list-style: none; margin-top: 10px; }
-        .item-list li { background: var(--bg-color); padding: 10px; margin-bottom: 8px; border-radius: 4px; position: relative; }
-        .item-text { white-space: pre-line; margin-top: 5px; font-size: 0.9rem; color: #555; }
+        .item-list li { background: var(--bg-color); padding: 12px; margin-bottom: 8px; border-radius: 4px; position: relative; }
+        .item-text { white-space: pre-line; margin-top: 5px; font-size: 0.95rem; color: #333; line-height: 1.4; }
         
-        /* 폴더 스타일 */
         .folder { border: 1px solid var(--secondary-color); border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
-        .folder-header { background: var(--secondary-color); color: white; padding: 10px; font-weight: bold; cursor: pointer; }
+        .folder-header { background: var(--secondary-color); color: white; padding: 12px; font-weight: bold; cursor: pointer; }
         .folder-body { padding: 10px; background: white; display: none; }
         .folder.open .folder-body { display: block; }
     </style>
@@ -57,39 +50,37 @@
     <header id="main-title">무전근무 (오전/오후)</header>
 
     <div class="container">
-        <!-- 1. 무전근무 페이지 -->
         <div id="page1" class="page active">
             <div class="card">
-                <h3>☀️ 오전 근무 체크리스트</h3>
-                <p>07:30 - 장비 점검 및 대기망 개소 상태 확인</p>
-                <p>08:00 - 오전 교신 감도 체크 및 일일 주파수 도약 확인</p>
-                <p>11:30 - 교대조 인계사항 정리 및 장비 온도 확인</p>
+                <h3>⏱️ 근무 일정 추가</h3>
+                <select id="work-time">
+                    <option value="오전 근무">오전 근무</option>
+                    <option value="오후/야간 근무">오후/야간 근무</option>
+                </select>
+                <textarea id="work-content" rows="3" placeholder="근무 지침 및 체크리스트 입력"></textarea>
+                <button class="btn" onclick="addWork()">근무 지침 추가</button>
+            </div>
+            
+            <div class="card">
+                <h3>☀️ 오전 근무</h3>
+                <ul id="work-list-am" class="item-list"></ul>
             </div>
             <div class="card">
-                <h3>🌙 오후/야간 근무 체크리스트</h3>
-                <p>13:30 - 오후 반 대기망 점검</p>
-                <p>17:30 - 야간 CEOI 및 음어 자재 교체 확인</p>
-                <p>20:00 - 야간 무전 감도 불량 시 가설 상태 재점검</p>
+                <h3>🌙 오후/야간 근무</h3>
+                <ul id="work-list-pm" class="item-list"></ul>
             </div>
         </div>
 
-        <!-- 2. 상황별 조치사항 페이지 -->
         <div id="page2" class="page">
             <div class="card">
-                <h3>🚨 통신 두절 (낙뢰/방해전파 등)</h3>
-                <div class="item-text">1. 안테나 연결 상태 및 예비 안테나 교체 검토
-2. 주파수 일치 여부 재확인 (도약 모드 해제 후 고정 주파수 시도)
-3. 지휘소 보고 후 야전선 가설조 편성 및 출동</div>
+                <h3>🚨 새 상황조치 등록</h3>
+                <input type="text" id="situation-title" placeholder="상황 제목 (예: 장비 낙뢰 피격 시)">
+                <textarea id="situation-step" rows="4" placeholder="조치 단계를 순서대로 입력하세요"></textarea>
+                <button class="btn" onclick="addSituation()">상황조치 저장</button>
             </div>
-            <div class="card">
-                <h3>⚠️ 장비 고정형 불량 (P-999K 등)</h3>
-                <div class="item-text">1. 배터리(정류기) 전압 및 잔량 확인
-2. 송수화기(마이크) 케이블 단선 여부 확인
-3. 예비 장비로 즉각 전환 후 정비소 정비 요청 비치</div>
-            </div>
+            <div id="situation-container"></div>
         </div>
 
-        <!-- 3. 통신장비별 사용법 페이지 -->
         <div id="page3" class="page">
             <div class="card">
                 <h3>📁 장비 폴더 추가</h3>
@@ -99,7 +90,6 @@
             <div id="folder-container"></div>
         </div>
 
-        <!-- 4. 암기사항 페이지 -->
         <div id="page4" class="page">
             <div class="card">
                 <h3>✏️ 새 암기사항 추가</h3>
@@ -111,7 +101,6 @@
         </div>
     </div>
 
-    <!-- 하단 네비게이션 바 -->
     <nav>
         <button onclick="switchPage(1, '무전근무 (오전/오후)')" class="nav-btn active">무전근무</button>
         <button onclick="switchPage(2, '상황별 조치사항')" class="nav-btn">상황조치</button>
@@ -120,14 +109,90 @@
     </nav>
 
     <script>
-        // 페이지 전환 스크립트
         function switchPage(pageNum, title) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             
             document.getElementById('page' + pageNum).classList.add('active');
-            event.target.classList.add('active');
+            if(event) {
+                event.target.classList.add('active');
+            }
             document.getElementById('main-title').innerText = title;
+        }
+
+        // --- 1페이지: 무전근무 동적 추가 ---
+        let works = JSON.parse(localStorage.getItem('army_works')) || [
+            { type: "오전 근무", content: "07:30 - 장비 점검 및 대기망 개소 상태 확인" },
+            { type: "오후/야간 근무", content: "17:30 - 야간 CEOI 및 음어 자재 교체 확인" }
+        ];
+
+        function saveWorks() {
+            localStorage.setItem('army_works', JSON.stringify(works));
+            renderWorks();
+        }
+
+        function addWork() {
+            const type = document.getElementById('work-time').value;
+            const content = document.getElementById('work-content').value.trim();
+            if(!content) return alert('근무 내용을 입력해주세요.');
+            
+            works.push({ type, content });
+            document.getElementById('work-content').value = '';
+            saveWorks();
+        }
+
+        function deleteWork(idx) {
+            works.splice(idx, 1);
+            saveWorks();
+        }
+
+        function renderWorks() {
+            const amList = document.getElementById('work-list-am');
+            const pmList = document.getElementById('work-list-pm');
+            amList.innerHTML = '';
+            pmList.innerHTML = '';
+
+            works.forEach((w, idx) => {
+                const li = `<li><button class="delete-btn" onclick="deleteWork(${idx})">삭제</button><div class="item-text">${w.content}</div></li>`;
+                if(w.type === "오전 근무") amList.innerHTML += li;
+                else pmList.innerHTML += li;
+            });
+        }
+
+        // --- 2페이지: 상황조치 동적 추가 ---
+        let situations = JSON.parse(localStorage.getItem('army_situations')) || [
+            { title: "통신 두절 발생 시", step: "1. 안테나 및 커넥터 연결 상태 재점검\n2. 주파수 및 CEOI 유효 상태 확인\n3. 필요시 예비기 전환 후 지휘소 보고" }
+        ];
+
+        function saveSituations() {
+            localStorage.setItem('army_situations', JSON.stringify(situations));
+            renderSituations();
+        }
+
+        function addSituation() {
+            const title = document.getElementById('situation-title').value.trim();
+            const step = document.getElementById('situation-step').value.trim();
+            if(!title || !step) return alert('상황 제목과 조치 단계를 모두 입력해주세요.');
+
+            situations.push({ title, step });
+            document.getElementById('situation-title').value = '';
+            document.getElementById('situation-step').value = '';
+            saveSituations();
+        }
+
+        function deleteSituation(idx) {
+            situations.splice(idx, 1);
+            saveSituations();
+        }
+
+        function renderSituations() {
+            const container = document.getElementById('situation-container');
+            container.innerHTML = situations.map((s, idx) => `
+                <div class="card">
+                    <h3>🚨 ${s.title} <button class="delete-btn" onclick="deleteSituation(${idx})">삭제</button></h3>
+                    <div class="item-text">${s.step}</div>
+                </div>
+            `).join('');
         }
 
         // --- 3페이지: 장비별 폴더 기능 ---
@@ -155,10 +220,11 @@
             }
         }
 
+        // 장비 내용 추가
         function addEquipmentDesc(folderName) {
-            const desc = prompt(`${folderName}에 추가할 사용법/제원 내용을 입력하세요:`);
-            if(desc) {
-                folders[folderName].push(desc);
+            const desc = prompt(`${folderName}에 추가할 사용법이나 제원 내용을 입력하세요:`);
+            if(desc && desc.trim()) {
+                folders[folderName].push(desc.trim());
                 saveFolders();
             }
         }
@@ -178,17 +244,17 @@
             for(let name in folders) {
                 let listHtml = folders[name].map((desc, idx) => `
                     <li>
-                        <button class="delete-btn" onclick="deleteEquipmentDesc('${name}', ${idx}); saveFolders();">삭제</button>
+                        <button class="delete-btn" onclick="deleteEquipmentDesc('${name}', ${idx})">삭제</button>
                         <div class="item-text">${desc}</div>
                     </li>
                 `).join('');
 
                 container.innerHTML += `
                     <div class="folder">
-                        <div class="folder-header" onclick="toggleFolder(this)">📁 ${name} <button class="delete-btn" onclick="event.stopPropagation(); deleteFolder('${name}');" style="background:#555;">폴더삭제</button></div>
+                        <div class="folder-header" onclick="toggleFolder(this)">📁 ${name} <button class="delete-btn" onclick="event.stopPropagation(); deleteFolder('${name}');" style="background:#555; margin-top:-2px;">폴더삭제</button></div>
                         <div class="folder-body">
-                            <button class="btn" style="padding:5px; margin-bottom:10px; font-size:0.85rem;" onclick="addEquipmentDesc('${name}')">+ 내용 추가</button>
-                            <ul class="item-list">${listHtml || '<li>등록된 내용이 없습니다.</li>'}</ul>
+                            <button class="btn" style="padding:6px; margin-bottom:10px; font-size:0.85rem;" onclick="addEquipmentDesc('${name}')">+ 세부 내용 추가</button>
+                            <ul class="item-list">${listHtml || '<li style="color:#aaa; text-align:center;">등록된 내용이 없습니다.</li>'}</ul>
                         </div>
                     </div>
                 `;
@@ -222,15 +288,17 @@
         function renderMemos() {
             const list = document.getElementById('memo-list');
             list.innerHTML = memos.map((m, idx) => `
-                <li class="card" style="box-shadow:none; margin-bottom:10px; background:white;">
+                <li class="card" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd;">
                     <strong>💡 ${m.title}</strong>
                     <button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button>
-                    <div class="item-text">${m.content}</div>
+                    <div class="item-text" style="margin-top:8px;">${m.content}</div>
                 </li>
             `).join('');
         }
 
-        // 초기 실행 시 저장된 데이터 불러오기
+        // 초기 실행시 데이터 렌더링
+        renderWorks();
+        renderSituations();
         renderFolders();
         renderMemos();
     </script>
