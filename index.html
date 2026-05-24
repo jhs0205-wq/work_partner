@@ -12,6 +12,7 @@
             --card-bg: #ffffff;
             --text-color: #333333;
             --accent-color: #d9534f;
+            --info-color: #31708f;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Malgun Gothic', sans-serif; }
@@ -43,6 +44,9 @@
         .folder-header { background: var(--secondary-color); color: white; padding: 12px; font-weight: bold; cursor: pointer; }
         .folder-body { padding: 10px; background: white; display: none; }
         .folder.open .folder-body { display: block; }
+
+        /* 데이터 인계용 스타일 */
+        .sync-box { background: #eef7f9; border: 1px solid #bce8f1; color: #31708f; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -91,6 +95,17 @@
         </div>
 
         <div id="page4" class="page">
+            <div class="card" style="border: 1px solid var(--secondary-color);">
+                <h3>📦 후임 인계 및 백업 (데이터 연동)</h3>
+                <div class="sync-box">
+                    💡 내가 입력한 모든 노트를 텍스트 코드로 추출하거나, 다른 기기(후임 폰)에서 인계받은 코드를 붙여넣어 동기화할 수 있습니다.
+                </div>
+                <button class="btn" onclick="exportData()" style="margin-bottom:10px; background-color: var(--secondary-color);">📋 내 노트 코드 복사하기 (내보내기)</button>
+                
+                <textarea id="import-zone" rows="3" placeholder="인계받은 노란색 텍스트 코드를 여기에 붙여넣으세요"></textarea>
+                <button class="btn" onclick="importData()" style="background-color: var(--info-color);">📥 코드 가져와서 데이터 덮어쓰기</button>
+            </div>
+
             <div class="card">
                 <h3>✏️ 새 암기사항 추가</h3>
                 <input type="text" id="memo-title" placeholder="제목 (예: 포네틱 코드)">
@@ -220,7 +235,6 @@
             }
         }
 
-        // 장비 내용 추가
         function addEquipmentDesc(folderName) {
             const desc = prompt(`${folderName}에 추가할 사용법이나 제원 내용을 입력하세요:`);
             if(desc && desc.trim()) {
@@ -294,6 +308,62 @@
                     <div class="item-text" style="margin-top:8px;">${m.content}</div>
                 </li>
             `).join('');
+        }
+
+        // --- 🚀 [추가 업그레이드] 데이터 내보내기 및 가져오기 기능 ---
+        function exportData() {
+            const allData = {
+                works: works,
+                situations: situations,
+                folders: folders,
+                memos: memos
+            };
+            // 데이터를 암호화된 문자열 형태로 변환 (Base64)
+            const jsonString = JSON.stringify(allData);
+            const encodedData = btoa(encodeURIComponent(jsonString));
+            
+            // 클립보드에 바로 복사시키기
+            navigator.clipboard.writeText(encodedData).then(() => {
+                alert('내 통신노트 전체 데이터 코드가 클립보드에 복사되었습니다!\n카카오톡이나 메모장에 붙여넣어(Ctrl+V) 후임에게 전수하거나 백업해두세요.');
+            }).catch(err => {
+                // 구형 브라우저 대응용 프롬프트 창 출력
+                prompt('아래 코드를 전체 복사(Ctrl+C)하세요:', encodedData);
+            });
+        }
+
+        function importData() {
+            const code = document.getElementById('import-zone').value.trim();
+            if(!code) return alert('가져올 코드를 입력창에 먼저 붙여넣어 주세요.');
+
+            if(confirm('주의: 코드를 가져오면 현재 스마트폰에 저장되어 있는 기존 노트 내용은 사라지고, 가져온 데이터로 전부 덮어씌워집니다. 진행하시겠습니까?')) {
+                try {
+                    const decodedString = decodeURIComponent(atob(code));
+                    const importedData = JSON.parse(decodedString);
+                    
+                    // 데이터 검증 후 복구 및 덮어쓰기
+                    if(importedData.works) works = importedData.works;
+                    if(importedData.situations) situations = importedData.situations;
+                    if(importedData.folders) folders = importedData.folders;
+                    if(importedData.memos) memos = importedData.memos;
+                    
+                    // 각각 세이브 진행하여 폰에 반영
+                    localStorage.setItem('army_works', JSON.stringify(works));
+                    localStorage.setItem('army_situations', JSON.stringify(situations));
+                    localStorage.setItem('army_folders', JSON.stringify(folders));
+                    localStorage.setItem('army_memos', JSON.stringify(memos));
+
+                    // 화면 새로고침 및 입력란 초기화
+                    document.getElementById('import-zone').value = '';
+                    renderWorks();
+                    renderSituations();
+                    renderFolders();
+                    renderMemos();
+
+                    alert('🎉 후임 인계 데이터 동기화 완료! 전체 노트가 성공적으로 업데이트되었습니다.');
+                } catch(e) {
+                    alert('❌ 올바르지 않은 데이터 코드입니다. 코드가 잘리거나 변형되지 않았는지 다시 확인해 주세요.');
+                }
+            }
         }
 
         // 초기 실행시 데이터 렌더링
