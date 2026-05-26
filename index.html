@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-color=1.0, user-scalable=no">
     <title>통신병 암기노트</title>
     <style>
         :root {
@@ -25,7 +25,8 @@
         .page { display: none; }
         .page.active { display: block; }
 
-        .card { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        /* 🚀 모든 페이지의 카드 규격을 동일하게 통일 */
+        .card { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #ddd; overflow: hidden; }
         .card h3 { margin-bottom: 10px; color: var(--primary-color); border-bottom: 2px solid var(--bg-color); padding-bottom: 5px; font-size: 1.1rem; }
         
         nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; overflow-x: auto; }
@@ -35,8 +36,7 @@
         input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px !important; -webkit-appearance: none; }
         textarea { resize: none; }
 
-        /* 🚀 3단계용 큰 입력창 전용 스타일 */
-        textarea.large-input { min-height: 100px; line-height: 1.5; font-family: monospace, 'Malgun Gothic', sans-serif; }
+        textarea.large-input { min-height: 100px; line-height: 1.5; }
 
         button.btn { background: var(--primary-color); color: white; border: none; padding: 12px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: bold; }
         button.btn:hover { background: var(--secondary-color); }
@@ -291,7 +291,7 @@
             });
         }
 
-        // --- 2페이지: 무전법 ---
+        // --- 2페이지: 무전법 (★글자 깨짐 및 카드 고정 버그 완벽 수정) ---
         let radioProtocols = JSON.parse(localStorage.getItem('army_radios')) || [];
         function saveRadios() { localStorage.setItem('army_radios', JSON.stringify(radioProtocols)); renderRadios(); }
         function addOrUpdateRadio() {
@@ -310,13 +310,25 @@
             renderRadios();
         }
         function deleteRadio(idx) { if(confirm('삭제하시겠습니까?')) { radioProtocols.splice(idx, 1); cancelAllEdits(); saveRadios(); } }
+        
         function renderRadios() {
             const container = document.getElementById('radio-container');
-            container.innerHTML = radioProtocols.map((r, idx) => {
+            container.innerHTML = ''; // 초기화
+            radioProtocols.forEach((r, idx) => {
                 const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
-                const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button>`;
-                return `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div> h3 🗣️ ${r.title} h3 div class="item-text" ${r.content} div div`;
-            }).join('');
+                const actionButtons = (idx === editTargetIndex) 
+                    ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` 
+                    : `<button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button>`;
+                
+                // HTML 문자열 꼬임 오류 완벽 해결 및 고정된 카드 크기 .card 스펙 적용
+                container.innerHTML += `
+                    <div class="card ${isEditingClass}">
+                        <div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div>
+                        <h3>🗣️ ${r.title}</h3>
+                        <div class="item-text">${r.content}</div>
+                    </div>
+                `;
+            });
         }
 
         // --- 3페이지: 상황조치 ---
@@ -390,6 +402,8 @@
             });
         }
 
+        style="text-align:center; color:#aaa; padding:20px;"
+
         function selectCategoryTag(name) { document.getElementById('sub-type-input').value = name; }
 
         function addOrUpdateDeviceDetail() {
@@ -435,7 +449,6 @@
         }
         function deleteDeviceDetail(idx) { if(confirm('삭제하시겠습니까?')) { folders[currentOpenFolder].splice(idx, 1); cancelAllEdits(); saveFolders(); renderDeviceDetails(); } }
 
-        // 중요도 토글
         function toggleStar(idx) {
             if(!currentOpenFolder || !folders[currentOpenFolder][idx]) return;
             folders[currentOpenFolder][idx].starred = !folders[currentOpenFolder][idx].starred;
