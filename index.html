@@ -57,13 +57,15 @@
         .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-color); }
         .back-btn { background: #555; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
-        /* 4단계 계층형 스타일 */
         .sub-category { border: 1px solid #ccc; border-radius: 6px; margin-bottom: 12px; background: white; overflow: hidden; }
         .sub-category.is-editing { border: 2px solid var(--edit-color); }
         .sub-header { background: #eaeea03b; padding: 12px; font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #eee; }
         .sub-body { padding: 12px; background: white; }
         
-        .level3-title { font-weight: bold; color: #444; margin-top: 5px; font-size: 1rem; border-bottom: 1px dashed #ddd; padding-bottom: 3px; }
+        .level3-title { font-weight: bold; color: #444; margin-top: 2px; font-size: 1rem; }
+
+        .checkbox-container { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.95rem; font-weight: bold; color: var(--secondary-color); cursor: pointer; }
+        .checkbox-container input { width: auto; margin-bottom: 0; transform: scale(1.2); cursor: pointer; }
 
         .sync-box { background: #eef7f9; border: 1px solid #bce8f1; color: #31708f; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem; }
     </style>
@@ -149,11 +151,17 @@
         </div>
         
         <div class="card" style="margin-bottom: 20px;">
-            <h3 id="detail-form-title">🛠️ 2, 3, 4단계 항목 입력</h3>
-            <input type="text" id="sub-type-input" placeholder="2단계: 대분류 입력 (예: 조작법, 주요제원, 방식)">
-            <input type="text" id="sub-title-input" placeholder="3단계: 소제목/소분류 입력 (예: 주파수 설정 방법)">
-            <textarea id="sub-desc-input" rows="3" placeholder="4단계: 실제 상세 설명을 상세히 입력하세요"></textarea>
-            <button class="btn" id="detail-submit-btn" onclick="addOrUpdateDeviceDetail()">항목 내용 저장</button>
+            <h3 id="detail-form-title">🛠️ 분류 및 세부항목 관리</h3>
+            <input type="text" id="sub-type-input" placeholder="2단계: 대분류 입력 (예: 방식, 조작법, 제원)">
+            <input type="text" id="sub-title-input" placeholder="3단계: 하위분류/소제목 입력 (예: 고정, 도약, 호출, 주파수 설정)">
+            
+            <label class="checkbox-container">
+                <input type="checkbox" id="use-desc-checkbox" checked onchange="toggleDescInput()">
+                ✍️ 4단계 상세설명 추가하기 (선택)
+            </label>
+            
+            <textarea id="sub-desc-input" rows="3" placeholder="4단계: 실제 상세 설명을 입력하세요"></textarea>
+            <button class="btn" id="detail-submit-btn" onclick="addOrUpdateDeviceDetail()">항목 저장하기</button>
         </div>
 
         <div id="device-details-container"></div>
@@ -180,6 +188,18 @@
             document.getElementById('main-title').innerText = title;
         }
 
+        // 4단계 입력창 토글 함수
+        function toggleDescInput() {
+            const checkbox = document.getElementById('use-desc-checkbox');
+            const descInput = document.getElementById('sub-desc-input');
+            if(checkbox.checked) {
+                descInput.style.display = 'block';
+            } else {
+                descInput.style.display = 'none';
+                descInput.value = '';
+            }
+        }
+
         function cancelAllEdits() {
             editTargetIndex = -1;
             
@@ -200,12 +220,14 @@
             document.getElementById('situation-title').value = '';
             document.getElementById('situation-step').value = '';
 
-            document.getElementById('detail-form-title').innerText = "🛠️ 2, 3, 4단계 항목 입력";
-            document.getElementById('detail-submit-btn').innerText = "항목 내용 저장";
+            document.getElementById('detail-form-title').innerText = "🛠️ 분류 및 세부항목 관리";
+            document.getElementById('detail-submit-btn').innerText = "항목 저장하기";
             document.getElementById('detail-submit-btn').classList.remove('edit-mode');
             document.getElementById('sub-type-input').value = '';
             document.getElementById('sub-title-input').value = '';
             document.getElementById('sub-desc-input').value = '';
+            document.getElementById('use-desc-checkbox').checked = true;
+            document.getElementById('sub-desc-input').style.display = 'block';
 
             document.getElementById('memo-form-title').innerText = "✏️ 새 암기사항 추가";
             document.getElementById('memo-submit-btn').innerText = "암기사항 저장";
@@ -303,10 +325,12 @@
             }).join('');
         }
 
-        // --- 4페이지: 통신장비별 사용법 (★4단계 고도화 적용) ---
+        // --- 4페이지: 통신장비별 사용법 (★무한 하위분류 및 선택형 4단계 전면 적용) ---
         let folders = JSON.parse(localStorage.getItem('army_folders')) || {
             "P-999K": [
-                { type: "방식", title: "주파수 도약", desc: "FM 주파수 변조 및 고속 도약 방식 적용" }
+                { type: "방식", title: "고정", desc: "단일 주파수를 수동 설정하여 운용" },
+                { type: "방식", title: "도약", desc: "고속 주파수 도약을 통한 보안 통신" },
+                { type: "방식", title: "호출", desc: "특정 망 호출 및 동기화 절차" }
             ]
         };
 
@@ -337,14 +361,16 @@
         }
         function closeFolderView() { document.getElementById('fullscreen-overlay').classList.remove('active'); currentOpenFolder = ""; cancelAllEdits(); }
 
-        // 4단계 저장 및 수정 처리
+        // 대분류, 소분류 등록 및 선택적 4단계 처리
         function addOrUpdateDeviceDetail() {
             if(!currentOpenFolder) return;
             const type = document.getElementById('sub-type-input').value.trim();   // 2단계 (대분류)
-            const title = document.getElementById('sub-title-input').value.trim(); // 3단계 (소제목)
-            const desc = document.getElementById('sub-desc-input').value.trim();   // 4단계 (세부설명)
+            const title = document.getElementById('sub-title-input').value.trim(); // 3단계 (소분류)
+            const hasDesc = document.getElementById('use-desc-checkbox').checked;
+            const desc = hasDesc ? document.getElementById('sub-desc-input').value.trim() : ""; // 4단계 선택형 처리
             
-            if(!type || !title || !desc) return alert('2단계 분류명, 3단계 소제목, 4단계 세부내용을 모두 적어주세요!');
+            if(!type || !title) return alert('2단계 대분류와 3단계 소분류(하위폴더)명은 필수 항목입니다!');
+            if(hasDesc && !desc) return alert('상세설명 추가가 선택되었습니다. 내용을 적거나 체크를 해제해 주세요.');
 
             if(editTargetIndex > -1) {
                 folders[currentOpenFolder][editTargetIndex] = { type, title, desc };
@@ -361,10 +387,22 @@
             
             document.getElementById('detail-form-title').innerText = "🔄 항목 수정 중...";
             document.getElementById('sub-type-input').value = targetDetail.type;
-            document.getElementById('sub-title-input').value = targetDetail.title || ""; // 하위 호환용 예외 처리
-            document.getElementById('sub-desc-input').value = targetDetail.desc;
-            document.getElementById('sub-type-input').focus();
+            document.getElementById('sub-title-input').value = targetDetail.title || "";
             
+            const checkbox = document.getElementById('use-desc-checkbox');
+            const descInput = document.getElementById('sub-desc-input');
+            
+            if(targetDetail.desc && targetDetail.desc.trim() !== "") {
+                checkbox.checked = true;
+                descInput.style.display = 'block';
+                descInput.value = targetDetail.desc;
+            } else {
+                checkbox.checked = false;
+                descInput.style.display = 'none';
+                descInput.value = '';
+            }
+            
+            document.getElementById('sub-type-input').focus();
             const submitBtn = document.getElementById('detail-submit-btn');
             submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
             renderDeviceDetails();
@@ -380,15 +418,20 @@
                 const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
                 const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editDeviceDetail(${idx})">수정</button><button class="delete-btn" onclick="deleteDeviceDetail(${idx})">삭제</button>`;
                 
+                // 4단계 내용 유무에 따른 조건부 렌더링
+                const descContent = (item.desc && item.desc.trim() !== "") 
+                    ? `<div class="item-text" style="margin-top:8px; color:#555; padding-top:5px; border-top:1px dashed #eee;">💡 4단계 상세내용:<br>${item.desc}</div>` 
+                    : ``;
+
                 return `
                     <div class="sub-category ${isEditingClass}">
                         <div class="sub-header">
-                            <span>📌 [2단계: ${item.type}]</span>
+                            <span>📂 ${item.type} &gt; <span style="color:#2e4f39">${item.title}</span></span>
                             <div class="action-btn-group">${actionButtons}</div>
                         </div>
-                        <div class="sub-body">
-                            <div class="level3-title">📝 3단계: ${item.title || "소제목 없음"}</div>
-                            <div class="item-text" style="margin-top:8px; color:#555;">💡 4단계 세부내용:<br>${item.desc}</div>
+                        <div class="sub-body" style="padding: ${item.desc ? '12px' : '4px 12px'};">
+                            <div class="level3-title">📌 항목명: ${item.title}</div>
+                            ${descContent}
                         </div>
                     </div>
                 `;
@@ -450,7 +493,7 @@
                     localStorage.setItem('army_memos', JSON.stringify(memos));
 
                     document.getElementById('import-zone').value = ''; cancelAllEdits();
-                    alert('🎉 4단계 구조 인계 동기화 완료!');
+                    alert('🎉 구조 고도화 데이터 인계 동기화 완료!');
                 } catch(e) { alert('❌ 올바르지 않은 코드입니다.'); }
             }
         }
