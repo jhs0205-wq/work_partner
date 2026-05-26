@@ -16,7 +16,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Malgun Gothic', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 75px; }
         
         header { background-color: var(--primary-color); color: white; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; position: sticky; top: 0; z-index: 100; }
 
@@ -27,8 +27,9 @@
         .card { background: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .card h3 { margin-bottom: 10px; color: var(--primary-color); border-bottom: 2px solid var(--bg-color); padding-bottom: 5px; }
         
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; }
-        nav button { background: none; border: none; color: #b3cbba; padding: 15px 5px; font-size: 0.85rem; flex: 1; cursor: pointer; transition: 0.2s; }
+        /* 네비게이션 바 고정 및 스크롤 최적화 */
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; overflow-x: auto; }
+        nav button { background: none; border: none; color: #b3cbba; padding: 15px 5px; font-size: 0.8rem; min-width: 75px; flex: 1; cursor: pointer; transition: 0.2s; white-space: nowrap; }
         nav button.active { color: white; font-weight: bold; background-color: var(--secondary-color); }
 
         input, textarea, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.95rem; }
@@ -37,15 +38,25 @@
         .delete-btn { background: var(--accent-color); color: white; border: none; padding: 4px 8px; border-radius: 4px; float: right; cursor: pointer; font-size: 0.8rem; }
 
         .item-list { list-style: none; margin-top: 10px; }
-        .item-list li { background: var(--bg-color); padding: 12px; margin-bottom: 8px; border-radius: 4px; position: relative; }
+        .item-list li { background: var(--bg-color); padding: 12px; margin-bottom: 8px; border-radius: 4px; position: relative; border-left: 4px solid var(--secondary-color); }
         .item-text { white-space: pre-line; margin-top: 5px; font-size: 0.95rem; color: #333; line-height: 1.4; }
         
-        .folder { border: 1px solid var(--secondary-color); border-radius: 6px; margin-bottom: 10px; overflow: hidden; }
-        .folder-header { background: var(--secondary-color); color: white; padding: 12px; font-weight: bold; cursor: pointer; }
-        .folder-body { padding: 10px; background: white; display: none; }
-        .folder.open .folder-body { display: block; }
+        /* 1단계: 장비 폴더 그리드 스타일 */
+        .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .folder-box { background: white; border: 2px solid var(--secondary-color); border-radius: 8px; padding: 20px 10px; text-align: center; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
+        .folder-box .folder-icon { font-size: 2rem; margin-bottom: 5px; display: block; }
 
-        /* 데이터 인계용 스타일 */
+        /* 🚀 2, 3단계: 장비 전체화면(Full Screen) 뷰 오버레이 */
+        .fullscreen-view { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-color); z-index: 200; overflow-y: auto; padding: 15px; padding-bottom: 40px; }
+        .fullscreen-view.active { display: block; }
+        .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-color); }
+        .back-btn { background: #555; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
+        /* 하위 카테고리 아코디언 스타일 */
+        .sub-category { border: 1px solid #ccc; border-radius: 6px; margin-bottom: 12px; background: white; overflow: hidden; }
+        .sub-header { background: #eaeea03b; padding: 12px; font-weight: bold; color: var(--primary-color); cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .sub-body { padding: 12px; background: white; }
+
         .sync-box { background: #eef7f9; border: 1px solid #bce8f1; color: #31708f; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 0.9rem; }
     </style>
 </head>
@@ -64,7 +75,6 @@
                 <textarea id="work-content" rows="3" placeholder="근무 지침 및 체크리스트 입력"></textarea>
                 <button class="btn" onclick="addWork()">근무 지침 추가</button>
             </div>
-            
             <div class="card">
                 <h3>☀️ 오전 근무</h3>
                 <ul id="work-list-am" class="item-list"></ul>
@@ -77,6 +87,16 @@
 
         <div id="page2" class="page">
             <div class="card">
+                <h3>🗣️ 새 무전법 지침 등록</h3>
+                <input type="text" id="radio-title" placeholder="제목 (예: 개소 보고 / 감도 확인 절차)">
+                <textarea id="radio-content" rows="4" placeholder="표준 교신 멘트나 무전 수칙을 입력하세요"></textarea>
+                <button class="btn" onclick="addRadioProtocol()">무전법 추가</button>
+            </div>
+            <div id="radio-container"></div>
+        </div>
+
+        <div id="page3" class="page">
+            <div class="card">
                 <h3>🚨 새 상황조치 등록</h3>
                 <input type="text" id="situation-title" placeholder="상황 제목 (예: 장비 낙뢰 피격 시)">
                 <textarea id="situation-step" rows="4" placeholder="조치 단계를 순서대로 입력하세요"></textarea>
@@ -85,27 +105,25 @@
             <div id="situation-container"></div>
         </div>
 
-        <div id="page3" class="page">
+        <div id="page4" class="page">
             <div class="card">
-                <h3>📁 장비 폴더 추가</h3>
-                <input type="text" id="folder-name" placeholder="예: P-999K, SB-22, PRC-950K">
+                <h3>📁 1단계: 장비 폴더 추가</h3>
+                <input type="text" id="folder-name" placeholder="장비명 입력 (예: P-999K, SB-22)">
                 <button class="btn" onclick="addFolder()">폴더 생성</button>
             </div>
-            <div id="folder-container"></div>
+            <div id="folder-grid" class="folder-grid"></div>
         </div>
 
-        <div id="page4" class="page">
+        <div id="page5" class="page">
             <div class="card" style="border: 1px solid var(--secondary-color);">
                 <h3>📦 후임 인계 및 백업 (데이터 연동)</h3>
                 <div class="sync-box">
-                    💡 내가 입력한 모든 노트를 텍스트 코드로 추출하거나, 다른 기기(후임 폰)에서 인계받은 코드를 붙여넣어 동기화할 수 있습니다.
+                    💡 내가 입력한 모든 노트를 텍스트 코드로 추출하거나, 인계받은 코드를 붙여넣어 동기화할 수 있습니다.
                 </div>
                 <button class="btn" onclick="exportData()" style="margin-bottom:10px; background-color: var(--secondary-color);">📋 내 노트 코드 복사하기 (내보내기)</button>
-                
-                <textarea id="import-zone" rows="3" placeholder="인계받은 노란색 텍스트 코드를 여기에 붙여넣으세요"></textarea>
+                <textarea id="import-zone" rows="3" placeholder="인계받은 텍스트 코드를 여기에 붙여넣으세요"></textarea>
                 <button class="btn" onclick="importData()" style="background-color: var(--info-color);">📥 코드 가져와서 데이터 덮어쓰기</button>
             </div>
-
             <div class="card">
                 <h3>✏️ 새 암기사항 추가</h3>
                 <input type="text" id="memo-title" placeholder="제목 (예: 포네틱 코드)">
@@ -116,90 +134,111 @@
         </div>
     </div>
 
+    <div id="fullscreen-overlay" class="fullscreen-view">
+        <div class="view-header">
+            <h2 id="view-device-title" style="color: var(--primary-color);">장비명</h2>
+            <button class="back-btn" onclick="closeFolderView()">◀ 뒤로가기</button>
+        </div>
+        
+        <div class="card" style="margin-bottom: 20px;">
+            <h3>🛠️ 2단계 항목 추가 (방식, 기능, 부속명칭 등)</h3>
+            <select id="sub-type-select">
+                <option value="방식">방식 (운용 방식 등)</option>
+                <option value="기능">기능 (주요 기능/제원)</option>
+                <option value="부속명칭">부속명칭 (각부 명칭 및 구성품)</option>
+                <option value="기타">기타 설명</option>
+            </select>
+            <textarea id="sub-desc-input" rows="3" placeholder="3단계: 세부 설명을 상세하게 입력하세요"></textarea>
+            <button class="btn" onclick="addEquipmentDetail()">항목 내용 저장</button>
+        </div>
+
+        <div id="device-details-container"></div>
+    </div>
+
     <nav>
         <button onclick="switchPage(1, '무전근무 (오전/오후)')" class="nav-btn active">무전근무</button>
-        <button onclick="switchPage(2, '상황별 조치사항')" class="nav-btn">상황조치</button>
-        <button onclick="switchPage(3, '통신장비별 사용법')" class="nav-btn">장비사용법</button>
-        <button onclick="switchPage(4, '통신 암기사항')" class="nav-btn">암기사항</button>
+        <button onclick="switchPage(2, '무전법 지침')" class="nav-btn">무전법</button>
+        <button onclick="switchPage(3, '상황별 조치사항')" class="nav-btn">상황조치</button>
+        <button onclick="switchPage(4, '통신장비별 사용법')" class="nav-btn">장비사용법</button>
+        <button onclick="switchPage(5, '통신 암기사항')" class="nav-btn">암기사항</button>
     </nav>
 
     <script>
+        let currentOpenFolder = ""; // 현재 전체화면으로 열린 장비명
+
         function switchPage(pageNum, title) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             
             document.getElementById('page' + pageNum).classList.add('active');
             if(event) {
-                event.target.classList.add('active');
+                document.querySelectorAll('.nav-btn')[pageNum-1].classList.add('active');
             }
             document.getElementById('main-title').innerText = title;
         }
 
-        // --- 1페이지: 무전근무 동적 추가 ---
+        // --- 1페이지: 무전근무 ---
         let works = JSON.parse(localStorage.getItem('army_works')) || [
             { type: "오전 근무", content: "07:30 - 장비 점검 및 대기망 개소 상태 확인" },
             { type: "오후/야간 근무", content: "17:30 - 야간 CEOI 및 음어 자재 교체 확인" }
         ];
-
-        function saveWorks() {
-            localStorage.setItem('army_works', JSON.stringify(works));
-            renderWorks();
-        }
-
+        function saveWorks() { localStorage.setItem('army_works', JSON.stringify(works)); renderWorks(); }
         function addWork() {
             const type = document.getElementById('work-time').value;
             const content = document.getElementById('work-content').value.trim();
             if(!content) return alert('근무 내용을 입력해주세요.');
-            
             works.push({ type, content });
             document.getElementById('work-content').value = '';
             saveWorks();
         }
-
-        function deleteWork(idx) {
-            works.splice(idx, 1);
-            saveWorks();
-        }
-
+        function deleteWork(idx) { works.splice(idx, 1); saveWorks(); }
         function renderWorks() {
-            const amList = document.getElementById('work-list-am');
-            const pmList = document.getElementById('work-list-pm');
-            amList.innerHTML = '';
-            pmList.innerHTML = '';
-
+            const amList = document.getElementById('work-list-am'); const pmList = document.getElementById('work-list-pm');
+            amList.innerHTML = ''; pmList.innerHTML = '';
             works.forEach((w, idx) => {
                 const li = `<li><button class="delete-btn" onclick="deleteWork(${idx})">삭제</button><div class="item-text">${w.content}</div></li>`;
-                if(w.type === "오전 근무") amList.innerHTML += li;
-                else pmList.innerHTML += li;
+                if(w.type === "오전 근무") amList.innerHTML += li; else pmList.innerHTML += li;
             });
         }
 
-        // --- 2페이지: 상황조치 동적 추가 ---
+        // --- 2페이지: 무전법 (★신설) ---
+        let radioProtocols = JSON.parse(localStorage.getItem('army_radios')) || [
+            { title: "개소 보고 표준", content: "독수리, 여기는 멧돼지, 망 개소 하였음. 감도 확인 바람, 오버." }
+        ];
+        function saveRadios() { localStorage.setItem('army_radios', JSON.stringify(radioProtocols)); renderRadios(); }
+        function addRadioProtocol() {
+            const title = document.getElementById('radio-title').value.trim();
+            const content = document.getElementById('radio-content').value.trim();
+            if(!title || !content) return alert('제목과 내용을 모두 입력해 주세요.');
+            radioProtocols.push({ title, content });
+            document.getElementById('radio-title').value = ''; document.getElementById('radio-content').value = '';
+            saveRadios();
+        }
+        function deleteRadio(idx) { radioProtocols.splice(idx, 1); saveRadios(); }
+        function renderRadios() {
+            const container = document.getElementById('radio-container');
+            container.innerHTML = radioProtocols.map((r, idx) => `
+                <div class="card">
+                    <h3>🗣️ ${r.title} <button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button></h3>
+                    <div class="item-text">${r.content}</div>
+                </div>
+            `).join('');
+        }
+
+        // --- 3페이지: 상황조치 ---
         let situations = JSON.parse(localStorage.getItem('army_situations')) || [
             { title: "통신 두절 발생 시", step: "1. 안테나 및 커넥터 연결 상태 재점검\n2. 주파수 및 CEOI 유효 상태 확인\n3. 필요시 예비기 전환 후 지휘소 보고" }
         ];
-
-        function saveSituations() {
-            localStorage.setItem('army_situations', JSON.stringify(situations));
-            renderSituations();
-        }
-
+        function saveSituations() { localStorage.setItem('army_situations', JSON.stringify(situations)); renderSituations(); }
         function addSituation() {
             const title = document.getElementById('situation-title').value.trim();
             const step = document.getElementById('situation-step').value.trim();
             if(!title || !step) return alert('상황 제목과 조치 단계를 모두 입력해주세요.');
-
             situations.push({ title, step });
-            document.getElementById('situation-title').value = '';
-            document.getElementById('situation-step').value = '';
+            document.getElementById('situation-title').value = ''; document.getElementById('situation-step').value = '';
             saveSituations();
         }
-
-        function deleteSituation(idx) {
-            situations.splice(idx, 1);
-            saveSituations();
-        }
-
+        function deleteSituation(idx) { situations.splice(idx, 1); saveSituations(); }
         function renderSituations() {
             const container = document.getElementById('situation-container');
             container.innerHTML = situations.map((s, idx) => `
@@ -210,14 +249,16 @@
             `).join('');
         }
 
-        // --- 3페이지: 장비별 폴더 기능 ---
-        let folders = JSON.parse(localStorage.getItem('army_folders')) || {};
+        // --- 4페이지: 통신장비별 사용법 (★3단계 전체화면 대형 업그레이드) ---
+        let folders = JSON.parse(localStorage.getItem('army_folders')) || {
+            "P-999K": [
+                { type: "방식", desc: "FM 주파수 도약 주파수 변조 방식" },
+                { type: "기능", desc: "전자전 방해 극복(ECCM), 출력 제어 기능" },
+                { type: "부속명칭", desc: "RT-3100K 송수신기, 송수화기, 안테나 결합기" }
+            ]
+        };
 
-        function saveFolders() {
-            localStorage.setItem('army_folders', JSON.stringify(folders));
-            renderFolders();
-        }
-
+        function saveFolders() { localStorage.setItem('army_folders', JSON.stringify(folders)); renderFolders(); }
         function addFolder() {
             const name = document.getElementById('folder-name').value.trim();
             if(!name) return;
@@ -227,78 +268,93 @@
                 saveFolders();
             }
         }
-
-        function deleteFolder(name) {
-            if(confirm(`[${name}] 폴더와 내부 자료를 모두 삭제하시겠습니까?`)) {
-                delete folders[name];
-                saveFolders();
+        function deleteFolder(name, event) {
+            event.stopPropagation();
+            if(confirm(`[${name}] 폴더와 내부 모든 세부정보를 삭제하겠습니까?`)) {
+                delete folders[name]; saveFolders();
             }
-        }
-
-        function addEquipmentDesc(folderName) {
-            const desc = prompt(`${folderName}에 추가할 사용법이나 제원 내용을 입력하세요:`);
-            if(desc && desc.trim()) {
-                folders[folderName].push(desc.trim());
-                saveFolders();
-            }
-        }
-
-        function deleteEquipmentDesc(folderName, index) {
-            folders[folderName].splice(index, 1);
-            saveFolders();
-        }
-
-        function toggleFolder(element) {
-            element.parentElement.classList.toggle('open');
         }
 
         function renderFolders() {
-            const container = document.getElementById('folder-container');
+            const container = document.getElementById('folder-grid');
             container.innerHTML = '';
             for(let name in folders) {
-                let listHtml = folders[name].map((desc, idx) => `
-                    <li>
-                        <button class="delete-btn" onclick="deleteEquipmentDesc('${name}', ${idx})">삭제</button>
-                        <div class="item-text">${desc}</div>
-                    </li>
-                `).join('');
-
                 container.innerHTML += `
-                    <div class="folder">
-                        <div class="folder-header" onclick="toggleFolder(this)">📁 ${name} <button class="delete-btn" onclick="event.stopPropagation(); deleteFolder('${name}');" style="background:#555; margin-top:-2px;">폴더삭제</button></div>
-                        <div class="folder-body">
-                            <button class="btn" style="padding:6px; margin-bottom:10px; font-size:0.85rem;" onclick="addEquipmentDesc('${name}')">+ 세부 내용 추가</button>
-                            <ul class="item-list">${listHtml || '<li style="color:#aaa; text-align:center;">등록된 내용이 없습니다.</li>'}</ul>
-                        </div>
+                    <div class="folder-box" onclick="openFolderView('${name}')">
+                        <span class="folder-icon">📁</span>
+                        ${name}
+                        <button class="delete-btn" onclick="deleteFolder('${name}', event)" style="position:absolute; bottom:5px; right:5px; padding:2px 6px; font-size:0.75rem;">삭제</button>
                     </div>
                 `;
             }
         }
 
-        // --- 4페이지: 암기사항 추가 기능 ---
-        let memos = JSON.parse(localStorage.getItem('army_memos')) || [];
-
-        function saveMemos() {
-            localStorage.setItem('army_memos', JSON.stringify(memos));
-            renderMemos();
+        // 🚀 2단계 전체화면 진입 기능
+        function openFolderView(name) {
+            currentOpenFolder = name;
+            document.getElementById('view-device-title').innerText = "📁 " + name;
+            document.getElementById('fullscreen-overlay').classList.add('active');
+            renderDeviceDetails();
         }
 
+        function closeFolderView() {
+            document.getElementById('fullscreen-overlay').classList.remove('active');
+            currentOpenFolder = "";
+        }
+
+        // 3단계 세부 설명 추가 기능
+        function addEquipmentDetail() {
+            if(!currentOpenFolder) return;
+            const type = document.getElementById('sub-type-select').value;
+            const desc = document.getElementById('sub-desc-input').value.trim();
+            if(!desc) return alert('3단계 세부 내용을 입력해주세요.');
+
+            folders[currentOpenFolder].push({ type, desc });
+            document.getElementById('sub-desc-input').value = '';
+            saveFolders();
+            renderDeviceDetails();
+        }
+
+        function deleteDeviceDetail(idx) {
+            folders[currentOpenFolder].splice(idx, 1);
+            saveFolders();
+            renderDeviceDetails();
+        }
+
+        // 전체화면 내 데이터 그리기
+        function renderDeviceDetails() {
+            const container = document.getElementById('device-details-container');
+            container.innerHTML = '';
+            if(!currentOpenFolder || !folders[currentOpenFolder]) return;
+
+            // 방식, 기능, 부속명칭별로 그룹핑 처리 또는 타임라인 형태 나열
+            const listHtml = folders[currentOpenFolder].map((item, idx) => `
+                <div class="sub-category">
+                    <div class="sub-header">
+                        <span>📌 [${item.type}] 정보</span>
+                        <button class="delete-btn" onclick="deleteDeviceDetail(${idx})" style="padding:2px 6px;">삭제</button>
+                    </div>
+                    <div class="sub-body">
+                        <div class="item-text">${item.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = listHtml || '<div style="text-align:center; color:#aaa; padding:20px;">등록된 세부 사항(방식, 기능, 부속명칭 등)이 없습니다. 위에서 추가해 보세요!</div>';
+        }
+
+        // --- 5페이지: 암기사항 ---
+        let memos = JSON.parse(localStorage.getItem('army_memos')) || [];
+        function saveMemos() { localStorage.setItem('army_memos', JSON.stringify(memos)); renderMemos(); }
         function addMemo() {
             const title = document.getElementById('memo-title').value.trim();
             const content = document.getElementById('memo-content').value.trim();
             if(!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
-
             memos.push({ title, content });
-            document.getElementById('memo-title').value = '';
-            document.getElementById('memo-content').value = '';
+            document.getElementById('memo-title').value = ''; document.getElementById('memo-content').value = '';
             saveMemos();
         }
-
-        function deleteMemo(index) {
-            memos.splice(index, 1);
-            saveMemos();
-        }
-
+        function deleteMemo(index) { memos.splice(index, 1); saveMemos(); }
         function renderMemos() {
             const list = document.getElementById('memo-list');
             list.innerHTML = memos.map((m, idx) => `
@@ -310,67 +366,42 @@
             `).join('');
         }
 
-        // --- 🚀 [추가 업그레이드] 데이터 내보내기 및 가져오기 기능 ---
+        // --- 데이터 내보내기/가져오기 (통합 인계 동기화) ---
         function exportData() {
-            const allData = {
-                works: works,
-                situations: situations,
-                folders: folders,
-                memos: memos
-            };
-            // 데이터를 암호화된 문자열 형태로 변환 (Base64)
-            const jsonString = JSON.stringify(allData);
-            const encodedData = btoa(encodeURIComponent(jsonString));
-            
-            // 클립보드에 바로 복사시키기
+            const allData = { works, radioProtocols, situations, folders, memos };
+            const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
             navigator.clipboard.writeText(encodedData).then(() => {
-                alert('내 통신노트 전체 데이터 코드가 클립보드에 복사되었습니다!\n카카오톡이나 메모장에 붙여넣어(Ctrl+V) 후임에게 전수하거나 백업해두세요.');
-            }).catch(err => {
-                // 구형 브라우저 대응용 프롬프트 창 출력
-                prompt('아래 코드를 전체 복사(Ctrl+C)하세요:', encodedData);
-            });
+                alert('내 통신노트 데이터 코드가 복사되었습니다! 후임에게 전수해 주거나 백업하세요.');
+            }).catch(() => { prompt('아래 코드를 복사하세요:', encodedData); });
         }
 
         function importData() {
             const code = document.getElementById('import-zone').value.trim();
-            if(!code) return alert('가져올 코드를 입력창에 먼저 붙여넣어 주세요.');
-
-            if(confirm('주의: 코드를 가져오면 현재 스마트폰에 저장되어 있는 기존 노트 내용은 사라지고, 가져온 데이터로 전부 덮어씌워집니다. 진행하시겠습니까?')) {
+            if(!code) return alert('코드를 입력창에 먼저 붙여넣어 주세요.');
+            if(confirm('기존 데이터가 모두 지워지고 가져온 파일로 교체됩니다. 진행하시겠습니까?')) {
                 try {
-                    const decodedString = decodeURIComponent(atob(code));
-                    const importedData = JSON.parse(decodedString);
-                    
-                    // 데이터 검증 후 복구 및 덮어쓰기
+                    const importedData = JSON.parse(decodeURIComponent(atob(code)));
                     if(importedData.works) works = importedData.works;
+                    if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
                     if(importedData.situations) situations = importedData.situations;
                     if(importedData.folders) folders = importedData.folders;
                     if(importedData.memos) memos = importedData.memos;
                     
-                    // 각각 세이브 진행하여 폰에 반영
                     localStorage.setItem('army_works', JSON.stringify(works));
+                    localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
                     localStorage.setItem('army_situations', JSON.stringify(situations));
                     localStorage.setItem('army_folders', JSON.stringify(folders));
                     localStorage.setItem('army_memos', JSON.stringify(memos));
 
-                    // 화면 새로고침 및 입력란 초기화
                     document.getElementById('import-zone').value = '';
-                    renderWorks();
-                    renderSituations();
-                    renderFolders();
-                    renderMemos();
-
-                    alert('🎉 후임 인계 데이터 동기화 완료! 전체 노트가 성공적으로 업데이트되었습니다.');
-                } catch(e) {
-                    alert('❌ 올바르지 않은 데이터 코드입니다. 코드가 잘리거나 변형되지 않았는지 다시 확인해 주세요.');
-                }
+                    renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos();
+                    alert('🎉 통신 암기 교범 인계 완료!');
+                } catch(e) { alert('❌ 잘못된 코드 양식입니다.'); }
             }
         }
 
-        // 초기 실행시 데이터 렌더링
-        renderWorks();
-        renderSituations();
-        renderFolders();
-        renderMemos();
+        // 초기화 실행
+        renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos();
     </script>
 </body>
 </html>
