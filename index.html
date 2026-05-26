@@ -682,4 +682,45 @@
             trashItems.splice(idx, 1); saveTrash(); alert('성공적으로 원래 위치로 복구되었습니다!');
         }
 
-        function killTrashItem(idx) { if(confirm('영구 삭제되어 복구할 수 없습니다. 계속하시겠습니까?')) { trashItems.splice(idx,
+        function killTrashItem(idx) { if(confirm('영구 삭제되어 복구할 수 없습니다. 계속하시겠습니까?')) { trashItems.splice(idx, 1); saveTrash(); } }
+        function clearTrashAll() { if(confirm('휴지통 내부의 모든 데이터가 영구히 소멸됩니다. 비우시겠습니까?')) { trashItems = []; saveTrash(); } }
+
+        // --- 데이터 백업 시스템 ---
+        function exportData() {
+            const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, trashItems };
+            const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
+            navigator.clipboard.writeText(encodedData).then(() => { alert('데이터 코드가 복사되었습니다!'); }).catch(() => { prompt('코드를 복사하세요:', encodedData); });
+        }
+        function importData() {
+            const code = document.getElementById('import-zone').value.trim(); if(!code) return alert('코드를 붙여넣어 주세요.');
+            if(confirm('데이터를 덮어쓰시겠습니까?')) {
+                try {
+                    const importedData = JSON.parse(decodeURIComponent(atob(code)));
+                    if(importedData.works) works = importedData.works;
+                    if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
+                    if(importedData.situations) situations = importedData.situations;
+                    if(importedData.situationFolders) situationFolders = importedData.situationFolders;
+                    if(importedData.folders) folders = importedData.folders;
+                    if(importedData.memos) memos = importedData.memos;
+                    if(importedData.radioMemos) radioMemos = importedData.radioMemos;
+                    if(importedData.trashItems) trashItems = importedData.trashItems;
+                    
+                    localStorage.setItem('army_works', JSON.stringify(works));
+                    localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
+                    localStorage.setItem('army_situations', JSON.stringify(situations));
+                    localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
+                    localStorage.setItem('army_folders', JSON.stringify(folders));
+                    localStorage.setItem('army_memos', JSON.stringify(memos));
+                    localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos));
+                    localStorage.setItem('army_trash', JSON.stringify(trashItems));
+
+                    document.getElementById('import-zone').value = ''; cancelAllEdits();
+                    alert('🎉 데이터 동기화 완료!');
+                } catch(e) { alert('❌ 올바르지 않은 코드입니다.'); }
+            }
+        }
+
+        renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos(); renderTrash();
+    </script>
+</body>
+</html>
