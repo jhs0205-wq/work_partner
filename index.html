@@ -29,8 +29,9 @@
         .card { background: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #ddd; overflow: hidden; }
         .card h3 { margin-bottom: 8px; color: var(--primary-color); border-bottom: 2px solid var(--bg-color); padding-bottom: 5px; font-size: 1.05rem; }
         
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; overflow-x: auto; }
-        nav button { background: none; border: none; color: #b3cbba; padding: 15px 5px; font-size: 0.85rem; min-width: 75px; flex: 1; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        /* 🛠️ 네비게이션 바가 항상 맨 위에 오도록 z-index 최적화 및 레이아웃 수정 */
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 1000; overflow-x: auto; }
+        nav button { background: none; border: none; color: #b3cbba; padding: 15px 5px; font-size: 0.85rem; min-width: 75px; flex: 1; cursor: pointer; transition: 0.2s; white-space: nowrap; height: 55px; }
         nav button.active { color: white; font-weight: bold; background-color: var(--secondary-color); }
 
         input, select { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px !important; -webkit-appearance: none; }
@@ -99,14 +100,14 @@
 
         .sync-box { background: #eef7f9; border: 1px solid #bce8f1; color: #31708f; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
 
-        /* 글 작성 시 완전 전체화면 스타일 */
-        body.writing-mode header,
-        body.writing-mode nav,
+        /* 🚀 간섭을 일으키던 뷰 활성화 스타일 구조 변경으로 터치 씹힘 원인 제거 */
+        body.writing-mode header { display: none !important; }
+        body.writing-mode nav { display: flex !important; } /* 메뉴 바는 항상 보이도록 유지 */
         body.writing-mode .card:not(.focus-form),
         body.writing-mode .toggle-tab-container { display: none !important; }
         body.writing-mode .container { padding: 0; }
-        body.writing-mode .card.focus-form { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999; margin: 0; border: none; border-radius: 0; height: 100vh; display: flex; flex-direction: column; padding: 15px; background: white; }
-        body.writing-mode .card.focus-form textarea { flex: 1; min-height: 60vh; margin-bottom: 15px; font-size: 17px !important; }
+        body.writing-mode .card.focus-form { position: fixed; top: 0; left: 0; right: 0; bottom: 55px; z-index: 500; margin: 0; border: none; border-radius: 0; height: calc(100vh - 55px); display: flex; flex-direction: column; padding: 15px; background: white; }
+        body.writing-mode .card.focus-form textarea { flex: 1; min-height: 50vh; margin-bottom: 15px; font-size: 17px !important; }
         body.writing-mode .card.focus-form input { font-size: 17px !important; margin-bottom: 12px; }
     </style>
 </head>
@@ -270,6 +271,7 @@
 
         function saveTrash() { localStorage.setItem('army_trash', JSON.stringify(trashItems)); renderTrash(); }
 
+        // 작성 모드 시 하단 바가 덮이지 않고 터치가 무조건 먹히도록 바텀 마진 및 z-index 세팅 전면 수정
         function enterWritingMode(formId, isInsideOverlay = false) {
             document.body.classList.add('writing-mode');
             document.querySelectorAll('.card').forEach(c => c.classList.remove('focus-form'));
@@ -280,7 +282,7 @@
                 const closeBtn = document.createElement('button');
                 closeBtn.type = 'button';
                 closeBtn.className = 'cancel-btn exit-fullscreen-btn';
-                closeBtn.style.cssText = "position: absolute; top: 12px; right: 12px; padding: 6px 12px;";
+                closeBtn.style.cssText = "position: absolute; top: 12px; right: 12px; padding: 6px 12px; z-index: 600;";
                 closeBtn.innerText = "닫기 ✕";
                 closeBtn.onclick = function(e) { e.stopPropagation(); exitWritingMode(); };
                 targetCard.style.position = 'relative';
@@ -465,7 +467,7 @@
             const container = document.getElementById('radio-container'); container.innerHTML = '';
             radioProtocols.forEach((r, idx) => {
                 const isEditingClass = (idx === editTargetIndex && document.getElementById('radio-form-title').innerText.includes('수정')) ? 'is-editing' : '';
-                container.innerHTML += `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button></div><h3>🗣️ ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
+                container.innerHTML += `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button></div> hijacking <h3>🗣️ ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
             });
         }
 
@@ -586,7 +588,7 @@
         }
         function deleteDeviceDetail(idx) {
             if(confirm('삭제하시겠습니까? (휴지통 보관)')) {
-                trashItems.push({ from: 'folders', deviceName: currentOpenFolder, data: folders[currentOpenFolder][idx] });
+                trashItems.push({ from: 'folders', folderName: currentOpenFolder, data: folders[currentOpenFolder][idx] });
                 folders[currentOpenFolder].splice(idx, 1); cancelAllEdits(); saveFolders(); saveTrash(); renderDeviceDetails();
             }
         }
@@ -680,30 +682,4 @@
             trashItems.splice(idx, 1); saveTrash(); alert('성공적으로 원래 위치로 복구되었습니다!');
         }
 
-        document.getElementById('form-work').querySelector('h3')
-
-        function killTrashItem(idx) { if(confirm('영구 삭제되어 복구할 수 없습니다. 계속하시겠습니까?')) { trashItems.splice(idx, 1); saveTrash(); } }
-        function clearTrashAll() { if(confirm('휴지통 내부의 모든 데이터가 영구히 소멸됩니다. 비우시겠습니까?')) { trashItems = []; saveTrash(); } }
-
-        // --- 데이터 백업 시스템 ---
-        function exportData() {
-            const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, trashItems };
-            const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
-            navigator.clipboard.writeText(encodedData).then(() => { alert('데이터 코드가 복사되었습니다!'); }).catch(() => { prompt('코드를 복사하세요:', encodedData); });
-        }
-        function importData() {
-            const code = document.getElementById('import-zone').value.trim(); if(!code) return alert('코드를 붙여넣어 주세요.');
-            if(confirm('데이터를 덮어쓰시겠습니까?')) {
-                try {
-                    const importedData = JSON.parse(decodeURIComponent(atob(code)));
-                    if(importedData.works) works = importedData.works;
-                    if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
-                    if(importedData.situations) situations = importedData.situations;
-                    if(importedData.situationFolders) situationFolders = importedData.situationFolders;
-                    if(importedData.folders) folders = importedData.folders;
-                    if(importedData.memos) memos = importedData.memos;
-                    if(importedData.radioMemos) radioMemos = importedData.radioMemos;
-                    if(importedData.trashItems) trashItems = importedData.trashItems;
-                    
-                    localStorage.setItem('army_works', JSON.stringify(works));
-                    localStorage.setItem('army_
+        function killTrashItem(idx) { if(confirm('영구 삭제되어 복구할 수 없습니다. 계속하시겠습니까?')) { trashItems.splice(idx,
