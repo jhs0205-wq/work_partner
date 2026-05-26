@@ -128,18 +128,6 @@
                 <ul id="main-radio-memo-list" class="item-list"></ul>
             </div>
 
-            <div class="card" id="form-radio-main-info">
-                <h3 id="radio-main-info-form-title">📋 주요 무전사항 기록</h3>
-                <input type="text" id="radio-main-info-title" placeholder="무전 상황 요약 (예: OO대대 교신보고)" onfocus="enterWritingMode('form-radio-main-info')">
-                <textarea id="radio-main-info-content" placeholder="주요 무전 지침이나 기록 내용을 작성하세요..." onfocus="enterWritingMode('form-radio-main-info')"></textarea>
-                <button class="btn" id="radio-main-info-submit-btn" onclick="addOrUpdateRadioMainInfo()">주요 무전사항 저장</button>
-            </div>
-
-            <div class="card">
-                <h3>📌 실시간 주요 무전사항</h3>
-                <ul id="radio-main-info-list" class="item-list"></ul>
-            </div>
-
             <div class="card" id="form-work">
                 <h3 id="work-form-title">⏱️ 근무 일정 추가</h3>
                 <select id="work-time">
@@ -278,7 +266,6 @@
         let editTargetIndex = -1;
         let situationViewMode = "classic";
 
-        // 휴지통 전용 DB 데이터 로드
         let trashItems = JSON.parse(localStorage.getItem('army_trash')) || [];
 
         function saveTrash() { localStorage.setItem('army_trash', JSON.stringify(trashItems)); renderTrash(); }
@@ -343,13 +330,7 @@
             document.getElementById('radio-memo-title').value = '';
             document.getElementById('radio-memo-content').value = '';
 
-            document.getElementById('radio-main-info-form-title').innerText = "📋 주요 무전사항 기록";
-            document.getElementById('radio-main-info-submit-btn').innerText = "주요 무전사항 저장";
-            document.getElementById('radio-main-info-submit-btn').classList.remove('edit-mode');
-            document.getElementById('radio-main-info-title').value = '';
-            document.getElementById('radio-main-info-content').value = '';
-
-            document.getElementById('work-form-title').innerText = "⏱️ 근무 일정 추가";
+            document.getElementById('form-work').querySelector('h3').innerText = "⏱️ 근무 일정 추가";
             document.getElementById('work-submit-btn').innerText = "근무 지침 추가";
             document.getElementById('work-submit-btn').classList.remove('edit-mode');
             document.getElementById('work-content').value = '';
@@ -378,7 +359,7 @@
             document.getElementById('memo-title').value = '';
             document.getElementById('memo-content').value = '';
 
-            renderRadioMemos(); renderRadioMainInfos(); renderWorks(); renderRadios(); renderSituations(); renderMemos(); renderTrash();
+            renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderMemos(); renderTrash();
             if(currentOpenFolder) { renderDeviceDetails(); renderBigCategoryButtons(); }
             if(currentOpenSituFolder) { renderSituFolderDetails(); }
         }
@@ -422,58 +403,19 @@
             }).join('');
         }
 
-        // --- [신설] 1페이지: 주요 무전사항 로직 ---
-        let radioMainInfos = JSON.parse(localStorage.getItem('army_radio_main_infos')) || [];
-        function saveRadioMainInfos() { localStorage.setItem('army_radio_main_infos', JSON.stringify(radioMainInfos)); renderRadioMainInfos(); }
-        
-        function addOrUpdateRadioMainInfo() {
-            const title = document.getElementById('radio-main-info-title').value.trim();
-            const content = document.getElementById('radio-main-info-content').value.trim();
-            if(!title || !content) return alert('제목과 내용을 모두 입력해 주세요.');
-            
-            if(editTargetIndex > -1 && document.getElementById('radio-main-info-form-title').innerText.includes('수정')) {
-                radioMainInfos[editTargetIndex] = { title, content };
-            } else {
-                radioMainInfos.push({ title, content });
-            }
-            cancelAllEdits(); saveRadioMainInfos();
-        }
-        function editRadioMainInfo(idx) {
-            cancelAllEdits(); editTargetIndex = idx; const info = radioMainInfos[idx];
-            document.getElementById('radio-main-info-form-title').innerText = "🔄 주요 무전사항 수정 중...";
-            document.getElementById('radio-main-info-title').value = info.title; document.getElementById('radio-main-info-content').value = info.content;
-            enterWritingMode('form-radio-main-info');
-            const btn = document.getElementById('radio-main-info-submit-btn'); btn.innerText = "✅ 수정 완료"; btn.classList.add('edit-mode');
-            renderRadioMainInfos();
-        }
-        function deleteRadioMainInfo(idx) {
-            if(confirm('이 주요 무전사항을 삭제하시겠습니까? (휴지통 보관)')) {
-                trashItems.push({ from: 'radioMainInfos', data: radioMainInfos[idx] });
-                radioMainInfos.splice(idx, 1); cancelAllEdits(); saveRadioMainInfos(); saveTrash();
-            }
-        }
-        function renderRadioMainInfos() {
-            const infoList = document.getElementById('radio-main-info-list');
-            if(radioMainInfos.length === 0) { infoList.innerHTML = `<li style="text-align:center; color:#999; list-style:none; border-left:none; background:none; padding:10px 0;">기록된 주요 무전사항이 없습니다.</li>`; return; }
-            infoList.innerHTML = radioMainInfos.map((info, idx) => {
-                const isEditingClass = (idx === editTargetIndex && document.getElementById('radio-main-info-form-title').innerText.includes('수정')) ? 'is-editing' : '';
-                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px; border-left-color: var(--info-color);"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadioMainInfo(${idx})">수정</button><button class="delete-btn" onclick="deleteRadioMainInfo(${idx})">삭제</button></div><strong>📋 ${info.title}</strong><div class="item-text" style="margin-top:8px;">${info.content}</div></li>`;
-            }).join('');
-        }
-
         // --- 1페이지: 근무 일정 ---
         let works = JSON.parse(localStorage.getItem('army_works')) || [];
         function saveWorks() { localStorage.setItem('army_works', JSON.stringify(works)); renderWorks(); }
         function addOrUpdateWork() {
             const type = document.getElementById('work-time').value; const content = document.getElementById('work-content').value.trim();
             if(!content) return alert('근무 내용을 입력해주세요.');
-            if(editTargetIndex > -1 && document.getElementById('work-form-title').innerText.includes('수정')) { works[editTargetIndex] = { type, content }; } 
+            if(editTargetIndex > -1 && document.getElementById('form-work').querySelector('h3').innerText.includes('수정')) { works[editTargetIndex] = { type, content }; } 
             else { works.push({ type, content }); }
             cancelAllEdits(); saveWorks();
         }
         function editWork(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetWork = works[idx];
-            document.getElementById('work-form-title').innerText = "🔄 근무 일정 수정 중...";
+            document.getElementById('form-work').querySelector('h3').innerText = "🔄 근무 일정 수정 중...";
             document.getElementById('work-time').value = targetWork.type; document.getElementById('work-content').value = targetWork.content;
             enterWritingMode('form-work');
             const submitBtn = document.getElementById('work-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
@@ -489,7 +431,7 @@
             const amList = document.getElementById('work-list-am'); const pmList = document.getElementById('work-list-pm');
             amList.innerHTML = ''; pmList.innerHTML = '';
             works.forEach((w, idx) => {
-                const isEditingClass = (idx === editTargetIndex && document.getElementById('work-form-title').innerText.includes('수정')) ? 'is-editing' : '';
+                const isEditingClass = (idx === editTargetIndex && document.getElementById('form-work').querySelector('h3').innerText.includes('수정')) ? 'is-editing' : '';
                 const li = `<li class="${isEditingClass}"><div class="action-btn-group"><button class="edit-item-btn" onclick="editWork(${idx})">수정</button><button class="delete-btn" onclick="deleteWork(${idx})">삭제</button></div><div class="item-text">${w.content}</div></li>`;
                 if(w.type === "오전 근무") amList.innerHTML += li; else pmList.innerHTML += li;
             });
@@ -679,7 +621,7 @@
             const title = document.getElementById('memo-title').value.trim(); const content = document.getElementById('memo-content').value.trim();
             if(!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
             
-            if(editTargetIndex > -1 && !document.getElementById('radio-memo-form-title').innerText.includes('수정') && !document.getElementById('radio-main-info-form-title').innerText.includes('수정') && !document.getElementById('work-form-title').innerText.includes('수정')) {
+            if(editTargetIndex > -1 && !document.getElementById('radio-memo-form-title').innerText.includes('수정') && !document.getElementById('form-work').querySelector('h3').innerText.includes('수정')) {
                 memos[editTargetIndex] = { title, content };
                 alert('일반 암기사항이 수정되었습니다.');
             } else { memos.push({ title, content }); }
@@ -705,7 +647,7 @@
             }).join('');
         }
 
-        // --- 🗑️ [신설] 휴지통 코어 복구 메커니즘 ---
+        // --- 🗑️ 휴지통 코어 메커니즘 ---
         function renderTrash() {
             const trashList = document.getElementById('trash-list');
             if(trashItems.length === 0) { trashList.innerHTML = `<li style="text-align:center; color:#bbb; list-style:none; background:none; border:none; padding:15px 0;">휴지통이 비어있습니다.</li>`; return; }
@@ -713,12 +655,11 @@
             trashList.innerHTML = trashItems.map((item, idx) => {
                 let categoryLabel = "";
                 if(item.from === 'radioMemos') categoryLabel = "무전 암기";
-                else if(item.from === 'radioMainInfos') categoryLabel = "주요 무전사항";
                 else if(item.from === 'works') categoryLabel = "근무 일정";
                 else if(item.from === 'radioProtocols') categoryLabel = "무전법";
                 else if(item.from === 'situations') categoryLabel = "상황조치(기존)";
                 else if(item.from === 'situationFolders') categoryLabel = `상황폴더(${item.folderName})`;
-                else if(item.from === 'folders') categoryLabel = `장비폴더(${item.deviceName})`;
+                else if(item.from === 'folders') categoryLabel = `장비폴더(${item.folderName})`;
                 else if(item.from === 'memos') categoryLabel = "일반 암기";
 
                 const displayTitle = item.data.title || item.data.type || "내용 기반 데이터";
@@ -729,23 +670,24 @@
         function restoreTrashItem(idx) {
             const item = trashItems[idx];
             if(item.from === 'radioMemos') { radioMemos.push(item.data); saveRadioMemos(); }
-            else if(item.from === 'radioMainInfos') { radioMainInfos.push(item.data); saveRadioMainInfos(); }
             else if(item.from === 'works') { works.push(item.data); saveWorks(); }
             else if(item.from === 'radioProtocols') { radioProtocols.push(item.data); saveRadios(); }
             else if(item.from === 'situations') { situations.push(item.data); saveSituations(); }
             else if(item.from === 'situationFolders') { if(!situationFolders[item.folderName]) situationFolders[item.folderName] = []; situationFolders[item.folderName].push(item.data); saveSituations(); }
-            else if(item.from === 'folders') { if(!folders[item.deviceName]) folders[item.deviceName] = []; folders[item.deviceName].push(item.data); saveFolders(); }
+            else if(item.from === 'folders') { if(!folders[item.folderName]) folders[item.folderName] = []; folders[item.folderName].push(item.data); saveFolders(); }
             else if(item.from === 'memos') { memos.push(item.data); saveMemos(); }
 
             trashItems.splice(idx, 1); saveTrash(); alert('성공적으로 원래 위치로 복구되었습니다!');
         }
 
+        document.getElementById('form-work').querySelector('h3')
+
         function killTrashItem(idx) { if(confirm('영구 삭제되어 복구할 수 없습니다. 계속하시겠습니까?')) { trashItems.splice(idx, 1); saveTrash(); } }
         function clearTrashAll() { if(confirm('휴지통 내부의 모든 데이터가 영구히 소멸됩니다. 비우시겠습니까?')) { trashItems = []; saveTrash(); } }
 
-        // --- 데이터 백업 시스템 확장 ---
+        // --- 데이터 백업 시스템 ---
         function exportData() {
-            const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, radioMainInfos, trashItems };
+            const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, trashItems };
             const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
             navigator.clipboard.writeText(encodedData).then(() => { alert('데이터 코드가 복사되었습니다!'); }).catch(() => { prompt('코드를 복사하세요:', encodedData); });
         }
@@ -761,26 +703,7 @@
                     if(importedData.folders) folders = importedData.folders;
                     if(importedData.memos) memos = importedData.memos;
                     if(importedData.radioMemos) radioMemos = importedData.radioMemos;
-                    if(importedData.radioMainInfos) radioMainInfos = importedData.radioMainInfos;
                     if(importedData.trashItems) trashItems = importedData.trashItems;
                     
                     localStorage.setItem('army_works', JSON.stringify(works));
-                    localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
-                    localStorage.setItem('army_situations', JSON.stringify(situations));
-                    localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
-                    localStorage.setItem('army_folders', JSON.stringify(folders));
-                    localStorage.setItem('army_memos', JSON.stringify(memos));
-                    localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos));
-                    localStorage.setItem('army_radio_main_infos', JSON.stringify(radioMainInfos));
-                    localStorage.setItem('army_trash', JSON.stringify(trashItems));
-
-                    document.getElementById('import-zone').value = ''; cancelAllEdits();
-                    alert('🎉 휴지통 및 주요무전사항 연동 전체 데이터 동기화 완료!');
-                } catch(e) { alert('❌ 올바르지 않은 코드입니다.'); }
-            }
-        }
-
-        renderRadioMemos(); renderRadioMainInfos(); renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos(); renderTrash();
-    </script>
-</body>
-</html>
+                    localStorage.setItem('army_
