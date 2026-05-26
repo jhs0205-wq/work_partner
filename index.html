@@ -41,6 +41,11 @@
         button.btn:hover { background: var(--secondary-color); }
         button.btn.edit-mode { background-color: var(--edit-color); color: white; }
 
+        /* 🚀 보기 방식 선택용 탭 스타일 */
+        .toggle-tab-container { display: flex; gap: 8px; margin-bottom: 12px; }
+        .toggle-tab-btn { flex: 1; background: #e2e8e4; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; text-align: center; }
+        .toggle-tab-btn.active { background: var(--secondary-color); color: white; }
+
         .action-btn-group { float: right; display: flex; gap: 6px; align-items: center; margin-left: 10px; }
         
         .edit-item-btn { background: none; border: 1px solid var(--edit-color); color: var(--edit-color); padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
@@ -49,7 +54,6 @@
         .delete-btn { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
         .delete-btn:hover { background: var(--accent-color); color: white; }
         
-        /* 🚀 상황조치 이동 버튼 스타일 추가 */
         .move-btn { background: none; border: 1px solid var(--info-color); color: var(--info-color); padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
         .move-btn:hover { background: var(--info-color); color: white; }
 
@@ -67,6 +71,7 @@
         .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
         .folder-box { background: white; border: 2px solid var(--secondary-color); border-radius: 8px; padding: 20px 10px; text-align: center; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
         .folder-box .folder-icon { font-size: 2rem; margin-bottom: 5px; display: block; }
+        .folder-box .folder-action-zone { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; z-index: 10; }
 
         .fullscreen-view { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-color); z-index: 200; overflow-y: auto; padding: 12px; padding-bottom: 40px; }
         .fullscreen-view.active { display: block; }
@@ -94,11 +99,13 @@
 
         .sync-box { background: #eef7f9; border: 1px solid #bce8f1; color: #31708f; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
 
+        /* 글 작성 시 완전 전체화면을 만들기 위한 스타일 */
         body.writing-mode header,
         body.writing-mode nav,
-        body.writing-mode .card:not(.focus-form) { display: none !important; }
+        body.writing-mode .card:not(.focus-form),
+        body.writing-mode .toggle-tab-container { display: none !important; }
         body.writing-mode .container { padding: 0; }
-        body.writing-mode .card.focus-form { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999; margin: 0; border: none; border-radius: 0; height: 100vh; display: flex; flex-direction: column; padding: 15px; }
+        body.writing-mode .card.focus-form { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999; margin: 0; border: none; border-radius: 0; height: 100vh; display: flex; flex-direction: column; padding: 15px; background: white; }
         body.writing-mode .card.focus-form textarea { flex: 1; min-height: 60vh; margin-bottom: 15px; font-size: 17px !important; }
         body.writing-mode .card.focus-form input { font-size: 17px !important; margin-bottom: 12px; }
     </style>
@@ -145,13 +152,28 @@
         </div>
 
         <div id="page3" class="page">
-            <div class="card" id="form-situation">
-                <h3 id="situation-form-title">🚨 새 상황조치 등록</h3>
-                <input type="text" id="situation-title" placeholder="상황 제목 (예: 장비 낙뢰 피격 시)" onfocus="enterWritingMode('form-situation')">
-                <textarea id="situation-step" placeholder="조치 단계를 순서대로 입력하세요..." onfocus="enterWritingMode('form-situation')"></textarea>
-                <button class="btn" id="situation-submit-btn" onclick="addOrUpdateSituation()">상황조치 저장</button>
+            <div class="toggle-tab-container">
+                <div id="tab-situ-classic" class="toggle-tab-btn active" onclick="switchSituationViewMode('classic')">📄 기존 형식 보기</div>
+                <div id="tab-situ-folder" class="toggle-tab-btn" onclick="switchSituationViewMode('folder')">📁 폴더 형식 보기</div>
             </div>
-            <div id="situation-container"></div>
+
+            <div id="situ-classic-zone">
+                <div class="card" id="form-situation">
+                    <h3 id="situation-form-title">🚨 새 상황조치 등록 (기존형)</h3>
+                    <input type="text" id="situation-title" placeholder="상황 제목 (예: 장비 낙뢰 피격 시)" onfocus="enterWritingMode('form-situation')">
+                    <textarea id="situation-step" placeholder="조치 단계를 순서대로 입력하세요..." onfocus="enterWritingMode('form-situation')"></textarea>
+                    <button class="btn" id="situation-submit-btn" onclick="addOrUpdateSituation()">상황조치 저장</button>
+                </div>
+                <div id="situation-container"></div>
+            </div>
+
+            <div id="situ-folder-zone" style="display:none;">
+                <div class="card">
+                    <h3>📁 상황조치 전용 폴더 관리</h3>
+                    <p style="font-size:0.85rem; color:#666; line-height:1.4;">장비사용법 탭에서 폴더를 <b>[전체 이동]</b> 시키거나 아래 그리드에서 폴더를 선택해 상황별 조치를 밀도 있게 관리하세요.</p>
+                </div>
+                <div id="situation-folder-grid" class="folder-grid"></div>
+            </div>
         </div>
 
         <div id="page4" class="page">
@@ -177,7 +199,7 @@
                 <h3 id="memo-form-title">✏️ 새 암기사항 추가</h3>
                 <input type="text" id="memo-title" placeholder="제목 (예: 포네틱 코드)" onfocus="enterWritingMode('form-memo')">
                 <textarea id="memo-content" placeholder="내용을 입력하세요..." onfocus="enterWritingMode('form-memo')"></textarea>
-                <button class="btn" id="memo-submit-btn" onclick="addOrUpdateMemo()">暗기사항 저장</button>
+                <button class="btn" id="memo-submit-btn" onclick="addOrUpdateMemo()">암기사항 저장</button>
             </div>
             <ul id="memo-list" class="item-list"></ul>
         </div>
@@ -208,6 +230,14 @@
         <div id="device-details-container"></div>
     </div>
 
+    <div id="situ-fullscreen-overlay" class="fullscreen-view">
+        <div class="view-header">
+            <h2 id="view-situ-folder-title" style="color: var(--accent-color);">상황조치 폴더</h2>
+            <button class="back-btn" onclick="closeSituFolderView()">◀ 뒤로가기</button>
+        </div>
+        <div id="situ-folder-details-container"></div>
+    </div>
+
     <nav>
         <button onclick="switchPage(1, '무전근무 (오전/오후)')" class="nav-btn active">무전근무</button>
         <button onclick="switchPage(2, '무전법 지침')" class="nav-btn">무전법</button>
@@ -218,7 +248,9 @@
 
     <script>
         let currentOpenFolder = "";
+        let currentOpenSituFolder = ""; // 현재 열린 상황조치 폴더명
         let editTargetIndex = -1;
+        let situationViewMode = "classic"; // classic 또는 folder
 
         function enterWritingMode(formId, isInsideOverlay = false) {
             document.body.classList.add('writing-mode');
@@ -254,6 +286,18 @@
             document.getElementById('main-title').innerText = title;
         }
 
+        // 상황조치 뷰모드 토글 스위치 기능
+        function switchSituationViewMode(mode) {
+            situationViewMode = mode;
+            document.getElementById('tab-situ-classic').classList.toggle('active', mode === 'classic');
+            document.getElementById('tab-situ-folder').classList.toggle('active', mode === 'folder');
+            
+            document.getElementById('situ-classic-zone').style.display = mode === 'classic' ? 'block' : 'none';
+            document.getElementById('situ-folder-zone').style.display = mode === 'folder' ? 'block' : 'none';
+            
+            if(mode === 'folder') renderSituationFolders();
+        }
+
         function toggleDescInput() {
             const checkbox = document.getElementById('use-desc-checkbox');
             const descInput = document.getElementById('sub-desc-input');
@@ -276,7 +320,7 @@
             document.getElementById('radio-title').value = '';
             document.getElementById('radio-content').value = '';
 
-            document.getElementById('situation-form-title').innerText = "🚨 새 상황조치 등록";
+            document.getElementById('situation-form-title').innerText = "🚨 새 상황조치 등록 (기존형)";
             document.getElementById('situation-submit-btn').innerText = "상황조치 저장";
             document.getElementById('situation-submit-btn').classList.remove('edit-mode');
             document.getElementById('situation-title').value = '';
@@ -298,10 +342,8 @@
             document.getElementById('memo-content').value = '';
 
             renderWorks(); renderRadios(); renderSituations(); renderMemos();
-            if(currentOpenFolder) {
-                renderDeviceDetails();
-                renderBigCategoryButtons();
-            }
+            if(currentOpenFolder) { renderDeviceDetails(); renderBigCategoryButtons(); }
+            if(currentOpenSituFolder) { renderSituFolderDetails(); }
         }
 
         // --- 1페이지: 무전근무 ---
@@ -356,20 +398,25 @@
         }
         function deleteRadio(idx) { if(confirm('삭제하시겠습니까?')) { radioProtocols.splice(idx, 1); cancelAllEdits(); saveRadios(); } }
         function renderRadios() {
-            const container = document.getElementById('radio-container');
-            container.innerHTML = '';
+            const container = document.getElementById('radio-container'); container.innerHTML = '';
             radioProtocols.forEach((r, idx) => {
                 const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
-                const actionButtons = (idx === editTargetIndex) 
-                    ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` 
-                    : `<button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button>`;
+                const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button>`;
                 container.innerHTML += `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div><h3>🗣️ ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
             });
         }
 
-        // --- 3페이지: 상황조치 ---
+        // --- 3페이지: 상황조치 (기존 카드형 및 폴더 데이터베이스 이원화 연동) ---
         let situations = JSON.parse(localStorage.getItem('army_situations')) || [];
-        function saveSituations() { localStorage.setItem('army_situations', JSON.stringify(situations)); renderSituations(); }
+        let situationFolders = JSON.parse(localStorage.getItem('army_situ_folders')) || {}; // 상황 전용 폴더 맵
+
+        function saveSituations() { 
+            localStorage.setItem('army_situations', JSON.stringify(situations)); 
+            localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
+            renderSituations(); 
+            renderSituationFolders();
+        }
+        
         function addOrUpdateSituation() {
             const title = document.getElementById('situation-title').value.trim();
             const step = document.getElementById('situation-step').value.trim();
@@ -379,7 +426,7 @@
             cancelAllEdits(); saveSituations();
         }
         function editSituation(idx) {
-            switchPage(3, '상황별 조치사항'); editTargetIndex = idx; const targetSitu = situations[idx];
+            switchPage(3, '상황별 조치사항'); switchSituationViewMode('classic'); editTargetIndex = idx; const targetSitu = situations[idx];
             document.getElementById('situation-form-title').innerText = "🔄 상황조치 수정 중...";
             document.getElementById('situation-title').value = targetSitu.title; document.getElementById('situation-step').value = targetSitu.step;
             enterWritingMode('form-situation');
@@ -396,7 +443,71 @@
             }).join('');
         }
 
-        // --- 4페이지: 통신장비별 사용법 ---
+        // 상황 전용 폴더 렌더러
+        function renderSituationFolders() {
+            const container = document.getElementById('situation-folder-grid');
+            container.innerHTML = '';
+            for(let name in situationFolders) {
+                container.innerHTML += `
+                    <div class="folder-box" onclick="openSituFolderView('${name}')" style="border-color: var(--accent-color);">
+                        <span class="folder-icon" style="color:var(--accent-color)">📂</span>${name}
+                        <div class="folder-action-zone">
+                            <button class="delete-btn" onclick="deleteSituFolder('${name}', event)" style="width:100%; padding:3px 0;">폴더 삭제</button>
+                        </div>
+                    </div>
+                `;
+            }
+            if(Object.keys(situationFolders).length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#aaa; grid-column:span 2; padding:30px;">장비사용법 탭에서 폴더를 이동시키거나 연동된 폴더 데이터가 아직 없습니다.</div>';
+            }
+        }
+
+        function openSituFolderView(name) {
+            currentOpenSituFolder = name;
+            document.getElementById('view-situ-folder-title').innerText = "🚨 " + name + " 상황조치 연동방";
+            document.getElementById('situ-fullscreen-overlay').classList.add('active');
+            renderSituFolderDetails();
+        }
+        function closeSituFolderView() { document.getElementById('situ-fullscreen-overlay').classList.remove('active'); currentOpenSituFolder = ""; }
+        
+        function deleteSituFolder(name, event) {
+            event.stopPropagation();
+            if(confirm(`[${name}] 상황조치 폴더를 삭제하겠습니까? 내부 데이터가 모두 영구 삭제됩니다.`)) {
+                delete situationFolders[name]; saveFolders(); saveSituations();
+            }
+        }
+        function deleteSituFolderDetail(idx) {
+            if(confirm('이 상황 항목을 삭제하시겠습니까?')) {
+                situationFolders[currentOpenSituFolder].splice(idx, 1); saveSituations(); renderSituFolderDetails();
+            }
+        }
+
+        function renderSituFolderDetails() {
+            const container = document.getElementById('situ-folder-details-container'); container.innerHTML = '';
+            if(!currentOpenSituFolder || !situationFolders[currentOpenSituFolder] || situationFolders[currentOpenSituFolder].length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">폴더 내에 조치사항이 없습니다.</div>'; return;
+            }
+            const groupMap = {};
+            situationFolders[currentOpenSituFolder].forEach((item, originalIndex) => {
+                if(!groupMap[item.type]) { groupMap[item.type] = []; }
+                groupMap[item.type].push({ ...item, originalIndex });
+            });
+            for(let typeName in groupMap) {
+                let cardHtml = `<div class="big-category-card" style="border-color:var(--accent-color);"><div class="big-category-title" style="background:#f2dede; color:var(--accent-color)">⚠️ 대분류: ${typeName}</div>`;
+                groupMap[typeName].forEach(subItem => {
+                    const descHtml = (subItem.desc && subItem.desc.trim() !== "") ? `<div class="level4-desc-text" style="border-left-color:var(--accent-color);">${subItem.desc}</div>` : ``;
+                    cardHtml += `<div class="level3-wrapper">
+                                    <div class="action-btn-group"><button class="delete-btn" onclick="deleteSituFolderDetail(${subItem.originalIndex})">삭제</button></div>
+                                    <div class="level3-title-text">📌 조치 항목명: ${subItem.title}</div>
+                                    ${descHtml}
+                                 </div>`;
+                });
+                cardHtml += `</div>`; container.innerHTML += cardHtml;
+            }
+        }
+
+
+        // --- 4페이지: 통신장비별 사용법 (★폴더 전체 이동 마이그레이션 기술 추가) ---
         let folders = JSON.parse(localStorage.getItem('army_folders')) || {};
         function saveFolders() { localStorage.setItem('army_folders', JSON.stringify(folders)); renderFolders(); }
         function addFolder() {
@@ -410,10 +521,42 @@
                 delete folders[name]; saveFolders(); if(currentOpenFolder === name) closeFolderView();
             }
         }
+
+        // 🚀 [대형 업그레이드]: 폴더 내 모든 하위 데이터를 상황조치 폴더 구조로 한방에 마이그레이션 전송
+        function moveWholeFolderToSituation(name, event) {
+            event.stopPropagation();
+            if(!folders[name] || folders[name].length === 0) return alert('폴더 내에 이동할 데이터가 존재하지 않습니다.');
+            
+            if(confirm(`[${name}] 폴더 내 모든 항목(${folders[name].length}개)을 3번 상황조치 폴더방으로 한 번에 복사 전송하시겠습니까?`)) {
+                // 상황 폴더 맵에 깊은 복사 구조로 저장 처리
+                if(!situationFolders[name]) situationFolders[name] = [];
+                
+                folders[name].forEach(item => {
+                    // 기존 데이터 포맷 유지 및 복제 처리
+                    situationFolders[name].push({
+                        type: item.type,
+                        title: item.title,
+                        desc: item.desc,
+                        starred: false
+                    });
+                });
+                
+                saveSituations();
+                alert(`🎉 [${name}] 폴더 복사 마이그레이션 성공!\n3번 상황조치 > [폴더 형식 보기] 탭에서 그대로 묶여있는 것을 확인할 수 있습니다.`);
+            }
+        }
+
         function renderFolders() {
             const container = document.getElementById('folder-grid'); container.innerHTML = '';
             for(let name in folders) {
-                container.innerHTML += `<div class="folder-box" onclick="openFolderView('${name}')"><span class="folder-icon">📁</span>${name}<button class="delete-btn" onclick="deleteFolder('${name}', event)" style="position:absolute; bottom:-10px; right:5px; padding:2px 6px; font-size:0.75rem; z-index:10;">삭제</button></div>`;
+                container.innerHTML += `
+                    <div class="folder-box" onclick="openFolderView('${name}')">
+                        <span class="folder-icon">📁</span>${name}
+                        <div class="folder-action-zone">
+                            <button class="move-btn" onclick="moveWholeFolderToSituation('${name}', event)" style="font-size:0.75rem; padding:4px 0;">🚨 상황조치로 전체이동</button>
+                            <button class="delete-btn" onclick="deleteFolder('${name}', event)" style="font-size:0.75rem; padding:2px 0; background:#777; border-color:#777;">폴더삭제</button>
+                        </div>
+                    </div>`;
             }
         }
 
@@ -421,8 +564,7 @@
             currentOpenFolder = name; cancelAllEdits();
             document.getElementById('view-device-title').innerText = "📁 " + name;
             document.getElementById('fullscreen-overlay').classList.add('active');
-            renderDeviceDetails();
-            renderBigCategoryButtons();
+            renderDeviceDetails(); renderBigCategoryButtons();
         }
         function closeFolderView() { document.getElementById('fullscreen-overlay').classList.remove('active'); currentOpenFolder = ""; cancelAllEdits(); }
 
@@ -456,12 +598,10 @@
         }
 
         function editDeviceDetail(idx) {
-            editTargetIndex = idx;
-            const targetDetail = folders[currentOpenFolder][idx];
+            editTargetIndex = idx; const targetDetail = folders[currentOpenFolder][idx];
             document.getElementById('detail-form-title').innerText = "🔄 항목 수정 중...";
             document.getElementById('sub-type-input').value = targetDetail.type;
             document.getElementById('sub-title-input').value = targetDetail.title || "";
-            
             const checkbox = document.getElementById('use-desc-checkbox');
             const descInput = document.getElementById('sub-desc-input');
             if(targetDetail.desc && targetDetail.desc.trim() !== "") {
@@ -476,20 +616,16 @@
         }
         function deleteDeviceDetail(idx) { if(confirm('삭제하시겠습니까?')) { folders[currentOpenFolder].splice(idx, 1); cancelAllEdits(); saveFolders(); renderDeviceDetails(); } }
 
-        // 🚀 [핵심 추가]: 장비사용법 ➔ 상황조치 이동(내보내기) 연동 함수
         function moveDetailToSituation(idx) {
             if(!currentOpenFolder || !folders[currentOpenFolder][idx]) return;
             const item = folders[currentOpenFolder][idx];
-            
-            // 전송할 텍스트 포맷 빌드 (3단계 분류와 4단계 설명을 합침)
             const newTitle = `[${currentOpenFolder}] ${item.title.replace(/\n/g, ' ')}`;
             const newStep = item.desc && item.desc.trim() !== "" ? item.desc : "세부 설명 없음";
             
-            if(confirm(`'${item.title.split('\n')[0]}...' 항목을 상황별 조치사항으로 복사 전송하시겠습니까?`)) {
+            if(confirm(`'${item.title.split('\n')[0]}...' 항목을 기존방식 상황별 조치사항 카드 리스트로 전송하시겠습니까?`)) {
                 situations.push({ title: newTitle, step: newStep });
-                localStorage.setItem('army_situations', JSON.stringify(situations));
-                renderSituations();
-                alert('🚨 상황별 조치사항으로 완벽히 복사되었습니다!\n3번 상황조치 탭에서 확인해 보세요.');
+                saveSituations();
+                alert('🚨 카드형 상황조치 리스트로 전송되었습니다!');
             }
         }
 
@@ -500,11 +636,9 @@
         }
 
         function renderDeviceDetails() {
-            const container = document.getElementById('device-details-container');
-            container.innerHTML = '';
+            const container = document.getElementById('device-details-container'); container.innerHTML = '';
             if(!currentOpenFolder || !folders[currentOpenFolder] || folders[currentOpenFolder].length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">등록된 데이터가 없습니다.</div>';
-                return;
+                container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">등록된 데이터가 없습니다.</div>'; return;
             }
             const groupMap = {};
             folders[currentOpenFolder].forEach((item, originalIndex) => {
@@ -517,12 +651,10 @@
                     const isEditingClass = (subItem.originalIndex === editTargetIndex) ? 'is-editing' : '';
                     const starClass = subItem.starred ? 'active' : '';
                     const starIcon = subItem.starred ? '★' : '☆';
-                    
-                    // 🚨 복사 이동 버튼(move-btn) 배치 추가
                     const actionButtons = (subItem.originalIndex === editTargetIndex) 
                         ? `<div class="action-btn-group"><button class="cancel-btn" onclick="cancelAllEdits()">취소</button></div>` 
                         : `<div class="action-btn-group">
-                               <button class="move-btn" onclick="moveDetailToSituation(${subItem.originalIndex})">🚨 상황조치로 이동</button>
+                               <button class="move-btn" onclick="moveDetailToSituation(${subItem.originalIndex})" title="상황조치 전송">🚨 전송</button>
                                <button class="star-btn ${starClass}" onclick="toggleStar(${subItem.originalIndex})">${starIcon}</button>
                                <button class="edit-item-btn" onclick="editDeviceDetail(${subItem.originalIndex})">수정</button>
                                <button class="delete-btn" onclick="deleteDeviceDetail(${subItem.originalIndex})">삭제</button>
@@ -550,35 +682,27 @@
             editTargetIndex = idx; const targetMemo = memos[idx];
             document.getElementById('memo-form-title').innerText = "🔄 암기사항 수정 중...";
             document.getElementById('memo-title').value = targetMemo.title; document.getElementById('memo-content').value = targetMemo.content;
-            switchPage(5, '통신 암기사항');
-            enterWritingMode('form-memo');
+            switchPage(5, '통신 암기사항'); enterWritingMode('form-memo');
             const submitBtn = document.getElementById('memo-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
             renderMemos();
         }
         function deleteMemo(index) { if(confirm('삭제하시겠습니까?')) { memos.splice(index, 1); cancelAllEdits(); saveMemos(); } }
-        
         function renderMemos() {
-            const list = document.getElementById('memo-list');
-            const mainList = document.getElementById('main-memo-list');
-            
+            const list = document.getElementById('memo-list'); const mainList = document.getElementById('main-memo-list');
             const htmlContent = memos.map((m, idx) => {
                 const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
                 const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button>`;
                 return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div><strong>💡 ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div></li>`;
             }).join('');
-            
             list.innerHTML = htmlContent;
-            
             if(memos.length === 0) {
                 mainList.innerHTML = `<li style="text-align:center; color:#999; list-style:none; border-left:none; background:none; padding:10px 0;">등록된 무전 암기사항이 없습니다.</li>`;
-            } else {
-                mainList.innerHTML = htmlContent;
-            }
+            } else { mainList.innerHTML = htmlContent; }
         }
 
-        // --- 데이터 인계 백업 시스템 ---
+        // --- 데이터 인계 백업 시스템 (상황 폴더 대응 패치 완료) ---
         function exportData() {
-            const allData = { works, radioProtocols, situations, folders, memos };
+            const allData = { works, radioProtocols, situations, situationFolders, folders, memos };
             const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
             navigator.clipboard.writeText(encodedData).then(() => { alert('데이터 코드가 복사되었습니다!'); }).catch(() => { prompt('코드를 복사하세요:', encodedData); });
         }
@@ -591,17 +715,19 @@
                     if(importedData.works) works = importedData.works;
                     if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
                     if(importedData.situations) situations = importedData.situations;
+                    if(importedData.situationFolders) situationFolders = importedData.situationFolders;
                     if(importedData.folders) folders = importedData.folders;
                     if(importedData.memos) memos = importedData.memos;
                     
                     localStorage.setItem('army_works', JSON.stringify(works));
                     localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
                     localStorage.setItem('army_situations', JSON.stringify(situations));
+                    localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
                     localStorage.setItem('army_folders', JSON.stringify(folders));
                     localStorage.setItem('army_memos', JSON.stringify(memos));
 
                     document.getElementById('import-zone').value = ''; cancelAllEdits();
-                    alert('🎉 데이터 동기화 완료!');
+                    alert('🎉 듀얼 상황조치 모드 데이터 인계 완료!');
                 } catch(e) { alert('❌ 올바르지 않은 코드입니다.'); }
             }
         }
