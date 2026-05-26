@@ -35,6 +35,9 @@
         input, textarea, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px !important; -webkit-appearance: none; }
         textarea { resize: none; }
 
+        /* 🚀 3단계용 큰 입력창 전용 스타일 */
+        textarea.large-input { min-height: 100px; line-height: 1.5; font-family: monospace, 'Malgun Gothic', sans-serif; }
+
         button.btn { background: var(--primary-color); color: white; border: none; padding: 12px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: bold; }
         button.btn:hover { background: var(--secondary-color); }
         button.btn.edit-mode { background-color: var(--edit-color); color: white; }
@@ -78,7 +81,6 @@
         .level3-wrapper:last-child { border-bottom: none; }
         .level3-wrapper.is-editing { background-color: #fffdf6; border-left: 4px solid var(--edit-color); }
         
-        /* 🚀 3단계 글씨가 여러 줄로 늘어나도 안 깨지고 자연스럽게 보이도록 pre-line 적용 및 여백 조율 */
         .level3-title-text { font-weight: bold; color: #333; font-size: 0.98rem; line-height: 1.5; word-break: break-all; white-space: pre-line; }
         .level3-title-text span.icon { color: var(--secondary-color); margin-right: 4px; font-weight: normal; display: inline-block; }
         
@@ -175,7 +177,7 @@
             <input type="text" id="sub-type-input" placeholder="2단계: 대분류 입력 (예: 방식, 조작법, 제원)">
             <div id="tag-buttons-zone" class="tag-container"></div>
             
-            <textarea id="sub-title-input" rows="2" placeholder="3단계: 하위분류/소제목 입력 (엔터로 2줄, 3줄 입력 가능)"></textarea>
+            <textarea id="sub-title-input" rows="4" class="large-input" placeholder="3단계: 하위분류/소제목 입력 (기본 3~4줄 크기 확보, 엔터 입력 가능)"></textarea>
             
             <label class="checkbox-container">
                 <input type="checkbox" id="use-desc-checkbox" checked onchange="toggleDescInput()">
@@ -313,7 +315,7 @@
             container.innerHTML = radioProtocols.map((r, idx) => {
                 const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
                 const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button>`;
-                return `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div><h3>🗣️ ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
+                return `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div> h3 🗣️ ${r.title} h3 div class="item-text" ${r.content} div div`;
             }).join('');
         }
 
@@ -393,7 +395,7 @@
         function addOrUpdateDeviceDetail() {
             if(!currentOpenFolder) return;
             const type = document.getElementById('sub-type-input').value.trim();
-            const title = document.getElementById('sub-title-input').value.trim(); // 이제 줄바꿈 포함 데이터 저장
+            const title = document.getElementById('sub-title-input').value.trim();
             const hasDesc = document.getElementById('use-desc-checkbox').checked;
             const desc = hasDesc ? document.getElementById('sub-desc-input').value.trim() : "";
             
@@ -415,7 +417,7 @@
             
             document.getElementById('detail-form-title').innerText = "🔄 항목 수정 중...";
             document.getElementById('sub-type-input').value = targetDetail.type;
-            document.getElementById('sub-title-input').value = targetDetail.title || ""; // 복구 시 줄바꿈 그대로 노출
+            document.getElementById('sub-title-input').value = targetDetail.title || "";
             
             const checkbox = document.getElementById('use-desc-checkbox');
             const descInput = document.getElementById('sub-desc-input');
@@ -433,6 +435,7 @@
         }
         function deleteDeviceDetail(idx) { if(confirm('삭제하시겠습니까?')) { folders[currentOpenFolder].splice(idx, 1); cancelAllEdits(); saveFolders(); renderDeviceDetails(); } }
 
+        // 중요도 토글
         function toggleStar(idx) {
             if(!currentOpenFolder || !folders[currentOpenFolder][idx]) return;
             folders[currentOpenFolder][idx].starred = !folders[currentOpenFolder][idx].starred;
@@ -534,7 +537,7 @@
                     if(importedData.works) works = importedData.works;
                     if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
                     if(importedData.situations) situations = importedData.situations;
-                    if(importedData.folders) folders = folders = importedData.folders;
+                    if(importedData.folders) folders = importedData.folders;
                     if(importedData.memos) memos = importedData.memos;
                     
                     localStorage.setItem('army_works', JSON.stringify(works));
