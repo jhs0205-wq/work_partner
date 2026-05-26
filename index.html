@@ -41,7 +41,6 @@
         button.btn:hover { background: var(--secondary-color); }
         button.btn.edit-mode { background-color: var(--edit-color); color: white; }
 
-        /* 🚀 보기 방식 선택용 탭 스타일 */
         .toggle-tab-container { display: flex; gap: 8px; margin-bottom: 12px; }
         .toggle-tab-btn { flex: 1; background: #e2e8e4; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; text-align: center; }
         .toggle-tab-btn.active { background: var(--secondary-color); color: white; }
@@ -99,7 +98,7 @@
 
         .sync-box { background: #eef7f9; border: 1px solid #bce8f1; color: #31708f; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
 
-        /* 글 작성 시 완전 전체화면을 만들기 위한 스타일 */
+        /* 글 작성 시 완전 전체화면 스타일 */
         body.writing-mode header,
         body.writing-mode nav,
         body.writing-mode .card:not(.focus-form),
@@ -116,6 +115,18 @@
 
     <div class="container">
         <div id="page1" class="page active">
+            <div class="card" id="form-radio-memo">
+                <h3 id="radio-memo-form-title">⚡ 무전 암기사항 추가 (메인 전용)</h3>
+                <input type="text" id="radio-memo-title" placeholder="제목 (예: 망 구성 명칭)" onfocus="enterWritingMode('form-radio-memo')">
+                <textarea id="radio-memo-content" placeholder="무전과 직접 관련된 핵심 내용을 입력하세요..." onfocus="enterWritingMode('form-radio-memo')"></textarea>
+                <button class="btn" id="radio-memo-submit-btn" onclick="addOrUpdateRadioMemo()">무전 암기사항 저장</button>
+            </div>
+
+            <div class="card">
+                <h3>💡 주요 무전 암기사항</h3>
+                <ul id="main-radio-memo-list" class="item-list"></ul>
+            </div>
+
             <div class="card" id="form-work">
                 <h3 id="work-form-title">⏱️ 근무 일정 추가</h3>
                 <select id="work-time">
@@ -124,11 +135,6 @@
                 </select>
                 <textarea id="work-content" placeholder="근무 지침 및 체크리스트 입력..." onfocus="enterWritingMode('form-work')"></textarea>
                 <button class="btn" id="work-submit-btn" onclick="addOrUpdateWork()">근무 지침 추가</button>
-            </div>
-            
-            <div class="card">
-                <h3>💡 주요 무전 암기사항</h3>
-                <ul id="main-memo-list" class="item-list"></ul>
             </div>
 
             <div class="card">
@@ -196,10 +202,10 @@
                 <button class="btn" onclick="importData()" style="background-color: var(--info-color);">📥 코드 가져와서 데이터 덮어쓰기</button>
             </div>
             <div class="card" id="form-memo">
-                <h3 id="memo-form-title">✏️ 새 암기사항 추가</h3>
+                <h3>✏️ 새 일반 암기사항 추가</h3>
                 <input type="text" id="memo-title" placeholder="제목 (예: 포네틱 코드)" onfocus="enterWritingMode('form-memo')">
                 <textarea id="memo-content" placeholder="내용을 입력하세요..." onfocus="enterWritingMode('form-memo')"></textarea>
-                <button class="btn" id="memo-submit-btn" onclick="addOrUpdateMemo()">암기사항 저장</button>
+                <button class="btn" id="memo-submit-btn" onclick="addOrUpdateMemo()">일반 암기사항 저장</button>
             </div>
             <ul id="memo-list" class="item-list"></ul>
         </div>
@@ -248,10 +254,11 @@
 
     <script>
         let currentOpenFolder = "";
-        let currentOpenSituFolder = ""; // 현재 열린 상황조치 폴더명
+        let currentOpenSituFolder = "";
         let editTargetIndex = -1;
-        let situationViewMode = "classic"; // classic 또는 folder
+        let situationViewMode = "classic";
 
+        // 전체화면 작성 모드 진입
         function enterWritingMode(formId, isInsideOverlay = false) {
             document.body.classList.add('writing-mode');
             document.querySelectorAll('.card').forEach(c => c.classList.remove('focus-form'));
@@ -286,15 +293,12 @@
             document.getElementById('main-title').innerText = title;
         }
 
-        // 상황조치 뷰모드 토글 스위치 기능
         function switchSituationViewMode(mode) {
             situationViewMode = mode;
             document.getElementById('tab-situ-classic').classList.toggle('active', mode === 'classic');
             document.getElementById('tab-situ-folder').classList.toggle('active', mode === 'folder');
-            
             document.getElementById('situ-classic-zone').style.display = mode === 'classic' ? 'block' : 'none';
             document.getElementById('situ-folder-zone').style.display = mode === 'folder' ? 'block' : 'none';
-            
             if(mode === 'folder') renderSituationFolders();
         }
 
@@ -309,6 +313,12 @@
             editTargetIndex = -1;
             exitWritingMode();
             
+            document.getElementById('radio-memo-form-title').innerText = "⚡ 무전 암기사항 추가 (메인 전용)";
+            document.getElementById('radio-memo-submit-btn').innerText = "무전 암기사항 저장";
+            document.getElementById('radio-memo-submit-btn').classList.remove('edit-mode');
+            document.getElementById('radio-memo-title').value = '';
+            document.getElementById('radio-memo-content').value = '';
+
             document.getElementById('work-form-title').innerText = "⏱️ 근무 일정 추가";
             document.getElementById('work-submit-btn').innerText = "근무 지침 추가";
             document.getElementById('work-submit-btn').classList.remove('edit-mode');
@@ -335,30 +345,71 @@
             document.getElementById('use-desc-checkbox').checked = true;
             document.getElementById('sub-desc-input').style.display = 'block';
 
-            document.getElementById('memo-form-title').innerText = "✏️ 새 암기사항 추가";
-            document.getElementById('memo-submit-btn').innerText = "암기사항 저장";
-            document.getElementById('memo-submit-btn').classList.remove('edit-mode');
             document.getElementById('memo-title').value = '';
             document.getElementById('memo-content').value = '';
 
-            renderWorks(); renderRadios(); renderSituations(); renderMemos();
+            renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderMemos();
             if(currentOpenFolder) { renderDeviceDetails(); renderBigCategoryButtons(); }
             if(currentOpenSituFolder) { renderSituFolderDetails(); }
         }
 
-        // --- 1페이지: 무전근무 ---
+        // --- 🚀 [★완전 독립] 1페이지: 무전 암기사항 엔진 ---
+        let radioMemos = JSON.parse(localStorage.getItem('army_radio_memos')) || [];
+        function saveRadioMemos() { localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos)); renderRadioMemos(); }
+        
+        function addOrUpdateRadioMemo() {
+            const title = document.getElementById('radio-memo-title').value.trim();
+            const content = document.getElementById('radio-memo-content').value.trim();
+            if(!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
+            
+            if(editTargetIndex > -1 && document.getElementById('radio-memo-form-title').innerText.includes('수정')) {
+                radioMemos[editTargetIndex] = { title, content };
+                alert('무전 암기사항이 수정되었습니다.');
+            } else {
+                radioMemos.push({ title, content });
+            }
+            cancelAllEdits(); saveRadioMemos();
+        }
+
+        function editRadioMemo(idx) {
+            cancelAllEdits();
+            editTargetIndex = idx; const m = radioMemos[idx];
+            document.getElementById('radio-memo-form-title').innerText = "🔄 무전 암기사항 수정 중...";
+            document.getElementById('radio-memo-title').value = m.title;
+            document.getElementById('radio-memo-content').value = m.content;
+            enterWritingMode('form-radio-memo');
+            const btn = document.getElementById('radio-memo-submit-btn'); btn.innerText = "✅ 수정 완료"; btn.classList.add('edit-mode');
+            renderRadioMemos();
+        }
+        function deleteRadioMemo(idx) { if(confirm('이 무전 암기사항을 삭제하시겠습니까?')) { radioMemos.splice(idx, 1); cancelAllEdits(); saveRadioMemos(); } }
+        
+        function renderRadioMemos() {
+            const mainList = document.getElementById('main-radio-memo-list');
+            if(radioMemos.length === 0) {
+                mainList.innerHTML = `<li style="text-align:center; color:#999; list-style:none; border-left:none; background:none; padding:10px 0;">등록된 무전 암기사항이 없습니다.</li>`;
+                return;
+            }
+            mainList.innerHTML = radioMemos.map((m, idx) => {
+                const isEditingClass = (idx === editTargetIndex && document.getElementById('radio-memo-form-title').innerText.includes('수정')) ? 'is-editing' : '';
+                const actionButtons = `<button class="edit-item-btn" onclick="editRadioMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteRadioMemo(${idx})">삭제</button>`;
+                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div><strong>⚡ ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div></li>`;
+            }).join('');
+        }
+
+        // --- 1페이지: 근무 일정 ---
         let works = JSON.parse(localStorage.getItem('army_works')) || [];
         function saveWorks() { localStorage.setItem('army_works', JSON.stringify(works)); renderWorks(); }
         function addOrUpdateWork() {
             const type = document.getElementById('work-time').value;
             const content = document.getElementById('work-content').value.trim();
             if(!content) return alert('근무 내용을 입력해주세요.');
-            if(editTargetIndex > -1) { works[editTargetIndex] = { type, content }; } 
+            if(editTargetIndex > -1 && document.getElementById('work-form-title').innerText.includes('수정')) { works[editTargetIndex] = { type, content }; } 
             else { works.push({ type, content }); }
             cancelAllEdits(); saveWorks();
         }
         function editWork(idx) {
-            switchPage(1, '무전근무 (오전/오후)'); editTargetIndex = idx; const targetWork = works[idx];
+            cancelAllEdits();
+            editTargetIndex = idx; const targetWork = works[idx];
             document.getElementById('work-form-title').innerText = "🔄 근무 일정 수정 중...";
             document.getElementById('work-time').value = targetWork.type; document.getElementById('work-content').value = targetWork.content;
             enterWritingMode('form-work');
@@ -370,8 +421,8 @@
             const amList = document.getElementById('work-list-am'); const pmList = document.getElementById('work-list-pm');
             amList.innerHTML = ''; pmList.innerHTML = '';
             works.forEach((w, idx) => {
-                const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
-                const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editWork(${idx})">수정</button><button class="delete-btn" onclick="deleteWork(${idx})">삭제</button>`;
+                const isEditingClass = (idx === editTargetIndex && document.getElementById('work-form-title').innerText.includes('수정')) ? 'is-editing' : '';
+                const actionButtons = `<button class="edit-item-btn" onclick="editWork(${idx})">수정</button><button class="delete-btn" onclick="deleteWork(${idx})">삭제</button>`;
                 const li = `<li class="${isEditingClass}"><div class="action-btn-group">${actionButtons}</div><div class="item-text">${w.content}</div></li>`;
                 if(w.type === "오전 근무") amList.innerHTML += li; else pmList.innerHTML += li;
             });
@@ -384,12 +435,13 @@
             const title = document.getElementById('radio-title').value.trim();
             const content = document.getElementById('radio-content').value.trim();
             if(!title || !content) return alert('제목과 내용을 모두 입력해 주세요.');
-            if(editTargetIndex > -1) { radioProtocols[editTargetIndex] = { title, content }; } 
+            if(editTargetIndex > -1 && document.getElementById('radio-form-title').innerText.includes('수정')) { radioProtocols[editTargetIndex] = { title, content }; } 
             else { radioProtocols.push({ title, content }); }
             cancelAllEdits(); saveRadios();
         }
         function editRadio(idx) {
-            switchPage(2, '무전법 지침'); editTargetIndex = idx; const targetRadio = radioProtocols[idx];
+            cancelAllEdits();
+            editTargetIndex = idx; const targetRadio = radioProtocols[idx];
             document.getElementById('radio-form-title').innerText = "🔄 무전법 지침 수정 중...";
             document.getElementById('radio-title').value = targetRadio.title; document.getElementById('radio-content').value = targetRadio.content;
             enterWritingMode('form-radio');
@@ -400,32 +452,29 @@
         function renderRadios() {
             const container = document.getElementById('radio-container'); container.innerHTML = '';
             radioProtocols.forEach((r, idx) => {
-                const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
-                const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button>`;
+                const isEditingClass = (idx === editTargetIndex && document.getElementById('radio-form-title').innerText.includes('수정')) ? 'is-editing' : '';
+                const actionButtons = `<button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button>`;
                 container.innerHTML += `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div><h3>🗣️ ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
             });
         }
 
-        // --- 3페이지: 상황조치 (기존 카드형 및 폴더 데이터베이스 이원화 연동) ---
+        // --- 3페이지: 상황조치 ---
         let situations = JSON.parse(localStorage.getItem('army_situations')) || [];
-        let situationFolders = JSON.parse(localStorage.getItem('army_situ_folders')) || {}; // 상황 전용 폴더 맵
-
+        let situationFolders = JSON.parse(localStorage.getItem('army_situ_folders')) || {};
         function saveSituations() { 
-            localStorage.setItem('army_situations', JSON.stringify(situations)); 
-            localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
-            renderSituations(); 
-            renderSituationFolders();
+            localStorage.setItem('army_situations', JSON.stringify(situations)); localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
+            renderSituations(); renderSituationFolders();
         }
-        
         function addOrUpdateSituation() {
             const title = document.getElementById('situation-title').value.trim();
             const step = document.getElementById('situation-step').value.trim();
             if(!title || !step) return alert('제목과 내용을 모두 입력해주세요.');
-            if(editTargetIndex > -1) { situations[editTargetIndex] = { title, step }; } 
+            if(editTargetIndex > -1 && document.getElementById('situation-form-title').innerText.includes('수정')) { situations[editTargetIndex] = { title, step }; } 
             else { situations.push({ title, step }); }
             cancelAllEdits(); saveSituations();
         }
         function editSituation(idx) {
+            cancelAllEdits();
             switchPage(3, '상황별 조치사항'); switchSituationViewMode('classic'); editTargetIndex = idx; const targetSitu = situations[idx];
             document.getElementById('situation-form-title').innerText = "🔄 상황조치 수정 중...";
             document.getElementById('situation-title').value = targetSitu.title; document.getElementById('situation-step').value = targetSitu.step;
@@ -437,77 +486,37 @@
         function renderSituations() {
             const container = document.getElementById('situation-container');
             container.innerHTML = situations.map((s, idx) => {
-                const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
-                const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editSituation(${idx})">수정</button><button class="delete-btn" onclick="deleteSituation(${idx})">삭제</button>`;
+                const isEditingClass = (idx === editTargetIndex && document.getElementById('situation-form-title').innerText.includes('수정')) ? 'is-editing' : '';
+                const actionButtons = `<button class="edit-item-btn" onclick="editSituation(${idx})">수정</button><button class="delete-btn" onclick="deleteSituation(${idx})">삭제</button>`;
                 return `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div><h3>🚨 ${s.title}</h3><div class="item-text">${s.step}</div></div>`;
             }).join('');
         }
-
-        // 상황 전용 폴더 렌더러
         function renderSituationFolders() {
-            const container = document.getElementById('situation-folder-grid');
-            container.innerHTML = '';
+            const container = document.getElementById('situation-folder-grid'); container.innerHTML = '';
             for(let name in situationFolders) {
-                container.innerHTML += `
-                    <div class="folder-box" onclick="openSituFolderView('${name}')" style="border-color: var(--accent-color);">
-                        <span class="folder-icon" style="color:var(--accent-color)">📂</span>${name}
-                        <div class="folder-action-zone">
-                            <button class="delete-btn" onclick="deleteSituFolder('${name}', event)" style="width:100%; padding:3px 0;">폴더 삭제</button>
-                        </div>
-                    </div>
-                `;
+                container.innerHTML += `<div class="folder-box" onclick="openSituFolderView('${name}')" style="border-color: var(--accent-color);"><span class="folder-icon" style="color:var(--accent-color)">📂</span>${name}<div class="folder-action-zone"><button class="delete-btn" onclick="deleteSituFolder('${name}', event)" style="width:100%; padding:3px 0;">폴더 삭제</button></div></div>`;
             }
-            if(Object.keys(situationFolders).length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#aaa; grid-column:span 2; padding:30px;">장비사용법 탭에서 폴더를 이동시키거나 연동된 폴더 데이터가 아직 없습니다.</div>';
-            }
+            if(Object.keys(situationFolders).length === 0) { container.innerHTML = '<div style="text-align:center; color:#aaa; grid-column:span 2; padding:30px;">연동된 폴더 데이터가 없습니다.</div>'; }
         }
-
-        function openSituFolderView(name) {
-            currentOpenSituFolder = name;
-            document.getElementById('view-situ-folder-title').innerText = "🚨 " + name + " 상황조치 연동방";
-            document.getElementById('situ-fullscreen-overlay').classList.add('active');
-            renderSituFolderDetails();
-        }
+        function openSituFolderView(name) { currentOpenSituFolder = name; document.getElementById('view-situ-folder-title').innerText = "🚨 " + name + " 상황조치 연동방"; document.getElementById('situ-fullscreen-overlay').classList.add('active'); renderSituFolderDetails(); }
         function closeSituFolderView() { document.getElementById('situ-fullscreen-overlay').classList.remove('active'); currentOpenSituFolder = ""; }
-        
-        function deleteSituFolder(name, event) {
-            event.stopPropagation();
-            if(confirm(`[${name}] 상황조치 폴더를 삭제하겠습니까? 내부 데이터가 모두 영구 삭제됩니다.`)) {
-                delete situationFolders[name]; saveFolders(); saveSituations();
-            }
-        }
-        function deleteSituFolderDetail(idx) {
-            if(confirm('이 상황 항목을 삭제하시겠습니까?')) {
-                situationFolders[currentOpenSituFolder].splice(idx, 1); saveSituations(); renderSituFolderDetails();
-            }
-        }
-
+        function deleteSituFolder(name, event) { event.stopPropagation(); if(confirm(`[${name}] 폴더를 삭제하겠습니까?`)) { delete situationFolders[name]; saveSituations(); } }
+        function deleteSituFolderDetail(idx) { if(confirm('삭제하시겠습니까?')) { situationFolders[currentOpenSituFolder].splice(idx, 1); saveSituations(); renderSituFolderDetails(); } }
         function renderSituFolderDetails() {
             const container = document.getElementById('situ-folder-details-container'); container.innerHTML = '';
-            if(!currentOpenSituFolder || !situationFolders[currentOpenSituFolder] || situationFolders[currentOpenSituFolder].length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">폴더 내에 조치사항이 없습니다.</div>'; return;
-            }
-            const groupMap = {};
-            situationFolders[currentOpenSituFolder].forEach((item, originalIndex) => {
-                if(!groupMap[item.type]) { groupMap[item.type] = []; }
-                groupMap[item.type].push({ ...item, originalIndex });
-            });
+            if(!currentOpenSituFolder || !situationFolders[currentOpenSituFolder] || situationFolders[currentOpenSituFolder].length === 0) { container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">폴더 내에 조치사항이 없습니다.</div>'; return; }
+            const groupMap = {}; situationFolders[currentOpenSituFolder].forEach((item, originalIndex) => { if(!groupMap[item.type]) { groupMap[item.type] = []; } groupMap[item.type].push({ ...item, originalIndex }); });
             for(let typeName in groupMap) {
                 let cardHtml = `<div class="big-category-card" style="border-color:var(--accent-color);"><div class="big-category-title" style="background:#f2dede; color:var(--accent-color)">⚠️ 대분류: ${typeName}</div>`;
                 groupMap[typeName].forEach(subItem => {
                     const descHtml = (subItem.desc && subItem.desc.trim() !== "") ? `<div class="level4-desc-text" style="border-left-color:var(--accent-color);">${subItem.desc}</div>` : ``;
-                    cardHtml += `<div class="level3-wrapper">
-                                    <div class="action-btn-group"><button class="delete-btn" onclick="deleteSituFolderDetail(${subItem.originalIndex})">삭제</button></div>
-                                    <div class="level3-title-text">📌 조치 항목명: ${subItem.title}</div>
-                                    ${descHtml}
-                                 </div>`;
+                    cardHtml += `<div class="level3-wrapper"><div class="action-btn-group"><button class="delete-btn" onclick="deleteSituFolderDetail(${subItem.originalIndex})">삭제</button></div><div class="level3-title-text">📌 조치 항목명: ${subItem.title}</div>${descHtml}</div>`;
                 });
                 cardHtml += `</div>`; container.innerHTML += cardHtml;
             }
         }
 
-
-        // --- 4페이지: 통신장비별 사용법 (★폴더 전체 이동 마이그레이션 기술 추가) ---
+        // --- 4페이지: 통신장비별 사용법 ---
         let folders = JSON.parse(localStorage.getItem('army_folders')) || {};
         function saveFolders() { localStorage.setItem('army_folders', JSON.stringify(folders)); renderFolders(); }
         function addFolder() {
@@ -515,150 +524,68 @@
             if(!name) return;
             if(!folders[name]) { folders[name] = []; document.getElementById('folder-name').value = ''; saveFolders(); }
         }
-        function deleteFolder(name, event) {
-            event.stopPropagation();
-            if(confirm(`[${name}] 폴더와 내부 모든 정보가 삭제됩니다. 정말 삭제하시겠습니까?`)) {
-                delete folders[name]; saveFolders(); if(currentOpenFolder === name) closeFolderView();
-            }
-        }
-
-        // 🚀 [대형 업그레이드]: 폴더 내 모든 하위 데이터를 상황조치 폴더 구조로 한방에 마이그레이션 전송
+        function deleteFolder(name, event) { event.stopPropagation(); if(confirm(`[${name}] 폴더가 삭제됩니다. 정말 삭제하시겠습니까?`)) { delete folders[name]; saveFolders(); if(currentOpenFolder === name) closeFolderView(); } }
         function moveWholeFolderToSituation(name, event) {
-            event.stopPropagation();
-            if(!folders[name] || folders[name].length === 0) return alert('폴더 내에 이동할 데이터가 존재하지 않습니다.');
-            
-            if(confirm(`[${name}] 폴더 내 모든 항목(${folders[name].length}개)을 3번 상황조치 폴더방으로 한 번에 복사 전송하시겠습니까?`)) {
-                // 상황 폴더 맵에 깊은 복사 구조로 저장 처리
+            event.stopPropagation(); if(!folders[name] || folders[name].length === 0) return alert('폴더 내에 데이터가 없습니다.');
+            if(confirm(`[${name}] 폴더 내 모든 항목(${folders[name].length}개)을 상황조치 폴더로 복사하시겠습니까?`)) {
                 if(!situationFolders[name]) situationFolders[name] = [];
-                
-                folders[name].forEach(item => {
-                    // 기존 데이터 포맷 유지 및 복제 처리
-                    situationFolders[name].push({
-                        type: item.type,
-                        title: item.title,
-                        desc: item.desc,
-                        starred: false
-                    });
-                });
-                
-                saveSituations();
-                alert(`🎉 [${name}] 폴더 복사 마이그레이션 성공!\n3번 상황조치 > [폴더 형식 보기] 탭에서 그대로 묶여있는 것을 확인할 수 있습니다.`);
+                folders[name].forEach(item => { situationFolders[name].push({ type: item.type, title: item.title, desc: item.desc, starred: false }); });
+                saveSituations(); alert('🎉 상황조치 폴더방으로 일괄 복사 완료!');
             }
         }
-
         function renderFolders() {
             const container = document.getElementById('folder-grid'); container.innerHTML = '';
             for(let name in folders) {
-                container.innerHTML += `
-                    <div class="folder-box" onclick="openFolderView('${name}')">
-                        <span class="folder-icon">📁</span>${name}
-                        <div class="folder-action-zone">
-                            <button class="move-btn" onclick="moveWholeFolderToSituation('${name}', event)" style="font-size:0.75rem; padding:4px 0;">🚨 상황조치로 전체이동</button>
-                            <button class="delete-btn" onclick="deleteFolder('${name}', event)" style="font-size:0.75rem; padding:2px 0; background:#777; border-color:#777;">폴더삭제</button>
-                        </div>
-                    </div>`;
+                container.innerHTML += `<div class="folder-box" onclick="openFolderView('${name}')"><span class="folder-icon">📁</span>${name}<div class="folder-action-zone"><button class="move-btn" onclick="moveWholeFolderToSituation('${name}', event)" style="font-size:0.75rem; padding:4px 0;">🚨 상황조치로 전체이동</button><button class="delete-btn" onclick="deleteFolder('${name}', event)" style="font-size:0.75rem; padding:2px 0; background:#777; border-color:#777;">폴더삭제</button></div></div>`;
             }
         }
-
-        function openFolderView(name) {
-            currentOpenFolder = name; cancelAllEdits();
-            document.getElementById('view-device-title').innerText = "📁 " + name;
-            document.getElementById('fullscreen-overlay').classList.add('active');
-            renderDeviceDetails(); renderBigCategoryButtons();
-        }
+        function openFolderView(name) { currentOpenFolder = name; cancelAllEdits(); document.getElementById('view-device-title').innerText = "📁 " + name; document.getElementById('fullscreen-overlay').classList.add('active'); renderDeviceDetails(); renderBigCategoryButtons(); }
         function closeFolderView() { document.getElementById('fullscreen-overlay').classList.remove('active'); currentOpenFolder = ""; cancelAllEdits(); }
-
         function renderBigCategoryButtons() {
-            const zone = document.getElementById('tag-buttons-zone'); zone.innerHTML = '';
-            if(!currentOpenFolder || !folders[currentOpenFolder]) return;
-            const categorySet = new Set();
-            folders[currentOpenFolder].forEach(item => { if(item.type) categorySet.add(item.type); });
+            const zone = document.getElementById('tag-buttons-zone'); zone.innerHTML = ''; if(!currentOpenFolder || !folders[currentOpenFolder]) return;
+            const categorySet = new Set(); folders[currentOpenFolder].forEach(item => { if(item.type) categorySet.add(item.type); });
             if(categorySet.size === 0) { ['방식', '기능', '부속명칭', '조작법'].forEach(word => categorySet.add(word)); }
-            categorySet.forEach(catName => {
-                zone.innerHTML += `<button type="button" class="tag-btn" onclick="selectCategoryTag('${catName}')"># ${catName}</button>`;
-            });
+            categorySet.forEach(catName => { zone.innerHTML += `<button type="button" class="tag-btn" onclick="selectCategoryTag('${catName}')"># ${catName}</button>`; });
         }
         function selectCategoryTag(name) { document.getElementById('sub-type-input').value = name; }
-
         function addOrUpdateDeviceDetail() {
             if(!currentOpenFolder) return;
-            const type = document.getElementById('sub-type-input').value.trim();
-            const title = document.getElementById('sub-title-input').value.trim();
-            const hasDesc = document.getElementById('use-desc-checkbox').checked;
-            const desc = hasDesc ? document.getElementById('sub-desc-input').value.trim() : "";
-            
-            if(!type || !title) return alert('2단계 대분류와 3단계 하위분류명은 필수입니다!');
-            if(editTargetIndex > -1) {
-                const isStarred = folders[currentOpenFolder][editTargetIndex].starred || false;
-                folders[currentOpenFolder][editTargetIndex] = { type, title, desc, starred: isStarred };
-            } else {
-                folders[currentOpenFolder].push({ type, title, desc, starred: false });
-            }
+            const type = document.getElementById('sub-type-input').value.trim(); const title = document.getElementById('sub-title-input').value.trim();
+            const hasDesc = document.getElementById('use-desc-checkbox').checked; const desc = hasDesc ? document.getElementById('sub-desc-input').value.trim() : "";
+            if(!type || !title) return alert('대분류와 하위분류명은 필수입니다!');
+            if(editTargetIndex > -1 && document.getElementById('detail-form-title').innerText.includes('수정')) { const isStarred = folders[currentOpenFolder][editTargetIndex].starred || false; folders[currentOpenFolder][editTargetIndex] = { type, title, desc, starred: isStarred }; } 
+            else { folders[currentOpenFolder].push({ type, title, desc, starred: false }); }
             cancelAllEdits(); saveFolders(); renderDeviceDetails();
         }
-
         function editDeviceDetail(idx) {
+            cancelAllEdits();
             editTargetIndex = idx; const targetDetail = folders[currentOpenFolder][idx];
             document.getElementById('detail-form-title').innerText = "🔄 항목 수정 중...";
-            document.getElementById('sub-type-input').value = targetDetail.type;
-            document.getElementById('sub-title-input').value = targetDetail.title || "";
-            const checkbox = document.getElementById('use-desc-checkbox');
-            const descInput = document.getElementById('sub-desc-input');
-            if(targetDetail.desc && targetDetail.desc.trim() !== "") {
-                checkbox.checked = true; descInput.style.display = 'block'; descInput.value = targetDetail.desc;
-            } else {
-                checkbox.checked = false; descInput.style.display = 'none'; descInput.value = '';
-            }
+            document.getElementById('sub-type-input').value = targetDetail.type; document.getElementById('sub-title-input').value = targetDetail.title || "";
+            const checkbox = document.getElementById('use-desc-checkbox'); const descInput = document.getElementById('sub-desc-input');
+            if(targetDetail.desc && targetDetail.desc.trim() !== "") { checkbox.checked = true; descInput.style.display = 'block'; descInput.value = targetDetail.desc; } 
+            else { checkbox.checked = false; descInput.style.display = 'none'; descInput.value = ''; }
             enterWritingMode('form-detail');
-            const submitBtn = document.getElementById('detail-submit-btn');
-            submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
+            const submitBtn = document.getElementById('detail-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
             renderDeviceDetails();
         }
         function deleteDeviceDetail(idx) { if(confirm('삭제하시겠습니까?')) { folders[currentOpenFolder].splice(idx, 1); cancelAllEdits(); saveFolders(); renderDeviceDetails(); } }
-
         function moveDetailToSituation(idx) {
             if(!currentOpenFolder || !folders[currentOpenFolder][idx]) return;
-            const item = folders[currentOpenFolder][idx];
-            const newTitle = `[${currentOpenFolder}] ${item.title.replace(/\n/g, ' ')}`;
-            const newStep = item.desc && item.desc.trim() !== "" ? item.desc : "세부 설명 없음";
-            
-            if(confirm(`'${item.title.split('\n')[0]}...' 항목을 기존방식 상황별 조치사항 카드 리스트로 전송하시겠습니까?`)) {
-                situations.push({ title: newTitle, step: newStep });
-                saveSituations();
-                alert('🚨 카드형 상황조치 리스트로 전송되었습니다!');
-            }
+            const item = folders[currentOpenFolder][idx]; const newTitle = `[${currentOpenFolder}] ${item.title.replace(/\n/g, ' ')}`; const newStep = item.desc && item.desc.trim() !== "" ? item.desc : "세부 설명 없음";
+            if(confirm('기존방식 상황조치 카드 리스트로 복사하시겠습니까?')) { situations.push({ title: newTitle, step: newStep }); saveSituations(); alert('🚨 전송 완료!'); }
         }
-
-        function toggleStar(idx) {
-            if(!currentOpenFolder || !folders[currentOpenFolder][idx]) return;
-            folders[currentOpenFolder][idx].starred = !folders[currentOpenFolder][idx].starred;
-            saveFolders(); renderDeviceDetails();
-        }
-
+        function toggleStar(idx) { if(!currentOpenFolder || !folders[currentOpenFolder][idx]) return; folders[currentOpenFolder][idx].starred = !folders[currentOpenFolder][idx].starred; saveFolders(); renderDeviceDetails(); }
         function renderDeviceDetails() {
             const container = document.getElementById('device-details-container'); container.innerHTML = '';
-            if(!currentOpenFolder || !folders[currentOpenFolder] || folders[currentOpenFolder].length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">등록된 데이터가 없습니다.</div>'; return;
-            }
-            const groupMap = {};
-            folders[currentOpenFolder].forEach((item, originalIndex) => {
-                if(!groupMap[item.type]) { groupMap[item.type] = []; }
-                groupMap[item.type].push({ ...item, originalIndex });
-            });
+            if(!currentOpenFolder || !folders[currentOpenFolder] || folders[currentOpenFolder].length === 0) { container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">등록된 데이터가 없습니다.</div>'; return; }
+            const groupMap = {}; folders[currentOpenFolder].forEach((item, originalIndex) => { if(!groupMap[item.type]) { groupMap[item.type] = []; } groupMap[item.type].push({ ...item, originalIndex }); });
             for(let typeName in groupMap) {
                 let cardHtml = `<div class="big-category-card"><div class="big-category-title">📂 ${typeName}</div>`;
                 groupMap[typeName].forEach(subItem => {
-                    const isEditingClass = (subItem.originalIndex === editTargetIndex) ? 'is-editing' : '';
-                    const starClass = subItem.starred ? 'active' : '';
-                    const starIcon = subItem.starred ? '★' : '☆';
-                    const actionButtons = (subItem.originalIndex === editTargetIndex) 
-                        ? `<div class="action-btn-group"><button class="cancel-btn" onclick="cancelAllEdits()">취소</button></div>` 
-                        : `<div class="action-btn-group">
-                               <button class="move-btn" onclick="moveDetailToSituation(${subItem.originalIndex})" title="상황조치 전송">🚨 전송</button>
-                               <button class="star-btn ${starClass}" onclick="toggleStar(${subItem.originalIndex})">${starIcon}</button>
-                               <button class="edit-item-btn" onclick="editDeviceDetail(${subItem.originalIndex})">수정</button>
-                               <button class="delete-btn" onclick="deleteDeviceDetail(${subItem.originalIndex})">삭제</button>
-                           </div>`;
+                    const isEditingClass = (subItem.originalIndex === editTargetIndex && document.getElementById('detail-form-title').innerText.includes('수정')) ? 'is-editing' : '';
+                    const starClass = subItem.starred ? 'active' : ''; const starIcon = subItem.starred ? '★' : '☆';
+                    const actionButtons = `<div class="action-btn-group"><button class="move-btn" onclick="moveDetailToSituation(${subItem.originalIndex})">🚨 전송</button><button class="star-btn ${starClass}" onclick="toggleStar(${subItem.originalIndex})">${starIcon}</button><button class="edit-item-btn" onclick="editDeviceDetail(${subItem.originalIndex})">수정</button><button class="delete-btn" onclick="deleteDeviceDetail(${subItem.originalIndex})">삭제</button></div>`;
                     const descHtml = (subItem.desc && subItem.desc.trim() !== "") ? `<div class="level4-desc-text">${subItem.desc}</div>` : ``;
                     const starPrefix = subItem.starred ? `<span style="color:#f39c12; margin-right:4px;">★</span>` : `<span class="icon">📌</span>`;
                     cardHtml += `<div class="level3-wrapper ${isEditingClass}">${actionButtons}<div class="level3-title-text">${starPrefix}${subItem.title}</div>${descHtml}</div>`;
@@ -667,42 +594,42 @@
             }
         }
 
-        // --- 5페이지: 암기사항 ---
+        // --- 5페이지: 일반 암기사항 (★독립 분리 완료) ---
         let memos = JSON.parse(localStorage.getItem('army_memos')) || [];
         function saveMemos() { localStorage.setItem('army_memos', JSON.stringify(memos)); renderMemos(); }
         function addOrUpdateMemo() {
             const title = document.getElementById('memo-title').value.trim();
             const content = document.getElementById('memo-content').value.trim();
             if(!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
-            if(editTargetIndex > -1) { memos[editTargetIndex] = { title, content }; } 
-            else { memos.push({ title, content }); }
+            
+            if(editTargetIndex > -1 && !document.getElementById('radio-memo-form-title').innerText.includes('수정') && !document.getElementById('work-form-title').innerText.includes('수정')) {
+                memos[editTargetIndex] = { title, content };
+                alert('일반 암기사항이 수정되었습니다.');
+            } else {
+                memos.push({ title, content });
+            }
             cancelAllEdits(); saveMemos();
         }
         function editMemo(idx) {
+            cancelAllEdits();
             editTargetIndex = idx; const targetMemo = memos[idx];
-            document.getElementById('memo-form-title').innerText = "🔄 암기사항 수정 중...";
             document.getElementById('memo-title').value = targetMemo.title; document.getElementById('memo-content').value = targetMemo.content;
             switchPage(5, '통신 암기사항'); enterWritingMode('form-memo');
-            const submitBtn = document.getElementById('memo-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
             renderMemos();
         }
         function deleteMemo(index) { if(confirm('삭제하시겠습니까?')) { memos.splice(index, 1); cancelAllEdits(); saveMemos(); } }
         function renderMemos() {
-            const list = document.getElementById('memo-list'); const mainList = document.getElementById('main-memo-list');
-            const htmlContent = memos.map((m, idx) => {
-                const isEditingClass = (idx === editTargetIndex) ? 'is-editing' : '';
-                const actionButtons = (idx === editTargetIndex) ? `<button class="cancel-btn" onclick="cancelAllEdits()">취소</button>` : `<button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button>`;
-                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div><strong>💡 ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div></li>`;
+            const list = document.getElementById('memo-list');
+            list.innerHTML = memos.map((m, idx) => {
+                const isEditingClass = (idx === editTargetIndex && !document.getElementById('radio-memo-form-title').innerText.includes('수정')) ? 'is-editing' : '';
+                const actionButtons = `<button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button>`;
+                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;">${actionButtons}</div><strong>💡 일반암기: ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div></li>`;
             }).join('');
-            list.innerHTML = htmlContent;
-            if(memos.length === 0) {
-                mainList.innerHTML = `<li style="text-align:center; color:#999; list-style:none; border-left:none; background:none; padding:10px 0;">등록된 무전 암기사항이 없습니다.</li>`;
-            } else { mainList.innerHTML = htmlContent; }
         }
 
-        // --- 데이터 인계 백업 시스템 (상황 폴더 대응 패치 완료) ---
+        // --- 데이터 백업 시스템 (무전 암기사항 데이터 연동 패치 완료) ---
         function exportData() {
-            const allData = { works, radioProtocols, situations, situationFolders, folders, memos };
+            const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos };
             const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
             navigator.clipboard.writeText(encodedData).then(() => { alert('데이터 코드가 복사되었습니다!'); }).catch(() => { prompt('코드를 복사하세요:', encodedData); });
         }
@@ -718,6 +645,7 @@
                     if(importedData.situationFolders) situationFolders = importedData.situationFolders;
                     if(importedData.folders) folders = importedData.folders;
                     if(importedData.memos) memos = importedData.memos;
+                    if(importedData.radioMemos) radioMemos = importedData.radioMemos;
                     
                     localStorage.setItem('army_works', JSON.stringify(works));
                     localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
@@ -725,14 +653,15 @@
                     localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
                     localStorage.setItem('army_folders', JSON.stringify(folders));
                     localStorage.setItem('army_memos', JSON.stringify(memos));
+                    localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos));
 
                     document.getElementById('import-zone').value = ''; cancelAllEdits();
-                    alert('🎉 듀얼 상황조치 모드 데이터 인계 완료!');
+                    alert('🎉 무전 암기 분리형 전체 데이터 동기화 완료!');
                 } catch(e) { alert('❌ 올바르지 않은 코드입니다.'); }
             }
         }
 
-        renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos();
+        renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos();
     </script>
 </body>
 </html>
