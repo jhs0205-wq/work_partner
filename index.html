@@ -29,19 +29,30 @@
         .card { background: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #ddd; overflow: hidden; }
         .card h3 { margin-bottom: 8px; color: var(--primary-color); border-bottom: 2px solid var(--bg-color); padding-bottom: 5px; font-size: 1.05rem; }
         
-        /* 🛠️ 네비게이션 바가 항상 맨 위에 오도록 z-index 최적화 및 레이아웃 수정 */
         nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 1000; overflow-x: auto; }
         nav button { background: none; border: none; color: #b3cbba; padding: 15px 5px; font-size: 0.85rem; min-width: 75px; flex: 1; cursor: pointer; transition: 0.2s; white-space: nowrap; height: 55px; }
         nav button.active { color: white; font-weight: bold; background-color: var(--secondary-color); }
 
         input, select { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px !important; -webkit-appearance: none; }
         
+        /* 🔍 검색창 전용 스타일 스타일링 */
+        input.search-bar { border: 2px solid var(--primary-color); background-color: #fff; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 12px; }
+        input.search-bar::placeholder { color: #999; font-weight: normal; }
+
         textarea { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px !important; -webkit-appearance: none; resize: none; min-height: 140px; line-height: 1.5; }
-        textarea.large-input { min-height: 160px; }
 
         button.btn { background: var(--primary-color); color: white; border: none; padding: 12px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: bold; }
         button.btn:hover { background: var(--secondary-color); }
         button.btn.edit-mode { background-color: var(--edit-color); color: white; }
+
+        .image-upload-wrapper { margin-bottom: 10px; background: #fafafa; border: 1px dashed #ccc; padding: 10px; border-radius: 4px; position: relative; }
+        .image-upload-wrapper label { display: block; text-align: center; font-size: 0.85rem; color: var(--secondary-color); font-weight: bold; cursor: pointer; padding: 6px 0; }
+        .image-upload-wrapper input[type="file"] { display: none; }
+        .image-preview-box { display: none; margin-top: 8px; text-align: center; position: relative; background: #eee; border-radius: 4px; padding: 5px; }
+        .image-preview-box img { max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 4px; }
+        .image-preview-box .remove-img-btn { position: absolute; top: 8px; right: 8px; background: rgba(219,83,79,0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+
+        .note-attached-image { display: block; max-width: 100%; max-height: 220px; object-fit: contain; margin-top: 8px; border-radius: 4px; border: 1px solid #eee; background: #f9f9f9; }
 
         .toggle-tab-container { display: flex; gap: 8px; margin-bottom: 12px; }
         .toggle-tab-btn { flex: 1; background: #e2e8e4; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; text-align: center; }
@@ -62,7 +73,6 @@
         
         .star-btn { background: none; border: none; font-size: 1.05rem; cursor: pointer; color: #ccc; transition: transform 0.1s ease; padding: 2px; display: inline-flex; align-items: center; justify-content: center; }
         .star-btn.active { color: #f39c12; text-shadow: 0 0 2px rgba(243,156,18,0.3); }
-        .star-btn:active { transform: scale(1.2); }
 
         .item-list { list-style: none; margin-top: 5px; }
         .item-list li { background: var(--bg-color); padding: 12px; margin-bottom: 8px; border-radius: 4px; position: relative; border-left: 4px solid var(--secondary-color); overflow: hidden;}
@@ -81,7 +91,6 @@
 
         .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -3px; margin-bottom: 12px; }
         .tag-btn { background: #e2e8e4; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .tag-btn:hover { background: var(--secondary-color); color: white; }
 
         .big-category-card { background: white; border: 2px solid #ccc; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; }
         .big-category-title { background: #eaeea02e; padding: 12px; font-size: 1.05rem; font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #ddd; }
@@ -100,14 +109,14 @@
 
         .sync-box { background: #eef7f9; border: 1px solid #bce8f1; color: #31708f; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
 
-        /* 🚀 간섭을 일으키던 뷰 활성화 스타일 구조 변경으로 터치 씹힘 원인 제거 */
         body.writing-mode header { display: none !important; }
-        body.writing-mode nav { display: flex !important; } /* 메뉴 바는 항상 보이도록 유지 */
+        body.writing-mode nav { display: flex !important; }
         body.writing-mode .card:not(.focus-form),
-        body.writing-mode .toggle-tab-container { display: none !important; }
+        body.writing-mode .toggle-tab-container,
+        body.writing-mode .search-bar { display: none !important; }
         body.writing-mode .container { padding: 0; }
-        body.writing-mode .card.focus-form { position: fixed; top: 0; left: 0; right: 0; bottom: 55px; z-index: 500; margin: 0; border: none; border-radius: 0; height: calc(100vh - 55px); display: flex; flex-direction: column; padding: 15px; background: white; }
-        body.writing-mode .card.focus-form textarea { flex: 1; min-height: 50vh; margin-bottom: 15px; font-size: 17px !important; }
+        body.writing-mode .card.focus-form { position: fixed; top: 0; left: 0; right: 0; bottom: 55px; z-index: 500; margin: 0; border: none; border-radius: 0; height: calc(100vh - 55px); display: flex; flex-direction: column; padding: 15px; background: white; overflow-y: auto; }
+        body.writing-mode .card.focus-form textarea { flex: 1; min-height: 30vh; margin-bottom: 15px; font-size: 17px !important; }
         body.writing-mode .card.focus-form input { font-size: 17px !important; margin-bottom: 12px; }
     </style>
 </head>
@@ -116,11 +125,22 @@
     <header id="main-title">무전근무 (오전/오후)</header>
 
     <div class="container">
+        <!-- 1. 무전근무 페이지 -->
         <div id="page1" class="page active">
             <div class="card" id="form-radio-memo">
-                <h3 id="radio-memo-form-title">⚡ 무전 암기사항 추가 (메인 전용)</h3>
+                <h3 id="radio-memo-form-title">⚡ 무전 핵심 암기사항 추가</h3>
                 <input type="text" id="radio-memo-title" placeholder="제목 (예: 망 구성 명칭)" onfocus="enterWritingMode('form-radio-memo')">
-                <textarea id="radio-memo-content" placeholder="무전과 직접 관련된 핵심 암기 내용을 입력하세요..." onfocus="enterWritingMode('form-radio-memo')"></textarea>
+                <textarea id="radio-memo-content" placeholder="핵심 내용을 입력하세요..." onfocus="enterWritingMode('form-radio-memo')"></textarea>
+                
+                <div class="image-upload-wrapper">
+                    <label for="radio-memo-img-input">🖼️ 사진 첨부하기 (촬영/갤러리)</label>
+                    <input type="file" id="radio-memo-img-input" accept="image/*" onchange="processAndPreviewImage(this, 'radio-memo-preview-zone', 'radio-memo-preview-img')">
+                    <div id="radio-memo-preview-zone" class="image-preview-box">
+                        <img id="radio-memo-preview-img" src="" alt="미리보기">
+                        <button type="button" class="remove-img-btn" onclick="removePreviewImage('radio-memo-img-input', 'radio-memo-preview-zone', 'radio-memo-preview-img')">✕</button>
+                    </div>
+                </div>
+
                 <button class="btn" id="radio-memo-submit-btn" onclick="addOrUpdateRadioMemo()">무전 암기사항 저장</button>
             </div>
 
@@ -130,7 +150,7 @@
             </div>
 
             <div class="card" id="form-work">
-                <h3 id="work-form-title">⏱️ 근무 일정 추가</h3>
+                <h3 id="work-form-title">⏱️ 근무 지침 추가</h3>
                 <select id="work-time">
                     <option value="오전 근무">오전 근무</option>
                     <option value="오후/야간 근무">오후/야간 근무</option>
@@ -149,6 +169,7 @@
             </div>
         </div>
 
+        <!-- 2. 무전법 페이지 -->
         <div id="page2" class="page">
             <div class="card" id="form-radio">
                 <h3 id="radio-form-title">🗣️ 새 무전법 지침 등록</h3>
@@ -159,11 +180,15 @@
             <div id="radio-container"></div>
         </div>
 
+        <!-- 3. 상황별 조치사항 페이지 (★실시간 통합 검색바 적용) -->
         <div id="page3" class="page">
             <div class="toggle-tab-container">
                 <div id="tab-situ-classic" class="toggle-tab-btn active" onclick="switchSituationViewMode('classic')">📄 기존 형식 보기</div>
                 <div id="tab-situ-folder" class="toggle-tab-btn" onclick="switchSituationViewMode('folder')">📁 폴더 형식 보기</div>
             </div>
+
+            <!-- 🔍 실시간 조치법 검색창 -->
+            <input type="text" id="situ-search-input" class="search-bar" placeholder="🔍 상황조치 및 장비 분류 검색..." oninput="filterSituations()">
 
             <div id="situ-classic-zone">
                 <div class="card" id="form-situation">
@@ -178,12 +203,13 @@
             <div id="situ-folder-zone" style="display:none;">
                 <div class="card">
                     <h3>📁 상황조치 전용 폴더 관리</h3>
-                    <p style="font-size:0.85rem; color:#666; line-height:1.4;">장비사용법 탭에서 폴더를 <b>[전체 이동]</b> 시키거나 아래 그리드에서 폴더를 선택해 상황별 조치를 밀도 있게 관리하세요.</p>
+                    <p style="font-size:0.85rem; color:#666; line-height:1.4;">장비사용법 탭에서 폴더를 이동해 조치를 관리하세요.</p>
                 </div>
                 <div id="situation-folder-grid" class="folder-grid"></div>
             </div>
         </div>
 
+        <!-- 4. 통신장비별 사용법 페이지 -->
         <div id="page4" class="page">
             <div class="card">
                 <h3>📁 1단계: 장비 폴더 추가</h3>
@@ -193,33 +219,46 @@
             <div id="folder-grid" class="folder-grid"></div>
         </div>
 
+        <!-- 5. 일반 암기사항 및 백업/휴지통 페이지 -->
         <div id="page5" class="page">
             <div class="card" style="border: 1px solid var(--secondary-color);">
                 <h3>📦 후임 인계 및 백업 (데이터 연동)</h3>
                 <div class="sync-box">
-                    💡 내가 입력한 모든 노트를 텍스트 코드로 추출하거나, 인계받은 코드를 붙여넣어 동기화할 수 있습니다.
+                    💡 사진 데이터까지 코드 하나로 인계받을 수 있습니다.
                 </div>
                 <button class="btn" onclick="exportData()" style="margin-bottom:10px; background-color: var(--secondary-color);">📋 내 노트 코드 복사하기 (내보내기)</button>
                 <textarea id="import-zone" placeholder="인계받은 텍스트 코드를 여기에 붙여넣으세요..."></textarea>
                 <button class="btn" onclick="importData()" style="background-color: var(--info-color);">📥 코드 가져와서 데이터 덮어쓰기</button>
             </div>
+            
             <div class="card" id="form-memo">
                 <h3>✏️ 새 일반 암기사항 추가</h3>
                 <input type="text" id="memo-title" placeholder="제목 (예: 포네틱 코드)" onfocus="enterWritingMode('form-memo')">
                 <textarea id="memo-content" placeholder="내용을 입력하세요..." onfocus="enterWritingMode('form-memo')"></textarea>
+                
+                <div class="image-upload-wrapper">
+                    <label for="memo-img-input">🖼️ 사진 첨부하기 (촬영/갤러리)</label>
+                    <input type="file" id="memo-img-input" accept="image/*" onchange="processAndPreviewImage(this, 'memo-preview-zone', 'memo-preview-img')">
+                    <div id="memo-preview-zone" class="image-preview-box">
+                        <img id="memo-preview-img" src="" alt="미리보기">
+                        <button type="button" class="remove-img-btn" onclick="removePreviewImage('memo-img-input', 'memo-preview-zone', 'memo-preview-img')">✕</button>
+                    </div>
+                </div>
+
                 <button class="btn" id="memo-submit-btn" onclick="addOrUpdateMemo()">일반 암기사항 저장</button>
             </div>
             <ul id="memo-list" class="item-list"></ul>
 
             <div class="card" style="border: 2px dashed var(--trash-color); margin-top: 25px; background: #fafafa;">
                 <h3 style="color: var(--trash-color);">🗑️ 안전 복구 휴지통</h3>
-                <p style="font-size:0.8rem; color:#666; margin-bottom: 10px;">삭제된 항목들이 보관됩니다. 필요시 언제든 원래 탭으로 원복 시킬 수 있습니다.</p>
+                <p style="font-size:0.8rem; color:#666; margin-bottom: 10px;">삭제된 항목(사진 포함)들이 임시 보관됩니다.</p>
                 <ul id="trash-list" class="item-list"></ul>
                 <button class="btn" onclick="clearTrashAll()" style="background-color: #bbbbbb; color:#333; font-size:0.85rem; padding:8px; margin-top:5px;">휴지통 완전히 비우기</button>
             </div>
         </div>
     </div>
 
+    <!-- 장비 폴더 전용 전체화면 뷰 -->
     <div id="fullscreen-overlay" class="fullscreen-view">
         <div class="view-header">
             <h2 id="view-device-title" style="color: var(--primary-color);">장비명</h2>
@@ -231,7 +270,7 @@
             <input type="text" id="sub-type-input" placeholder="2단계: 대분류 입력 (예: 방식, 조작법, 제원)" onfocus="enterWritingMode('form-detail', true)">
             <div id="tag-buttons-zone" class="tag-container"></div>
             
-            <textarea id="sub-title-input" class="large-input" placeholder="3단계: 하위분류/소제목 입력 (엔터 입력 가능)..." onfocus="enterWritingMode('form-detail', true)"></textarea>
+            <textarea id="sub-title-input" placeholder="3단계: 하위분류/소제목 입력 (엔터 가능)..." onfocus="enterWritingMode('form-detail', true)"></textarea>
             
             <label class="checkbox-container">
                 <input type="checkbox" id="use-desc-checkbox" checked onchange="toggleDescInput()">
@@ -239,12 +278,23 @@
             </label>
             
             <textarea id="sub-desc-input" placeholder="4단계: 실제 상세 설명을 입력하세요..." onfocus="enterWritingMode('form-detail', true)"></textarea>
+            
+            <div class="image-upload-wrapper">
+                <label for="detail-img-input">🖼️ 장비 사진/회로도 첨부하기</label>
+                <input type="file" id="detail-img-input" accept="image/*" onchange="processAndPreviewImage(this, 'detail-preview-zone', 'detail-preview-img')">
+                <div id="detail-preview-zone" class="image-preview-box">
+                    <img id="detail-preview-img" src="" alt="미리보기">
+                    <button type="button" class="remove-img-btn" onclick="removePreviewImage('detail-img-input', 'detail-preview-zone', 'detail-preview-img')">✕</button>
+                </div>
+            </div>
+
             <button class="btn" id="detail-submit-btn" onclick="addOrUpdateDeviceDetail()">항목 저장하기</button>
         </div>
 
         <div id="device-details-container"></div>
     </div>
 
+    <!-- 상황조치 폴더 전체화면 뷰 -->
     <div id="situ-fullscreen-overlay" class="fullscreen-view">
         <div class="view-header">
             <h2 id="view-situ-folder-title" style="color: var(--accent-color);">상황조치 폴더</h2>
@@ -266,12 +316,44 @@
         let currentOpenSituFolder = "";
         let editTargetIndex = -1;
         let situationViewMode = "classic";
-
+        
+        let tempAttachedImageDataUrl = "";
         let trashItems = JSON.parse(localStorage.getItem('army_trash')) || [];
 
         function saveTrash() { localStorage.setItem('army_trash', JSON.stringify(trashItems)); renderTrash(); }
 
-        // 작성 모드 시 하단 바가 덮이지 않고 터치가 무조건 먹히도록 바텀 마진 및 z-index 세팅 전면 수정
+        function processAndPreviewImage(inputNode, previewZoneId, previewImgId) {
+            const file = inputNode.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width; let height = img.height;
+                    const MAX_WIDTH = 640; const MAX_HEIGHT = 640;
+                    if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
+                    else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65);
+                    tempAttachedImageDataUrl = compressedDataUrl;
+                    document.getElementById(previewImgId).src = compressedDataUrl;
+                    document.getElementById(previewZoneId).style.display = 'block';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removePreviewImage(inputId, previewZoneId, previewImgId) {
+            document.getElementById(inputId).value = "";
+            document.getElementById(previewImgId).src = "";
+            document.getElementById(previewZoneId).style.display = 'none';
+            tempAttachedImageDataUrl = "";
+        }
+
         function enterWritingMode(formId, isInsideOverlay = false) {
             document.body.classList.add('writing-mode');
             document.querySelectorAll('.card').forEach(c => c.classList.remove('focus-form'));
@@ -312,7 +394,9 @@
             document.getElementById('tab-situ-folder').classList.toggle('active', mode === 'folder');
             document.getElementById('situ-classic-zone').style.display = mode === 'classic' ? 'block' : 'none';
             document.getElementById('situ-folder-zone').style.display = mode === 'folder' ? 'block' : 'none';
-            if(mode === 'folder') renderSituationFolders();
+            
+            document.getElementById('situ-search-input').value = ""; // 스위칭 시 검색어 리셋
+            if(mode === 'folder') renderSituationFolders(); else renderSituations();
         }
 
         function toggleDescInput() {
@@ -322,44 +406,90 @@
             if(!checkbox.checked) descInput.value = '';
         }
 
-        function cancelAllEdits() {
-            editTargetIndex = -1;
-            exitWritingMode();
+        // 🔍 [핵심 엔지니어링] 실시간 필터링 검색 함수 구현
+        function filterSituations() {
+            const keyword = document.getElementById('situ-search-input').value.toLowerCase().trim();
             
-            document.getElementById('radio-memo-form-title').innerText = "⚡ 무전 암기사항 추가 (메인 전용)";
+            if (situationViewMode === "classic") {
+                // 기존 형식 카드 필터링
+                const container = document.getElementById('situation-container');
+                if (!keyword) { renderSituations(); return; }
+                
+                const filtered = situations.filter(s => s.title.toLowerCase().includes(keyword) || s.step.toLowerCase().includes(keyword));
+                container.innerHTML = filtered.map((s, originalIdx) => {
+                    // 필터링 상태에서는 인덱스 추적이 복잡하므로 복원용 매핑 필요하나 검색 가시성 중심 우선 노출
+                    return `<div class="card"><h3 style="color:var(--accent-color);">🚨 ${s.title}</h3><div class="item-text">${s.step}</div></div>`;
+                }).join('');
+                if(filtered.length === 0) container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">검색 결과가 없습니다.</div>';
+                
+            } else {
+                // 폴더 형식 보기 내 내부 하위 아이템 실시간 관통 검색
+                const container = document.getElementById('situation-folder-grid');
+                if (!keyword) { renderSituationFolders(); return; }
+                
+                container.innerHTML = '';
+                let matchCount = 0;
+
+                for (let folderName in situationFolders) {
+                    const matchedItems = situationFolders[folderName].filter(item => 
+                        item.type.toLowerCase().includes(keyword) || 
+                        item.title.toLowerCase().includes(keyword) || 
+                        item.desc.toLowerCase().includes(keyword)
+                    );
+
+                    if (matchedItems.length > 0) {
+                        matchCount++;
+                        let matchCardHtml = `<div class="big-category-card" style="border-color:var(--accent-color); grid-column: span 2; margin-bottom:8px;">
+                                                <div class="big-category-title" style="background:#f2dede; color:var(--accent-color); font-weight:bold;">📁 폴더 [${folderName}] 매칭 결과</div>`;
+                        
+                        matchedItems.forEach(item => {
+                            const imgHtml = item.image ? `<img src="${item.image}" class="note-attached-image">` : '';
+                            const descHtml = item.desc ? `<div class="level4-desc-text" style="border-left-color:var(--accent-color);">${item.desc}</div>` : '';
+                            matchCardHtml += `<div class="level3-wrapper" style="padding:10px;">
+                                                <div style="font-size:0.8rem; color:#777; font-weight:bold;">[대분류: ${item.type}]</div>
+                                                <div class="level3-title-text" style="margin-top:4px;">📌 ${item.title}</div>
+                                                ${descHtml}${imgHtml}
+                                              </div>`;
+                        });
+                        matchCardHtml += `</div>`;
+                        container.innerHTML += matchCardHtml;
+                    }
+                }
+                if (matchCount === 0) container.innerHTML = '<div style="text-align:center; color:#aaa; grid-column:span 2; padding:30px;">검색 결과가 없습니다.</div>';
+            }
+        }
+
+        function cancelAllEdits() {
+            editTargetIndex = -1; tempAttachedImageDataUrl = ""; exitWritingMode();
+            document.getElementById('situ-search-input').value = ""; // 검색어 삭제
+            
+            removePreviewImage('radio-memo-img-input', 'radio-memo-preview-zone', 'radio-memo-preview-img');
+            removePreviewImage('memo-img-input', 'memo-preview-zone', 'memo-preview-img');
+            removePreviewImage('detail-img-input', 'detail-preview-zone', 'detail-preview-img');
+
+            document.getElementById('radio-memo-form-title').innerText = "⚡ 무전 핵심 암기사항 추가";
             document.getElementById('radio-memo-submit-btn').innerText = "무전 암기사항 저장";
             document.getElementById('radio-memo-submit-btn').classList.remove('edit-mode');
-            document.getElementById('radio-memo-title').value = '';
-            document.getElementById('radio-memo-content').value = '';
+            document.getElementById('radio-memo-title').value = ''; document.getElementById('radio-memo-content').value = '';
 
-            document.getElementById('form-work').querySelector('h3').innerText = "⏱️ 근무 일정 추가";
-            document.getElementById('work-submit-btn').innerText = "근무 지침 추가";
-            document.getElementById('work-submit-btn').classList.remove('edit-mode');
+            document.getElementById('form-work').querySelector('h3').innerText = "⏱️ 근무 지침 추가";
+            document.getElementById('work-submit-btn').innerText = "근무 지침 추가"; document.getElementById('work-submit-btn').classList.remove('edit-mode');
             document.getElementById('work-content').value = '';
             
             document.getElementById('radio-form-title').innerText = "🗣️ 새 무전법 지침 등록";
-            document.getElementById('radio-submit-btn').innerText = "무전법 추가";
-            document.getElementById('radio-submit-btn').classList.remove('edit-mode');
-            document.getElementById('radio-title').value = '';
-            document.getElementById('radio-content').value = '';
+            document.getElementById('radio-submit-btn').innerText = "무전법 추가"; document.getElementById('radio-submit-btn').classList.remove('edit-mode');
+            document.getElementById('radio-title').value = ''; document.getElementById('radio-content').value = '';
 
             document.getElementById('situation-form-title').innerText = "🚨 새 상황조치 등록 (기존형)";
-            document.getElementById('situation-submit-btn').innerText = "상황조치 저장";
-            document.getElementById('situation-submit-btn').classList.remove('edit-mode');
-            document.getElementById('situation-title').value = '';
-            document.getElementById('situation-step').value = '';
+            document.getElementById('situation-submit-btn').innerText = "상황조치 저장"; document.getElementById('situation-submit-btn').classList.remove('edit-mode');
+            document.getElementById('situation-title').value = ''; document.getElementById('situation-step').value = '';
 
             document.getElementById('detail-form-title').innerText = "🛠️ 분류 및 세부항목 관리";
-            document.getElementById('detail-submit-btn').innerText = "항목 저장하기";
-            document.getElementById('detail-submit-btn').classList.remove('edit-mode');
-            document.getElementById('sub-type-input').value = '';
-            document.getElementById('sub-title-input').value = '';
-            document.getElementById('sub-desc-input').value = '';
-            document.getElementById('use-desc-checkbox').checked = true;
-            document.getElementById('sub-desc-input').style.display = 'block';
+            document.getElementById('detail-submit-btn').innerText = "항목 저장하기"; document.getElementById('detail-submit-btn').classList.remove('edit-mode');
+            document.getElementById('sub-type-input').value = ''; document.getElementById('sub-title-input').value = ''; document.getElementById('sub-desc-input').value = '';
+            document.getElementById('use-desc-checkbox').checked = true; document.getElementById('sub-desc-input').style.display = 'block';
 
-            document.getElementById('memo-title').value = '';
-            document.getElementById('memo-content').value = '';
+            document.getElementById('memo-title').value = ''; document.getElementById('memo-content').value = '';
 
             renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderMemos(); renderTrash();
             if(currentOpenFolder) { renderDeviceDetails(); renderBigCategoryButtons(); }
@@ -369,43 +499,36 @@
         // --- 1페이지: 무전 암기사항 ---
         let radioMemos = JSON.parse(localStorage.getItem('army_radio_memos')) || [];
         function saveRadioMemos() { localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos)); renderRadioMemos(); }
-        
         function addOrUpdateRadioMemo() {
-            const title = document.getElementById('radio-memo-title').value.trim();
-            const content = document.getElementById('radio-memo-content').value.trim();
+            const title = document.getElementById('radio-memo-title').value.trim(); const content = document.getElementById('radio-memo-content').value.trim();
             if(!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
-            
             if(editTargetIndex > -1 && document.getElementById('radio-memo-form-title').innerText.includes('수정')) {
-                radioMemos[editTargetIndex] = { title, content };
-            } else {
-                radioMemos.push({ title, content });
-            }
+                const oldImg = radioMemos[editTargetIndex].image || "";
+                radioMemos[editTargetIndex] = { title, content, image: tempAttachedImageDataUrl ? tempAttachedImageDataUrl : oldImg };
+            } else { radioMemos.push({ title, content, image: tempAttachedImageDataUrl }); }
             cancelAllEdits(); saveRadioMemos();
         }
         function editRadioMemo(idx) {
             cancelAllEdits(); editTargetIndex = idx; const m = radioMemos[idx];
             document.getElementById('radio-memo-form-title').innerText = "🔄 무전 암기사항 수정 중...";
             document.getElementById('radio-memo-title').value = m.title; document.getElementById('radio-memo-content').value = m.content;
+            if(m.image) { tempAttachedImageDataUrl = m.image; document.getElementById('radio-memo-preview-img').src = m.image; document.getElementById('radio-memo-preview-zone').style.display = 'block'; }
             enterWritingMode('form-radio-memo');
             const btn = document.getElementById('radio-memo-submit-btn'); btn.innerText = "✅ 수정 완료"; btn.classList.add('edit-mode');
             renderRadioMemos();
         }
-        function deleteRadioMemo(idx) {
-            if(confirm('이 무전 암기사항을 삭제하시겠습니까? (휴지통 보관)')) {
-                trashItems.push({ from: 'radioMemos', data: radioMemos[idx] });
-                radioMemos.splice(idx, 1); cancelAllEdits(); saveRadioMemos(); saveTrash();
-            }
-        }
+        function deleteRadioMemo(idx) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'radioMemos', data: radioMemos[idx] }); radioMemos.splice(idx, 1); cancelAllEdits(); saveRadioMemos(); saveTrash(); } }
         function renderRadioMemos() {
             const mainList = document.getElementById('main-radio-memo-list');
             if(radioMemos.length === 0) { mainList.innerHTML = `<li style="text-align:center; color:#999; list-style:none; border-left:none; background:none; padding:10px 0;">등록된 무전 암기사항이 없습니다.</li>`; return; }
             mainList.innerHTML = radioMemos.map((m, idx) => {
                 const isEditingClass = (idx === editTargetIndex && document.getElementById('radio-memo-form-title').innerText.includes('수정')) ? 'is-editing' : '';
-                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadioMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteRadioMemo(${idx})">삭제</button></div><strong>⚡ ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div></li>`;
+                const imgHtml = m.image ? `<img src="${m.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
+                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadioMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteRadioMemo(${idx})">삭제</button></div><strong>⚡ ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div>${imgHtml}</li>`;
             }).join('');
         }
 
-        // --- 1페이지: 근무 일정 ---
+        // --- 1페이지: 근무 지침 ---
         let works = JSON.parse(localStorage.getItem('army_works')) || [];
         function saveWorks() { localStorage.setItem('army_works', JSON.stringify(works)); renderWorks(); }
         function addOrUpdateWork() {
@@ -417,18 +540,13 @@
         }
         function editWork(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetWork = works[idx];
-            document.getElementById('form-work').querySelector('h3').innerText = "🔄 근무 일정 수정 중...";
+            document.getElementById('form-work').querySelector('h3').innerText = "🔄 근무 지침 수정 중...";
             document.getElementById('work-time').value = targetWork.type; document.getElementById('work-content').value = targetWork.content;
             enterWritingMode('form-work');
             const submitBtn = document.getElementById('work-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
             renderWorks();
         }
-        function deleteWork(idx) {
-            if(confirm('삭제하시겠습니까? (휴지통 보관)')) {
-                trashItems.push({ from: 'works', data: works[idx] });
-                works.splice(idx, 1); cancelAllEdits(); saveWorks(); saveTrash();
-            }
-        }
+        function deleteWork(idx) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'works', data: works[idx] }); works.splice(idx, 1); cancelAllEdits(); saveWorks(); saveTrash(); } }
         function renderWorks() {
             const amList = document.getElementById('work-list-am'); const pmList = document.getElementById('work-list-pm');
             amList.innerHTML = ''; pmList.innerHTML = '';
@@ -454,20 +572,15 @@
             document.getElementById('radio-form-title').innerText = "🔄 무전법 지침 수정 중...";
             document.getElementById('radio-title').value = targetRadio.title; document.getElementById('radio-content').value = targetRadio.content;
             enterWritingMode('form-radio');
-            const submitBtn = document.getElementById('radio-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
+            const submitBtn = document.getElementById('submit-btn'); if(submitBtn) { submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode'); }
             renderRadios();
         }
-        function deleteRadio(idx) {
-            if(confirm('삭제하시겠습니까? (휴지통 보관)')) {
-                trashItems.push({ from: 'radioProtocols', data: radioProtocols[idx] });
-                radioProtocols.splice(idx, 1); cancelAllEdits(); saveRadios(); saveTrash();
-            }
-        }
+        function deleteRadio(idx) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'radioProtocols', data: radioProtocols[idx] }); radioProtocols.splice(idx, 1); cancelAllEdits(); saveRadios(); saveTrash(); } }
         function renderRadios() {
             const container = document.getElementById('radio-container'); container.innerHTML = '';
             radioProtocols.forEach((r, idx) => {
                 const isEditingClass = (idx === editTargetIndex && document.getElementById('radio-form-title').innerText.includes('수정')) ? 'is-editing' : '';
-                container.innerHTML += `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button></div> hijacking <h3>🗣️ ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
+                container.innerHTML += `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button></div><h3>🗣️ ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
             });
         }
 
@@ -476,7 +589,7 @@
         let situationFolders = JSON.parse(localStorage.getItem('army_situ_folders')) || {};
         function saveSituations() { 
             localStorage.setItem('army_situations', JSON.stringify(situations)); localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
-            renderSituations(); renderSituationFolders();
+            if(document.getElementById('situ-search-input').value === "") { renderSituations(); renderSituationFolders(); } else { filterSituations(); }
         }
         function addOrUpdateSituation() {
             const title = document.getElementById('situation-title').value.trim(); const step = document.getElementById('situation-step').value.trim();
@@ -493,12 +606,7 @@
             const submitBtn = document.getElementById('situation-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
             renderSituations();
         }
-        function deleteSituation(idx) {
-            if(confirm('삭제하시겠습니까? (휴지통 보관)')) {
-                trashItems.push({ from: 'situations', data: situations[idx] });
-                situations.splice(idx, 1); cancelAllEdits(); saveSituations(); saveTrash();
-            }
-        }
+        function deleteSituation(idx) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'situations', data: situations[idx] }); situations.splice(idx, 1); cancelAllEdits(); saveSituations(); saveTrash(); } }
         function renderSituations() {
             const container = document.getElementById('situation-container');
             container.innerHTML = situations.map((s, idx) => {
@@ -529,8 +637,9 @@
             for(let typeName in groupMap) {
                 let cardHtml = `<div class="big-category-card" style="border-color:var(--accent-color);"><div class="big-category-title" style="background:#f2dede; color:var(--accent-color)">⚠️ 대분류: ${typeName}</div>`;
                 groupMap[typeName].forEach(subItem => {
+                    const imgHtml = subItem.image ? `<img src="${subItem.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
                     const descHtml = (subItem.desc && subItem.desc.trim() !== "") ? `<div class="level4-desc-text" style="border-left-color:var(--accent-color);">${subItem.desc}</div>` : ``;
-                    cardHtml += `<div class="level3-wrapper"><div class="action-btn-group"><button class="delete-btn" onclick="deleteSituFolderDetail(${subItem.originalIndex})">삭제</button></div><div class="level3-title-text">📌 조치 항목명: ${subItem.title}</div>${descHtml}</div>`;
+                    cardHtml += `<div class="level3-wrapper"><div class="action-btn-group"><button class="delete-btn" onclick="deleteSituFolderDetail(${subItem.originalIndex})">삭제</button></div><div class="level3-title-text">📌 조치 항목명: ${subItem.title}</div>${descHtml}${imgHtml}</div>`;
                 });
                 cardHtml += `</div>`; container.innerHTML += cardHtml;
             }
@@ -545,8 +654,8 @@
             event.stopPropagation(); if(!folders[name] || folders[name].length === 0) return alert('폴더 내에 데이터가 없습니다.');
             if(confirm(`[${name}] 폴더 내 모든 항목(${folders[name].length}개)을 상황조치 폴더로 복사하시겠습니까?`)) {
                 if(!situationFolders[name]) situationFolders[name] = [];
-                folders[name].forEach(item => { situationFolders[name].push({ type: item.type, title: item.title, desc: item.desc, starred: false }); });
-                saveSituations(); alert('🎉 상황조치 폴더방으로 일괄 복사 완료!');
+                folders[name].forEach(item => { situationFolders[name].push({ type: item.type, title: item.title, desc: item.desc, image: item.image || "", starred: false }); });
+                saveSituations(); alert('🎉 상황조치 폴더방으로 사진 포함 일괄 복사 완료!');
             }
         }
         function renderFolders() {
@@ -571,17 +680,28 @@
             const type = document.getElementById('sub-type-input').value.trim(); const title = document.getElementById('sub-title-input').value.trim();
             const hasDesc = document.getElementById('use-desc-checkbox').checked; const desc = hasDesc ? document.getElementById('sub-desc-input').value.trim() : "";
             if(!type || !title) return alert('대분류와 하위분류명은 필수입니다!');
-            if(editTargetIndex > -1 && document.getElementById('detail-form-title').innerText.includes('수정')) { const isStarred = folders[currentOpenFolder][editTargetIndex].starred || false; folders[currentOpenFolder][editTargetIndex] = { type, title, desc, starred: isStarred }; } 
-            else { folders[currentOpenFolder].push({ type, title, desc, starred: false }); }
+            
+            if(editTargetIndex > -1 && document.getElementById('detail-form-title').innerText.includes('수정')) { 
+                const isStarred = folders[currentOpenFolder][editTargetIndex].starred || false; 
+                const oldImg = folders[currentOpenFolder][editTargetIndex].image || "";
+                folders[currentOpenFolder][editTargetIndex] = { type, title, desc, image: tempAttachedImageDataUrl ? tempAttachedImageDataUrl : oldImg, starred: isStarred }; 
+            } 
+            else { folders[currentOpenFolder].push({ type, title, desc, image: tempAttachedImageDataUrl, starred: false }); }
             cancelAllEdits(); saveFolders(); renderDeviceDetails();
         }
         function editDeviceDetail(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetDetail = folders[currentOpenFolder][idx];
-            document.getElementById('detail-form-title').innerText = "🔄 항목 수정 중...";
+            document.getElementById('detail-form-title').innerText = "🛠️ 항목 수정 중...";
             document.getElementById('sub-type-input').value = targetDetail.type; document.getElementById('sub-title-input').value = targetDetail.title || "";
             const checkbox = document.getElementById('use-desc-checkbox'); const descInput = document.getElementById('sub-desc-input');
             if(targetDetail.desc && targetDetail.desc.trim() !== "") { checkbox.checked = true; descInput.style.display = 'block'; descInput.value = targetDetail.desc; } 
             else { checkbox.checked = false; descInput.style.display = 'none'; descInput.value = ''; }
+            
+            if(targetDetail.image) {
+                tempAttachedImageDataUrl = targetDetail.image;
+                document.getElementById('detail-preview-img').src = targetDetail.image;
+                document.getElementById('detail-preview-zone').style.display = 'block';
+            }
             enterWritingMode('form-detail');
             const submitBtn = document.getElementById('detail-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
             renderDeviceDetails();
@@ -608,9 +728,10 @@
                     const isEditingClass = (subItem.originalIndex === editTargetIndex && document.getElementById('detail-form-title').innerText.includes('수정')) ? 'is-editing' : '';
                     const starClass = subItem.starred ? 'active' : ''; const starIcon = subItem.starred ? '★' : '☆';
                     const actionButtons = `<div class="action-btn-group"><button class="move-btn" onclick="moveDetailToSituation(${subItem.originalIndex})">🚨 전송</button><button class="star-btn ${starClass}" onclick="toggleStar(${subItem.originalIndex})">${starIcon}</button><button class="edit-item-btn" onclick="editDeviceDetail(${subItem.originalIndex})">수정</button><button class="delete-btn" onclick="deleteDeviceDetail(${subItem.originalIndex})">삭제</button></div>`;
+                    const imgHtml = subItem.image ? `<img src="${subItem.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
                     const descHtml = (subItem.desc && subItem.desc.trim() !== "") ? `<div class="level4-desc-text">${subItem.desc}</div>` : ``;
                     const starPrefix = subItem.starred ? `<span style="color:#f39c12; margin-right:4px;">★</span>` : `<span class="icon">📌</span>`;
-                    cardHtml += `<div class="level3-wrapper ${isEditingClass}">${actionButtons}<div class="level3-title-text">${starPrefix}${subItem.title}</div>${descHtml}</div>`;
+                    cardHtml += `<div class="level3-wrapper ${isEditingClass}">${actionButtons}<div class="level3-title-text">${starPrefix}${subItem.title}</div>${descHtml}${imgHtml}</div>`;
                 });
                 cardHtml += `</div>`; container.innerHTML += cardHtml;
             }
@@ -624,51 +745,46 @@
             if(!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
             
             if(editTargetIndex > -1 && !document.getElementById('radio-memo-form-title').innerText.includes('수정') && !document.getElementById('form-work').querySelector('h3').innerText.includes('수정')) {
-                memos[editTargetIndex] = { title, content };
+                const oldImg = memos[editTargetIndex].image || "";
+                memos[editTargetIndex] = { title, content, image: tempAttachedImageDataUrl ? tempAttachedImageDataUrl : oldImg };
                 alert('일반 암기사항이 수정되었습니다.');
-            } else { memos.push({ title, content }); }
+            } else { memos.push({ title, content, image: tempAttachedImageDataUrl }); }
             cancelAllEdits(); saveMemos();
         }
         function editMemo(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetMemo = memos[idx];
             document.getElementById('memo-title').value = targetMemo.title; document.getElementById('memo-content').value = targetMemo.content;
+            if(targetMemo.image) { tempAttachedImageDataUrl = targetMemo.image; document.getElementById('memo-preview-img').src = targetMemo.image; document.getElementById('memo-preview-zone').style.display = 'block'; }
             switchPage(5, '통신 암기사항'); enterWritingMode('form-memo');
             renderMemos();
         }
-        function deleteMemo(index) {
-            if(confirm('삭제하시겠습니까? (휴지통 보관)')) {
-                trashItems.push({ from: 'memos', data: memos[index] });
-                memos.splice(index, 1); cancelAllEdits(); saveMemos(); saveTrash();
-            }
-        }
+        function deleteMemo(index) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'memos', data: memos[index] }); memos.splice(index, 1); cancelAllEdits(); saveMemos(); saveTrash(); } }
         function renderMemos() {
             const list = document.getElementById('memo-list');
             list.innerHTML = memos.map((m, idx) => {
                 const isEditingClass = (idx === editTargetIndex && !document.getElementById('radio-memo-form-title').innerText.includes('수정')) ? 'is-editing' : '';
-                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button></div><strong>💡 일반암기: ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div></li>`;
+                const imgHtml = m.image ? `<img src="${m.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
+                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button></div><strong>💡 일반암기: ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div>${imgHtml}</li>`;
             }).join('');
         }
 
-        // --- 🗑️ 휴지통 코어 메커니즘 ---
+        // --- 🗑️ 휴지통 ---
         function renderTrash() {
             const trashList = document.getElementById('trash-list');
             if(trashItems.length === 0) { trashList.innerHTML = `<li style="text-align:center; color:#bbb; list-style:none; background:none; border:none; padding:15px 0;">휴지통이 비어있습니다.</li>`; return; }
-            
             trashList.innerHTML = trashItems.map((item, idx) => {
                 let categoryLabel = "";
                 if(item.from === 'radioMemos') categoryLabel = "무전 암기";
-                else if(item.from === 'works') categoryLabel = "근무 일정";
+                else if(item.from === 'works') categoryLabel = "근무 지침";
                 else if(item.from === 'radioProtocols') categoryLabel = "무전법";
                 else if(item.from === 'situations') categoryLabel = "상황조치(기존)";
                 else if(item.from === 'situationFolders') categoryLabel = `상황폴더(${item.folderName})`;
                 else if(item.from === 'folders') categoryLabel = `장비폴더(${item.folderName})`;
                 else if(item.from === 'memos') categoryLabel = "일반 암기";
-
                 const displayTitle = item.data.title || item.data.type || "내용 기반 데이터";
                 return `<li style="border-left-color:#aaa; background:#f0f0f0;"><div class="action-btn-group"><button class="move-btn" style="border-color:#555; color:#555;" onclick="restoreTrashItem(${idx})">복구</button><button class="delete-btn" onclick="killTrashItem(${idx})">영구삭제</button></div><span style="font-size:0.75rem; background:#ddd; padding:2px 5px; border-radius:3px; margin-right:5px; font-weight:bold; color:#666;">${categoryLabel}</span><strong>${displayTitle}</strong></li>`;
             }).join('');
         }
-
         function restoreTrashItem(idx) {
             const item = trashItems[idx];
             if(item.from === 'radioMemos') { radioMemos.push(item.data); saveRadioMemos(); }
@@ -678,45 +794,35 @@
             else if(item.from === 'situationFolders') { if(!situationFolders[item.folderName]) situationFolders[item.folderName] = []; situationFolders[item.folderName].push(item.data); saveSituations(); }
             else if(item.from === 'folders') { if(!folders[item.folderName]) folders[item.folderName] = []; folders[item.folderName].push(item.data); saveFolders(); }
             else if(item.from === 'memos') { memos.push(item.data); saveMemos(); }
-
-            trashItems.splice(idx, 1); saveTrash(); alert('성공적으로 원래 위치로 복구되었습니다!');
+            trashItems.splice(idx, 1); saveTrash(); alert('성공적으로 복구되었습니다!');
         }
-
         function killTrashItem(idx) { if(confirm('영구 삭제되어 복구할 수 없습니다. 계속하시겠습니까?')) { trashItems.splice(idx, 1); saveTrash(); } }
         function clearTrashAll() { if(confirm('휴지통 내부의 모든 데이터가 영구히 소멸됩니다. 비우시겠습니까?')) { trashItems = []; saveTrash(); } }
 
         // --- 데이터 백업 시스템 ---
         function exportData() {
             const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, trashItems };
-            const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
-            navigator.clipboard.writeText(encodedData).then(() => { alert('데이터 코드가 복사되었습니다!'); }).catch(() => { prompt('코드를 복사하세요:', encodedData); });
+            try {
+                const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
+                navigator.clipboard.writeText(encodedData).then(() => { alert('사진이 포함된 데이터 코드가 복사되었습니다!'); }).catch(() => { prompt('코드를 복사하세요:', encodedData); });
+            } catch(err) { alert("❌ 이미지 용량이 과도하여 기본 백업이 실패했습니다. 불필요한 사진을 정리하거나 휴지통을 비운 뒤 다시 시도해 주세요."); }
         }
         function importData() {
             const code = document.getElementById('import-zone').value.trim(); if(!code) return alert('코드를 붙여넣어 주세요.');
             if(confirm('데이터를 덮어쓰시겠습니까?')) {
                 try {
                     const importedData = JSON.parse(decodeURIComponent(atob(code)));
-                    if(importedData.works) works = importedData.works;
-                    if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
-                    if(importedData.situations) situations = importedData.situations;
-                    if(importedData.situationFolders) situationFolders = importedData.situationFolders;
-                    if(importedData.folders) folders = importedData.folders;
-                    if(importedData.memos) memos = importedData.memos;
-                    if(importedData.radioMemos) radioMemos = importedData.radioMemos;
-                    if(importedData.trashItems) trashItems = importedData.trashItems;
+                    if(importedData.works) works = importedData.works; if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
+                    if(importedData.situations) situations = importedData.situations; if(importedData.situationFolders) situationFolders = importedData.situationFolders;
+                    if(importedData.folders) folders = folders = importedData.folders; if(importedData.memos) memos = importedData.memos;
+                    if(importedData.radioMemos) radioMemos = importedData.radioMemos; if(importedData.trashItems) trashItems = importedData.trashItems;
                     
-                    localStorage.setItem('army_works', JSON.stringify(works));
-                    localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
-                    localStorage.setItem('army_situations', JSON.stringify(situations));
-                    localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
-                    localStorage.setItem('army_folders', JSON.stringify(folders));
-                    localStorage.setItem('army_memos', JSON.stringify(memos));
-                    localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos));
-                    localStorage.setItem('army_trash', JSON.stringify(trashItems));
-
-                    document.getElementById('import-zone').value = ''; cancelAllEdits();
-                    alert('🎉 데이터 동기화 완료!');
-                } catch(e) { alert('❌ 올바르지 않은 코드입니다.'); }
+                    localStorage.setItem('army_works', JSON.stringify(works)); localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
+                    localStorage.setItem('army_situations', JSON.stringify(situations)); localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
+                    localStorage.setItem('army_folders', JSON.stringify(folders)); localStorage.setItem('army_memos', JSON.stringify(memos));
+                    localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos)); localStorage.setItem('army_trash', JSON.stringify(trashItems));
+                    document.getElementById('import-zone').value = ''; cancelAllEdits(); alert('🎉 데이터 동기화 완료!');
+                } catch(e) { alert('❌ 올바르지 않거나 손상된 코드입니다.'); }
             }
         }
 
@@ -724,3 +830,4 @@
     </script>
 </body>
 </html>
+,
