@@ -3,328 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>통신병 암기노트</title>
+    <title>Work Partner 2.0 - 통신병 암기노트</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Urbanist:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
         :root {
-            --primary-color: #2e4f39; /* 국방색 */
-            --secondary-color: #4a7256;
-            --bg-color: #f4f6f4;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --accent-color: #d9534f;
-            --info-color: #31708f;
-            --edit-color: #f0ad4e;
-            --trash-color: #777777;
+            --bg-dark: #020617;       /* 메인 배경 (매우 어두운 슬레이트 블루) */
+            --panel-bg: #0f172a;      /* 카드 및 패널 배경 */
+            --panel-border: #1e293b;  /* 부드러운 테두리 */
+            --primary: #10b981;       /* 전술 에메랄드 그린 */
+            --primary-hover: #059669;
+            --text-main: #f8fafc;     /* 메인 텍스트 */
+            --text-muted: #94a3b8;    /* 부차적 텍스트 */
+            --accent-red: #f43f5e;    /* 경고/상황조치 컬러 */
+            --accent-blue: #38bdf8;   /* 안내/이동 컬러 */
+            --accent-orange: #fb923c; /* 수정 모드 컬러 */
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Malgun Gothic', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 75px; -webkit-text-size-adjust: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', 'Urbanist', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 85px; min-height: 100vh; -webkit-text-size-adjust: none; }
         
-        header { background-color: var(--primary-color); color: white; padding: 12px; text-align: center; font-size: 1.1rem; font-weight: bold; position: sticky; top: 0; z-index: 100; }
+        /* 상단 헤더 */
+        header { 
+            background: linear-gradient(135deg, var(--panel-bg), var(--bg-dark)); 
+            color: var(--text-main); 
+            padding: 16px; 
+            text-align: center; 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            position: sticky; 
+            top: 0; 
+            z-index: 90; 
+            border-bottom: 1px solid var(--panel-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            letter-spacing: -0.5px;
+        }
+        header span { color: var(--primary); font-family: 'Urbanist', sans-serif; }
 
-        .container { padding: 10px; max-width: 600px; margin: 0 auto; }
+        /* 컨테이너 */
+        .container { padding: 16px; max-width: 640px; margin: 0 auto; }
         .page { display: none; }
-        .page.active { display: block; }
+        .page.active { display: block; animation: fadeIn 0.3s ease-out; }
 
-        .card { background: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #ddd; overflow: hidden; }
-        .card h3 { margin-bottom: 8px; color: var(--primary-color); border-bottom: 2px solid var(--bg-color); padding-bottom: 5px; font-size: 1.05rem; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 고급 정보 카드 구성 */
+        .card { 
+            background: var(--panel-bg); 
+            padding: 18px; 
+            border-radius: 16px; 
+            margin-bottom: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+            border: 1px solid var(--panel-border); 
+            overflow: hidden; 
+            position: relative;
+        }
+        .card h3 { margin-bottom: 12px; color: var(--primary); font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         
-        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--primary-color); display: flex; justify-content: space-around; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 1000; overflow-x: auto; }
-        nav button { background: none; border: none; color: #b3cbba; padding: 15px 5px; font-size: 0.85rem; min-width: 75px; flex: 1; cursor: pointer; transition: 0.2s; white-space: nowrap; height: 55px; }
-        nav button.active { color: white; font-weight: bold; background-color: var(--secondary-color); }
+        /* 하단 고정 내비게이션 바 */
+        nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(8px);
+            display: flex; justify-content: space-around; 
+            border-top: 1px solid var(--panel-border);
+            z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+        }
+        nav button { 
+            background: none; border: none; color: var(--text-muted); 
+            padding: 12px 4px; font-size: 0.8rem; font-weight: 500;
+            flex: 1; cursor: pointer; transition: all 0.2s ease; 
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        nav button i { font-size: 1.25rem; transition: transform 0.2s; }
+        nav button.active { color: var(--primary); font-weight: 700; }
+        nav button.active i { transform: translateY(-2px); color: var(--primary); }
 
-        input, select { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px !important; -webkit-appearance: none; }
-        
-        /* 🔍 검색창 전용 스타일 스타일링 */
-        input.search-bar { border: 2px solid var(--primary-color); background-color: #fff; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 12px; }
-        input.search-bar::placeholder { color: #999; font-weight: normal; }
+        /* 공통 폼 스타일 */
+        input, select, textarea { 
+            width: 100%; padding: 12px; margin-bottom: 12px; 
+            background-color: rgba(2, 6, 23, 0.6);
+            border: 1px solid var(--panel-border); border-radius: 8px; 
+            color: var(--text-main); font-size: 15px; transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        textarea { resize: none; min-height: 120px; line-height: 1.5; }
 
-        textarea { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px !important; -webkit-appearance: none; resize: none; min-height: 140px; line-height: 1.5; }
+        /* 프리미엄 전역 실시간 검색바 */
+        .search-wrapper { position: relative; margin-bottom: 16px; }
+        .search-wrapper i { position: absolute; left: 14px; top: 14px; color: var(--text-muted); font-size: 18px; }
+        input.search-bar { padding-left: 42px; margin-bottom: 0; border: 2px solid var(--panel-border); font-weight: 500; background-color: var(--panel-bg); border-radius: 12px; }
+        input.search-bar:focus { border-color: var(--primary); }
 
-        button.btn { background: var(--primary-color); color: white; border: none; padding: 12px 15px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: bold; }
-        button.btn:hover { background: var(--secondary-color); }
-        button.btn.edit-mode { background-color: var(--edit-color); color: white; }
+        /* 세련된 버튼 시스템 */
+        button.btn { background: var(--primary); color: #fff; border: none; padding: 12px 16px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: 700; transition: background 0.2s; }
+        button.btn:hover { background: var(--primary-hover); }
+        button.btn.edit-mode { background-color: var(--accent-orange); }
 
-        .image-upload-wrapper { margin-bottom: 10px; background: #fafafa; border: 1px dashed #ccc; padding: 10px; border-radius: 4px; position: relative; }
-        .image-upload-wrapper label { display: block; text-align: center; font-size: 0.85rem; color: var(--secondary-color); font-weight: bold; cursor: pointer; padding: 6px 0; }
+        /* ➕ 우측 하단 플로팅 액션 버튼 (입력창 열기 전용) */
+        .fab {
+            position: fixed; bottom: 80px; right: 20px; 
+            width: 56px; height: 56px; background: var(--primary); 
+            color: white; border-radius: 50%; display: flex; 
+            align-items: center; justify-content: center; font-size: 24px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); 
+            cursor: pointer; z-index: 95; transition: all 0.2s ease;
+        }
+        .fab:hover { transform: scale(1.05) rotate(90deg); background: var(--primary-hover); }
+
+        /* 모달 팝업 스타일 (지저분한 입력창 숨기기용) */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(4px);
+            z-index: 200; align-items: center; justify-content: center; padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content { 
+            background: var(--panel-bg); width: 100%; max-width: 500px; 
+            border-radius: 20px; padding: 24px; border: 1px solid var(--panel-border);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); position: relative;
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
+
+        /* 사진 첨부 구역 디자인 */
+        .image-upload-wrapper { margin-bottom: 12px; background: rgba(2,6,23,0.4); border: 1px dashed var(--panel-border); padding: 14px; border-radius: 8px; text-align: center; }
+        .image-upload-wrapper label { font-size: 0.9rem; color: var(--primary); font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .image-upload-wrapper input[type="file"] { display: none; }
-        .image-preview-box { display: none; margin-top: 8px; text-align: center; position: relative; background: #eee; border-radius: 4px; padding: 5px; }
-        .image-preview-box img { max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 4px; }
-        .image-preview-box .remove-img-btn { position: absolute; top: 8px; right: 8px; background: rgba(219,83,79,0.85); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .image-preview-box { display: none; margin-top: 10px; position: relative; border-radius: 6px; overflow: hidden; background: #000; }
+        .image-preview-box img { max-width: 100%; max-height: 150px; object-fit: contain; display: block; margin: 0 auto; }
+        .image-preview-box .remove-img-btn { position: absolute; top: 8px; right: 8px; background: rgba(244,63,94,0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
 
-        .note-attached-image { display: block; max-width: 100%; max-height: 220px; object-fit: contain; margin-top: 8px; border-radius: 4px; border: 1px solid #eee; background: #f9f9f9; }
+        .note-attached-image { display: block; max-width: 100%; max-height: 200px; object-fit: contain; margin-top: 10px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.2); }
 
-        .toggle-tab-container { display: flex; gap: 8px; margin-bottom: 12px; }
-        .toggle-tab-btn { flex: 1; background: #e2e8e4; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; text-align: center; }
-        .toggle-tab-btn.active { background: var(--secondary-color); color: white; }
+        /* 상단 세그먼트 토글 탭 */
+        .toggle-tab-container { display: flex; gap: 8px; margin-bottom: 16px; background: rgba(2,6,23,0.4); padding: 4px; border-radius: 10px; }
+        .toggle-tab-btn { flex: 1; border: none; background: none; color: var(--text-muted); padding: 10px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .toggle-tab-btn.active { background: var(--panel-bg); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
 
-        .action-btn-group { float: right; display: flex; gap: 6px; align-items: center; margin-left: 10px; }
+        /* 아이템 리스트 및 버튼 그룹 */
+        .action-btn-group { float: right; display: flex; gap: 6px; align-items: center; }
+        .action-btn-group button { background: none; border: 1px solid var(--panel-border); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
+        .edit-item-btn { color: var(--accent-orange); border-color: rgba(251,146,60,0.3) !important; }
+        .delete-btn { color: var(--accent-red); border-color: rgba(244,63,94,0.3) !important; }
+        .move-btn { color: var(--accent-blue); border-color: rgba(56,189,248,0.3) !important; }
+        .star-btn { color: var(--text-muted); font-size: 1rem; border: none !important; }
+        .star-btn.active { color: #f59e0b; }
+
+        .item-list { list-style: none; }
+        .item-list li { background: rgba(2,6,23,0.3); padding: 14px; margin-bottom: 10px; border-radius: 10px; border-left: 4px solid var(--primary); position: relative; }
+        .item-text { white-space: pre-line; margin-top: 8px; font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; clear: both; }
         
-        .edit-item-btn { background: none; border: 1px solid var(--edit-color); color: var(--edit-color); padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
-        .edit-item-btn:hover { background: var(--edit-color); color: white; }
-        
-        .delete-btn { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
-        .delete-btn:hover { background: var(--accent-color); color: white; }
-        
-        .move-btn { background: none; border: 1px solid var(--info-color); color: var(--info-color); padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
-        .move-btn:hover { background: var(--info-color); color: white; }
+        /* 격자형 폴더 구조 디자인 */
+        .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .folder-box { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 14px; padding: 20px 14px; text-align: center; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; transition: transform 0.2s; }
+        .folder-box:hover { transform: translateY(-2px); border-color: var(--primary); }
+        .folder-box .folder-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; color: var(--primary); }
+        .folder-box .folder-action-zone { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
 
-        .cancel-btn { background: #777; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; white-space: nowrap; }
+        /* 풀스크린 오버레이 확장창 */
+        .fullscreen-view { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-dark); z-index: 150; overflow-y: auto; padding: 16px; padding-bottom: 50px; }
+        .fullscreen-view.active { display: block; animation: fadeIn 0.2s ease-out; }
+        .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--panel-border); }
+        .back-btn { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--panel-border); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .tag-btn { background: rgba(2,6,23,0.4); border: 1px solid var(--panel-border); color: var(--text-muted); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .tag-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        .big-category-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 14px; margin-bottom: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .big-category-title { background: rgba(2,6,23,0.3); padding: 14px; font-size: 1rem; font-weight: bold; color: var(--primary); border-bottom: 1px solid var(--panel-border); }
         
-        .star-btn { background: none; border: none; font-size: 1.05rem; cursor: pointer; color: #ccc; transition: transform 0.1s ease; padding: 2px; display: inline-flex; align-items: center; justify-content: center; }
-        .star-btn.active { color: #f39c12; text-shadow: 0 0 2px rgba(243,156,18,0.3); }
-
-        .item-list { list-style: none; margin-top: 5px; }
-        .item-list li { background: var(--bg-color); padding: 12px; margin-bottom: 8px; border-radius: 4px; position: relative; border-left: 4px solid var(--secondary-color); overflow: hidden;}
-        .item-list li.is-editing { border-left: 4px solid var(--edit-color); background-color: #fefdfa; }
-        .item-text { white-space: pre-line; margin-top: 5px; font-size: 0.95rem; color: #333; line-height: 1.4; clear: both;}
-        
-        .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
-        .folder-box { background: white; border: 2px solid var(--secondary-color); border-radius: 8px; padding: 20px 10px; text-align: center; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); position: relative; }
-        .folder-box .folder-icon { font-size: 2rem; margin-bottom: 5px; display: block; }
-        .folder-box .folder-action-zone { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; z-index: 10; }
-
-        .fullscreen-view { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-color); z-index: 200; overflow-y: auto; padding: 12px; padding-bottom: 40px; }
-        .fullscreen-view.active { display: block; }
-        .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-color); }
-        .back-btn { background: #555; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
-
-        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -3px; margin-bottom: 12px; }
-        .tag-btn { background: #e2e8e4; border: 1px solid var(--secondary-color); color: var(--primary-color); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-
-        .big-category-card { background: white; border: 2px solid #ccc; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow: hidden; }
-        .big-category-title { background: #eaeea02e; padding: 12px; font-size: 1.05rem; font-weight: bold; color: var(--primary-color); border-bottom: 1px solid #ddd; }
-        
-        .level3-wrapper { padding: 12px; border-bottom: 1px dashed #eee; background: #fff; min-height: 42px; overflow: hidden; }
+        .level3-wrapper { padding: 14px; border-bottom: 1px dashed var(--panel-border); }
         .level3-wrapper:last-child { border-bottom: none; }
-        .level3-wrapper.is-editing { background-color: #fffdf6; border-left: 4px solid var(--edit-color); }
-        
-        .level3-title-text { font-weight: bold; color: #333; font-size: 0.98rem; line-height: 1.5; word-break: break-all; white-space: pre-line; }
-        .level3-title-text span.icon { color: var(--secondary-color); margin-right: 4px; font-weight: normal; display: inline-block; }
-        
-        .level4-desc-text { background: #fdfdfd; border-left: 3px solid var(--secondary-color); padding: 8px; margin-top: 8px; font-size: 0.9rem; color: #555; white-space: pre-line; word-break: break-all; clear: both; }
+        .level3-title-text { font-weight: 700; color: #fff; font-size: 0.95rem; line-height: 1.5; }
+        .level4-desc-text { background: rgba(2,6,23,0.4); border-left: 3px solid var(--primary); padding: 10px; margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); white-space: pre-line; border-radius: 0 6px 6px 0; }
 
-        .checkbox-container { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.95rem; font-weight: bold; color: var(--secondary-color); cursor: pointer; padding: 5px 0; }
-        .checkbox-container input { width: auto; margin-bottom: 0; transform: scale(1.3); cursor: pointer; }
-
-        .sync-box { background: #eef7f9; border: 1px solid #bce8f1; color: #31708f; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; }
-
-        body.writing-mode header { display: none !important; }
-        body.writing-mode nav { display: flex !important; }
-        body.writing-mode .card:not(.focus-form),
-        body.writing-mode .toggle-tab-container,
-        body.writing-mode .search-bar { display: none !important; }
-        body.writing-mode .container { padding: 0; }
-        body.writing-mode .card.focus-form { position: fixed; top: 0; left: 0; right: 0; bottom: 55px; z-index: 500; margin: 0; border: none; border-radius: 0; height: calc(100vh - 55px); display: flex; flex-direction: column; padding: 15px; background: white; overflow-y: auto; }
-        body.writing-mode .card.focus-form textarea { flex: 1; min-height: 30vh; margin-bottom: 15px; font-size: 17px !important; }
-        body.writing-mode .card.focus-form input { font-size: 17px !important; margin-bottom: 12px; }
+        .checkbox-container { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.9rem; font-weight: bold; color: var(--primary); cursor: pointer; }
+        .checkbox-container input { width: auto; margin-bottom: 0; transform: scale(1.2); }
+        .sync-box { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); color: var(--accent-blue); padding: 14px; border-radius: 10px; margin-bottom: 16px; font-size: 0.9rem; line-height: 1.4; }
     </style>
 </head>
 <body>
 
-    <header id="main-title">무전근무 (오전/오후)</header>
+    <header id="main-title">WORK PARTNER <span>2.0</span></header>
+
+    <div class="fab" id="main-fab" onclick="openCurrentPageModal()"><i class="fa-solid fa-plus"></i></div>
 
     <div class="container">
-        <!-- 1. 무전근무 페이지 -->
         <div id="page1" class="page active">
-            <div class="card" id="form-radio-memo">
-                <h3 id="radio-memo-form-title">⚡ 무전 핵심 암기사항 추가</h3>
-                <input type="text" id="radio-memo-title" placeholder="제목 (예: 망 구성 명칭)" onfocus="enterWritingMode('form-radio-memo')">
-                <textarea id="radio-memo-content" placeholder="핵심 내용을 입력하세요..." onfocus="enterWritingMode('form-radio-memo')"></textarea>
-                
+            <div class="card">
+                <h3><i class="fa-solid fa-bolt"></i> 주요 무전 암기사항</h3>
+                <ul id="main-radio-memo-list" class="item-list"></ul>
+            </div>
+            <div class="card">
+                <h3><i class="fa-solid fa-sun"></i> 오전 근무 지침</h3>
+                <ul id="work-list-am" class="item-list"></ul>
+            </div>
+            <div class="card">
+                <h3><i class="fa-solid fa-moon"></i> 오후/야간 근무 지침</h3>
+                <ul id="work-list-pm" class="item-list"></ul>
+            </div>
+        </div>
+
+        <div id="page2" class="page">
+            <div id="radio-container"></div>
+        </div>
+
+        <div id="page3" class="page">
+            <div class="toggle-tab-container">
+                <button id="tab-situ-classic" class="toggle-tab-btn active" onclick="switchSituationViewMode('classic')">📄 기존 형식</button>
+                <button id="tab-situ-folder" class="toggle-tab-btn" onclick="switchSituationViewMode('folder')">📁 장비 연동형</button>
+            </div>
+
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="situ-search-input" class="search-bar" placeholder="상황조치 및 장비 분류 실시간 검색..." oninput="filterSituations()">
+            </div>
+
+            <div id="situ-classic-zone"><div id="situation-container"></div></div>
+            <div id="situ-folder-zone" style="display:none;"><div id="situation-folder-grid" class="folder-grid"></div></div>
+        </div>
+
+        <div id="page4" class="page">
+            <div id="folder-grid" class="folder-grid"></div>
+        </div>
+
+        <div id="page5" class="page">
+            <div class="card" style="border-color: rgba(56,189,248,0.4);">
+                <h3><i class="fa-solid fa-box-archive"></i> 후임 데이터 인계 및 연동</h3>
+                <div class="sync-box">💾 대용량 사진 데이터까지 텍스트 코드 하나로 압축 인계할 수 있습니다.</div>
+                <button class="btn" onclick="exportData()" style="margin-bottom:12px; background-color: var(--panel-border); border: 1px solid #334155;">📋 내 노트 데이터 복사 (내보내기)</button>
+                <textarea id="import-zone" placeholder="인계받은 복사 코드를 여기에 붙여넣으세요..."></textarea>
+                <button class="btn" onclick="importData()" style="background-color: var(--accent-blue); color: #020617;">📥 코드 가져와서 데이터 동기화</button>
+            </div>
+            
+            <ul id="memo-list" class="item-list"></ul>
+
+            <div class="card" style="border: 2px dashed #334155; margin-top: 25px; background: rgba(15,23,42,0.3);">
+                <h3 style="color: var(--text-muted);"><i class="fa-solid fa-trash-can"></i> 안전 복구 휴지통</h3>
+                <ul id="trash-list" class="item-list" style="margin-bottom: 12px;"></ul>
+                <button class="btn" onclick="clearTrashAll()" style="background-color: #334155; color: var(--text-main); font-size:0.85rem; padding:8px;">휴지통 완전히 비우기</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-page1" class="modal-overlay" onclick="closeModal('modal-page1')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal('modal-page1')">✕</button>
+            <h3 id="radio-memo-form-title" style="margin-bottom:16px;">⚡ 무전 암기/근무 추가</h3>
+            
+            <select id="p1-type-select" onchange="toggleP1Fields()">
+                <option value="memo">무전 핵심 암기사항</option>
+                <option value="work">일일 근무 지침</option>
+            </select>
+
+            <div id="p1-memo-fields">
+                <input type="text" id="radio-memo-title" placeholder="주요 제목 (예: 망 구성 명칭)">
+                <textarea id="radio-memo-content" placeholder="핵심 수칙 및 암기내용 입력..."></textarea>
                 <div class="image-upload-wrapper">
-                    <label for="radio-memo-img-input">🖼️ 사진 첨부하기 (촬영/갤러리)</label>
+                    <label for="radio-memo-img-input"><i class="fa-solid fa-camera"></i> 사진 첨부 (촬영/갤러리)</label>
                     <input type="file" id="radio-memo-img-input" accept="image/*" onchange="processAndPreviewImage(this, 'radio-memo-preview-zone', 'radio-memo-preview-img')">
                     <div id="radio-memo-preview-zone" class="image-preview-box">
                         <img id="radio-memo-preview-img" src="" alt="미리보기">
                         <button type="button" class="remove-img-btn" onclick="removePreviewImage('radio-memo-img-input', 'radio-memo-preview-zone', 'radio-memo-preview-img')">✕</button>
                     </div>
                 </div>
-
                 <button class="btn" id="radio-memo-submit-btn" onclick="addOrUpdateRadioMemo()">무전 암기사항 저장</button>
             </div>
 
-            <div class="card">
-                <h3>💡 주요 무전 암기사항</h3>
-                <ul id="main-radio-memo-list" class="item-list"></ul>
-            </div>
-
-            <div class="card" id="form-work">
-                <h3 id="work-form-title">⏱️ 근무 지침 추가</h3>
+            <div id="p1-work-fields" style="display:none;">
                 <select id="work-time">
                     <option value="오전 근무">오전 근무</option>
                     <option value="오후/야간 근무">오후/야간 근무</option>
                 </select>
-                <textarea id="work-content" placeholder="근무 지침 및 체크리스트 입력..." onfocus="enterWritingMode('form-work')"></textarea>
+                <textarea id="work-content" placeholder="시간대별 임무 지침 및 체크리스트 입력..."></textarea>
                 <button class="btn" id="work-submit-btn" onclick="addOrUpdateWork()">근무 지침 추가</button>
-            </div>
-
-            <div class="card">
-                <h3>☀️ 오전 근무</h3>
-                <ul id="work-list-am" class="item-list"></ul>
-            </div>
-            <div class="card">
-                <h3>🌙 오후/야간 근무</h3>
-                <ul id="work-list-pm" class="item-list"></ul>
-            </div>
-        </div>
-
-        <!-- 2. 무전법 페이지 -->
-        <div id="page2" class="page">
-            <div class="card" id="form-radio">
-                <h3 id="radio-form-title">🗣️ 새 무전법 지침 등록</h3>
-                <input type="text" id="radio-title" placeholder="제목 (예: 개소 보고 절차)" onfocus="enterWritingMode('form-radio')">
-                <textarea id="radio-content" placeholder="표준 교신 멘트나 무전 수칙을 입력하세요..." onfocus="enterWritingMode('form-radio')"></textarea>
-                <button class="btn" id="radio-submit-btn" onclick="addOrUpdateRadio()">무전법 추가</button>
-            </div>
-            <div id="radio-container"></div>
-        </div>
-
-        <!-- 3. 상황별 조치사항 페이지 (★실시간 통합 검색바 적용) -->
-        <div id="page3" class="page">
-            <div class="toggle-tab-container">
-                <div id="tab-situ-classic" class="toggle-tab-btn active" onclick="switchSituationViewMode('classic')">📄 기존 형식 보기</div>
-                <div id="tab-situ-folder" class="toggle-tab-btn" onclick="switchSituationViewMode('folder')">📁 폴더 형식 보기</div>
-            </div>
-
-            <!-- 🔍 실시간 조치법 검색창 -->
-            <input type="text" id="situ-search-input" class="search-bar" placeholder="🔍 상황조치 및 장비 분류 검색..." oninput="filterSituations()">
-
-            <div id="situ-classic-zone">
-                <div class="card" id="form-situation">
-                    <h3 id="situation-form-title">🚨 새 상황조치 등록 (기존형)</h3>
-                    <input type="text" id="situation-title" placeholder="상황 제목 (예: 장비 낙뢰 피격 시)" onfocus="enterWritingMode('form-situation')">
-                    <textarea id="situation-step" placeholder="조치 단계를 순서대로 입력하세요..." onfocus="enterWritingMode('form-situation')"></textarea>
-                    <button class="btn" id="situation-submit-btn" onclick="addOrUpdateSituation()">상황조치 저장</button>
-                </div>
-                <div id="situation-container"></div>
-            </div>
-
-            <div id="situ-folder-zone" style="display:none;">
-                <div class="card">
-                    <h3>📁 상황조치 전용 폴더 관리</h3>
-                    <p style="font-size:0.85rem; color:#666; line-height:1.4;">장비사용법 탭에서 폴더를 이동해 조치를 관리하세요.</p>
-                </div>
-                <div id="situation-folder-grid" class="folder-grid"></div>
-            </div>
-        </div>
-
-        <!-- 4. 통신장비별 사용법 페이지 -->
-        <div id="page4" class="page">
-            <div class="card">
-                <h3>📁 1단계: 장비 폴더 추가</h3>
-                <input type="text" id="folder-name" placeholder="장비명 입력 (예: P-999K, SB-22)">
-                <button class="btn" onclick="addFolder()">폴더 생성</button>
-            </div>
-            <div id="folder-grid" class="folder-grid"></div>
-        </div>
-
-        <!-- 5. 일반 암기사항 및 백업/휴지통 페이지 -->
-        <div id="page5" class="page">
-            <div class="card" style="border: 1px solid var(--secondary-color);">
-                <h3>📦 후임 인계 및 백업 (데이터 연동)</h3>
-                <div class="sync-box">
-                    💡 사진 데이터까지 코드 하나로 인계받을 수 있습니다.
-                </div>
-                <button class="btn" onclick="exportData()" style="margin-bottom:10px; background-color: var(--secondary-color);">📋 내 노트 코드 복사하기 (내보내기)</button>
-                <textarea id="import-zone" placeholder="인계받은 텍스트 코드를 여기에 붙여넣으세요..."></textarea>
-                <button class="btn" onclick="importData()" style="background-color: var(--info-color);">📥 코드 가져와서 데이터 덮어쓰기</button>
-            </div>
-            
-            <div class="card" id="form-memo">
-                <h3>✏️ 새 일반 암기사항 추가</h3>
-                <input type="text" id="memo-title" placeholder="제목 (예: 포네틱 코드)" onfocus="enterWritingMode('form-memo')">
-                <textarea id="memo-content" placeholder="내용을 입력하세요..." onfocus="enterWritingMode('form-memo')"></textarea>
-                
-                <div class="image-upload-wrapper">
-                    <label for="memo-img-input">🖼️ 사진 첨부하기 (촬영/갤러리)</label>
-                    <input type="file" id="memo-img-input" accept="image/*" onchange="processAndPreviewImage(this, 'memo-preview-zone', 'memo-preview-img')">
-                    <div id="memo-preview-zone" class="image-preview-box">
-                        <img id="memo-preview-img" src="" alt="미리보기">
-                        <button type="button" class="remove-img-btn" onclick="removePreviewImage('memo-img-input', 'memo-preview-zone', 'memo-preview-img')">✕</button>
-                    </div>
-                </div>
-
-                <button class="btn" id="memo-submit-btn" onclick="addOrUpdateMemo()">일반 암기사항 저장</button>
-            </div>
-            <ul id="memo-list" class="item-list"></ul>
-
-            <div class="card" style="border: 2px dashed var(--trash-color); margin-top: 25px; background: #fafafa;">
-                <h3 style="color: var(--trash-color);">🗑️ 안전 복구 휴지통</h3>
-                <p style="font-size:0.8rem; color:#666; margin-bottom: 10px;">삭제된 항목(사진 포함)들이 임시 보관됩니다.</p>
-                <ul id="trash-list" class="item-list"></ul>
-                <button class="btn" onclick="clearTrashAll()" style="background-color: #bbbbbb; color:#333; font-size:0.85rem; padding:8px; margin-top:5px;">휴지통 완전히 비우기</button>
             </div>
         </div>
     </div>
 
-    <!-- 장비 폴더 전용 전체화면 뷰 -->
-    <div id="fullscreen-overlay" class="fullscreen-view">
-        <div class="view-header">
-            <h2 id="view-device-title" style="color: var(--primary-color);">장비명</h2>
-            <button class="back-btn" onclick="closeFolderView()">◀ 뒤로가기</button>
+    <div id="modal-page2" class="modal-overlay" onclick="closeModal('modal-page2')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal('modal-page2')">✕</button>
+            <h3 id="radio-form-title" style="margin-bottom:16px;"><i class="fa-solid fa-headset"></i> 새 무전교신법 등록</h3>
+            <input type="text" id="radio-title" placeholder="지침 제목 (예: 개소/종료 보고 절차)">
+            <textarea id="radio-content" placeholder="표준 송신 교신문 및 수칙을 입력하세요..."></textarea>
+            <button class="btn" id="radio-submit-btn" onclick="addOrUpdateRadio()">무전법 수칙 저장</button>
         </div>
-        
-        <div class="card" id="form-detail" style="margin-bottom: 20px;">
-            <h3 id="detail-form-title">🛠️ 분류 및 세부항목 관리</h3>
-            <input type="text" id="sub-type-input" placeholder="2단계: 대분류 입력 (예: 방식, 조작법, 제원)" onfocus="enterWritingMode('form-detail', true)">
+    </div>
+
+    <div id="modal-page3" class="modal-overlay" onclick="closeModal('modal-page3')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal('modal-page3')">✕</button>
+            <h3 id="situation-form-title" style="margin-bottom:16px;"><i class="fa-solid fa-triangle-exclamation"></i> 새 긴급 상황조치 등록</h3>
+            <input type="text" id="situation-title" placeholder="상황 제목 (예: 적 전파 방해 도발 시)">
+            <textarea id="situation-step" placeholder="조치 단계를 번호순으로 명확하게 기입..."></textarea>
+            <button class="btn" id="situation-submit-btn" onclick="addOrUpdateSituation()">상황조치 매뉴얼 저장</button>
+        </div>
+    </div>
+
+    <div id="modal-page4" class="modal-overlay" onclick="closeModal('modal-page4')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal('modal-page4')">✕</button>
+            <h3 style="margin-bottom:16px;"><i class="fa-solid fa-folder-plus"></i> 새 통신장비 폴더 생성</h3>
+            <input type="text" id="folder-name" placeholder="장비명 입력 (예: PRC-999K, SB-22/PT)">
+            <button class="btn" onclick="addFolder()">장비 폴더 생성</button>
+        </div>
+    </div>
+
+    <div id="modal-page5" class="modal-overlay" onclick="closeModal('modal-page5')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal('modal-page5')">✕</button>
+            <h3 style="margin-bottom:16px;"><i class="fa-solid fa-feather"></i> 새 일반 암기사항 추가</h3>
+            <input type="text" id="memo-title" placeholder="암기 제목 (예: CEOI 운용 포네틱 코드)">
+            <textarea id="memo-content" placeholder="세부 핵심 내용을 입력하세요..."></textarea>
+            <div class="image-upload-wrapper">
+                <label for="memo-img-input"><i class="fa-solid fa-image"></i> 이미지 첨부</label>
+                <input type="file" id="memo-img-input" accept="image/*" onchange="processAndPreviewImage(this, 'memo-preview-zone', 'memo-preview-img')">
+                <div id="memo-preview-zone" class="image-preview-box">
+                    <img id="memo-preview-img" src="" alt="미리보기">
+                    <button type="button" class="remove-img-btn" onclick="removePreviewImage('memo-img-input', 'memo-preview-zone', 'memo-preview-img')">✕</button>
+                </div>
+            </div>
+            <button class="btn" id="memo-submit-btn" onclick="addOrUpdateMemo()">암기사항 저장</button>
+        </div>
+    </div>
+
+    <div id="modal-detail" class="modal-overlay" onclick="closeModal('modal-detail')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close-btn" onclick="closeModal('modal-detail')">✕</button>
+            <h3 id="detail-form-title" style="margin-bottom:16px;">🛠️ 장비 제원/조작법 등록</h3>
+            <input type="text" id="sub-type-input" placeholder="2단계: 대분류 직접 입력 (방식, 조작, 제원 등)">
             <div id="tag-buttons-zone" class="tag-container"></div>
             
-            <textarea id="sub-title-input" placeholder="3단계: 하위분류/소제목 입력 (엔터 가능)..." onfocus="enterWritingMode('form-detail', true)"></textarea>
+            <textarea id="sub-title-input" placeholder="3단계: 핵심 소제목/기능 항목 기술..."></textarea>
             
             <label class="checkbox-container">
                 <input type="checkbox" id="use-desc-checkbox" checked onchange="toggleDescInput()">
-                ✍️ 4단계 상세설명 추가하기 (선택)
+                <span>4단계 세부 절차/상세설명 포함하기</span>
             </label>
             
-            <textarea id="sub-desc-input" placeholder="4단계: 실제 상세 설명을 입력하세요..." onfocus="enterWritingMode('form-detail', true)"></textarea>
+            <textarea id="sub-desc-input" placeholder="4단계: 연동될 실제 상세 매뉴얼 조치 내용을 기입하세요..."></textarea>
             
             <div class="image-upload-wrapper">
-                <label for="detail-img-input">🖼️ 장비 사진/회로도 첨부하기</label>
+                <label for="detail-img-input"><i class="fa-solid fa-diagram-project"></i> 장비 실물/회로도 사진 첨부</label>
                 <input type="file" id="detail-img-input" accept="image/*" onchange="processAndPreviewImage(this, 'detail-preview-zone', 'detail-preview-img')">
                 <div id="detail-preview-zone" class="image-preview-box">
                     <img id="detail-preview-img" src="" alt="미리보기">
                     <button type="button" class="remove-img-btn" onclick="removePreviewImage('detail-img-input', 'detail-preview-zone', 'detail-preview-img')">✕</button>
                 </div>
             </div>
-
-            <button class="btn" id="detail-submit-btn" onclick="addOrUpdateDeviceDetail()">항목 저장하기</button>
+            <button class="btn" id="detail-submit-btn" onclick="addOrUpdateDeviceDetail()">장비 데이터 저장</button>
         </div>
+    </div>
 
+    <div id="fullscreen-overlay" class="fullscreen-view">
+        <div class="view-header">
+            <h2 id="view-device-title" style="color: var(--primary);">장비 상세 매뉴얼</h2>
+            <button class="back-btn" onclick="closeFolderView()">◀ 뒤로가기</button>
+        </div>
+        <button class="btn" onclick="openModal('modal-detail')" style="margin-bottom: 20px; background-color: #1e293b; border: 1px solid var(--panel-border);"><i class="fa-solid fa-plus"></i> 이 장비에 소분류/제원 항목 추가</button>
         <div id="device-details-container"></div>
     </div>
 
-    <!-- 상황조치 폴더 전체화면 뷰 -->
     <div id="situ-fullscreen-overlay" class="fullscreen-view">
         <div class="view-header">
-            <h2 id="view-situ-folder-title" style="color: var(--accent-color);">상황조치 폴더</h2>
+            <h2 id="view-situ-folder-title" style="color: var(--accent-red);">상황조치 연동방</h2>
             <button class="back-btn" onclick="closeSituFolderView()">◀ 뒤로가기</button>
         </div>
         <div id="situ-folder-details-container"></div>
     </div>
 
     <nav>
-        <button onclick="switchPage(1, '무전근무 (오전/오후)')" class="nav-btn active">무전근무</button>
-        <button onclick="switchPage(2, '무전법 지침')" class="nav-btn">무전법</button>
-        <button onclick="switchPage(3, '상황별 조치사항')" class="nav-btn">상황조치</button>
-        <button onclick="switchPage(4, '통신장비별 사용법')" class="nav-btn">장비사용법</button>
-        <button onclick="switchPage(5, '통신 암기사항')" class="nav-btn">암기사항</button>
+        <button onclick="switchPage(1, '무전근무 (오전/오후)')" class="nav-btn active"><i class="fa-solid fa-shield-halved"></i>무전근무</button>
+        <button onclick="switchPage(2, '무전교신 절차법')" class="nav-btn"><i class="fa-solid fa-headset"></i>무전법</button>
+        <button onclick="switchPage(3, '상황별 긴급조치')" class="nav-btn"><i class="fa-solid fa-triangle-exclamation"></i>상황조치</button>
+        <button onclick="switchPage(4, '통신장비별 데이터')" class="nav-btn"><i class="fa-solid fa-cubes"></i>장비사용법</button>
+        <button onclick="switchPage(5, '통신 핵심 암기사항')" class="nav-btn"><i class="fa-solid fa-brain"></i>암기사항</button>
     </nav>
 
     <script>
+        let currentActivePage = 1;
         let currentOpenFolder = "";
         let currentOpenSituFolder = "";
         let editTargetIndex = -1;
         let situationViewMode = "classic";
-        
         let tempAttachedImageDataUrl = "";
+        
         let trashItems = JSON.parse(localStorage.getItem('army_trash')) || [];
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('active'); 
+            // 폼 입력 리셋 방지 목적 외에는 에디트 모드 취소하지 않음
+        }
+
+        function toggleP1Fields() {
+            const val = document.getElementById('p1-type-select').value;
+            document.getElementById('p1-memo-fields').style.display = val === 'memo' ? 'block' : 'none';
+            document.getElementById('p1-work-fields').style.display = val === 'work' ? 'block' : 'none';
+        }
+
+        function openCurrentPageModal() {
+            if(currentActivePage === 1) { toggleP1Fields(); openModal('modal-page1'); }
+            else if(currentActivePage === 2) { openModal('modal-page2'); }
+            else if(currentActivePage === 3) { openModal('modal-page3'); }
+            else if(currentActivePage === 4) { openModal('modal-page4'); }
+            else if(currentActivePage === 5) { openModal('modal-page5'); }
+        }
 
         function saveTrash() { localStorage.setItem('army_trash', JSON.stringify(trashItems)); renderTrash(); }
 
         function processAndPreviewImage(inputNode, previewZoneId, previewImgId) {
-            const file = inputNode.files[0];
-            if (!file) return;
+            const file = inputNode.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -335,8 +433,7 @@
                     if (width > height) { if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } } 
                     else { if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; } }
                     canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
                     const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65);
                     tempAttachedImageDataUrl = compressedDataUrl;
                     document.getElementById(previewImgId).src = compressedDataUrl;
@@ -354,38 +451,19 @@
             tempAttachedImageDataUrl = "";
         }
 
-        function enterWritingMode(formId, isInsideOverlay = false) {
-            document.body.classList.add('writing-mode');
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('focus-form'));
-            const targetCard = document.getElementById(formId);
-            targetCard.classList.add('focus-form');
-            
-            if (!targetCard.querySelector('.exit-fullscreen-btn')) {
-                const closeBtn = document.createElement('button');
-                closeBtn.type = 'button';
-                closeBtn.className = 'cancel-btn exit-fullscreen-btn';
-                closeBtn.style.cssText = "position: absolute; top: 12px; right: 12px; padding: 6px 12px; z-index: 600;";
-                closeBtn.innerText = "닫기 ✕";
-                closeBtn.onclick = function(e) { e.stopPropagation(); exitWritingMode(); };
-                targetCard.style.position = 'relative';
-                targetCard.appendChild(closeBtn);
-            }
-        }
-
-        function exitWritingMode() {
-            document.body.classList.remove('writing-mode');
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('focus-form'));
-            const closeBtn = document.querySelector('.exit-fullscreen-btn');
-            if(closeBtn) closeBtn.remove();
-        }
-
         function switchPage(pageNum, title) {
-            cancelAllEdits();
+            cancelAllEdits(); currentActivePage = pageNum;
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('page' + pageNum).classList.add('active');
-            if(event) { document.querySelectorAll('.nav-btn')[pageNum-1].classList.add('active'); }
-            document.getElementById('main-title').innerText = title;
+            
+            // 하단 탭 포커스 동기화
+            document.querySelectorAll('.nav-btn')[pageNum-1].classList.add('active');
+            document.getElementById('main-title').innerHTML = `WORK PARTNER <span>${pageNum}.0</span>`;
+            
+            // 5번 탭은 인계 구역이므로 플로팅 버튼 숨김
+            if (pageNum === 5) document.getElementById('main-fab').style.display = 'flex';
+            else document.getElementById('main-fab').style.display = 'flex';
         }
 
         function switchSituationViewMode(mode) {
@@ -395,7 +473,7 @@
             document.getElementById('situ-classic-zone').style.display = mode === 'classic' ? 'block' : 'none';
             document.getElementById('situ-folder-zone').style.display = mode === 'folder' ? 'block' : 'none';
             
-            document.getElementById('situ-search-input').value = ""; // 스위칭 시 검색어 리셋
+            document.getElementById('situ-search-input').value = "";
             if(mode === 'folder') renderSituationFolders(); else renderSituations();
         }
 
@@ -406,62 +484,50 @@
             if(!checkbox.checked) descInput.value = '';
         }
 
-        // 🔍 [핵심 엔지니어링] 실시간 필터링 검색 함수 구현
+        // 전천후 관통 실시간 기동 검색 기능
         function filterSituations() {
             const keyword = document.getElementById('situ-search-input').value.toLowerCase().trim();
-            
             if (situationViewMode === "classic") {
-                // 기존 형식 카드 필터링
                 const container = document.getElementById('situation-container');
                 if (!keyword) { renderSituations(); return; }
-                
                 const filtered = situations.filter(s => s.title.toLowerCase().includes(keyword) || s.step.toLowerCase().includes(keyword));
-                container.innerHTML = filtered.map((s, originalIdx) => {
-                    // 필터링 상태에서는 인덱스 추적이 복잡하므로 복원용 매핑 필요하나 검색 가시성 중심 우선 노출
-                    return `<div class="card"><h3 style="color:var(--accent-color);">🚨 ${s.title}</h3><div class="item-text">${s.step}</div></div>`;
-                }).join('');
-                if(filtered.length === 0) container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">검색 결과가 없습니다.</div>';
-                
+                container.innerHTML = filtered.map(s => `
+                    <div class="card" style="border-left: 4px solid var(--accent-red);">
+                        <h3 style="color:var(--accent-red);"><i class="fa-solid fa-triangle-exclamation"></i> ${s.title}</h3>
+                        <div class="item-text">${s.step}</div>
+                    </div>`).join('');
+                if(filtered.length === 0) container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">검색 매칭 결과가 존재하지 않습니다.</div>';
             } else {
-                // 폴더 형식 보기 내 내부 하위 아이템 실시간 관통 검색
                 const container = document.getElementById('situation-folder-grid');
                 if (!keyword) { renderSituationFolders(); return; }
-                
-                container.innerHTML = '';
-                let matchCount = 0;
-
+                container.innerHTML = ''; let matchCount = 0;
                 for (let folderName in situationFolders) {
                     const matchedItems = situationFolders[folderName].filter(item => 
-                        item.type.toLowerCase().includes(keyword) || 
-                        item.title.toLowerCase().includes(keyword) || 
-                        item.desc.toLowerCase().includes(keyword)
+                        item.type.toLowerCase().includes(keyword) || item.title.toLowerCase().includes(keyword) || item.desc.toLowerCase().includes(keyword)
                     );
-
                     if (matchedItems.length > 0) {
                         matchCount++;
-                        let matchCardHtml = `<div class="big-category-card" style="border-color:var(--accent-color); grid-column: span 2; margin-bottom:8px;">
-                                                <div class="big-category-title" style="background:#f2dede; color:var(--accent-color); font-weight:bold;">📁 폴더 [${folderName}] 매칭 결과</div>`;
-                        
+                        let cardHtml = `<div class="big-category-card" style="grid-column: span 2; border-color:var(--accent-red);">
+                                            <div class="big-category-title" style="color:var(--accent-red);"><i class="fa-solid fa-folder-open"></i> [${folderName}] 폴더 내 매칭 결과</div>`;
                         matchedItems.forEach(item => {
                             const imgHtml = item.image ? `<img src="${item.image}" class="note-attached-image">` : '';
-                            const descHtml = item.desc ? `<div class="level4-desc-text" style="border-left-color:var(--accent-color);">${item.desc}</div>` : '';
-                            matchCardHtml += `<div class="level3-wrapper" style="padding:10px;">
-                                                <div style="font-size:0.8rem; color:#777; font-weight:bold;">[대분류: ${item.type}]</div>
-                                                <div class="level3-title-text" style="margin-top:4px;">📌 ${item.title}</div>
-                                                ${descHtml}${imgHtml}
-                                              </div>`;
+                            const descHtml = item.desc ? `<div class="level4-desc-text" style="border-left-color:var(--accent-red);">${item.desc}</div>` : '';
+                            cardHtml += `<div class="level3-wrapper">
+                                            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:bold;">대분류: ${item.type}</div>
+                                            <div class="level3-title-text" style="margin-top:4px;">📌 ${item.title}</div>
+                                            ${descHtml}${imgHtml}
+                                          </div>`;
                         });
-                        matchCardHtml += `</div>`;
-                        container.innerHTML += matchCardHtml;
+                        cardHtml += `</div>`; container.innerHTML += cardHtml;
                     }
                 }
-                if (matchCount === 0) container.innerHTML = '<div style="text-align:center; color:#aaa; grid-column:span 2; padding:30px;">검색 결과가 없습니다.</div>';
+                if (matchCount === 0) container.innerHTML = '<div style="text-align:center; color:var(--text-muted); grid-column:span 2; padding:30px;">검색 결과가 없습니다.</div>';
             }
         }
 
         function cancelAllEdits() {
-            editTargetIndex = -1; tempAttachedImageDataUrl = ""; exitWritingMode();
-            document.getElementById('situ-search-input').value = ""; // 검색어 삭제
+            editTargetIndex = -1; tempAttachedImageDataUrl = "";
+            document.getElementById('situ-search-input').value = "";
             
             removePreviewImage('radio-memo-img-input', 'radio-memo-preview-zone', 'radio-memo-preview-img');
             removePreviewImage('memo-img-input', 'memo-preview-zone', 'memo-preview-img');
@@ -472,22 +538,17 @@
             document.getElementById('radio-memo-submit-btn').classList.remove('edit-mode');
             document.getElementById('radio-memo-title').value = ''; document.getElementById('radio-memo-content').value = '';
 
-            document.getElementById('form-work').querySelector('h3').innerText = "⏱️ 근무 지침 추가";
             document.getElementById('work-submit-btn').innerText = "근무 지침 추가"; document.getElementById('work-submit-btn').classList.remove('edit-mode');
             document.getElementById('work-content').value = '';
             
-            document.getElementById('radio-form-title').innerText = "🗣️ 새 무전법 지침 등록";
-            document.getElementById('radio-submit-btn').innerText = "무전법 추가"; document.getElementById('radio-submit-btn').classList.remove('edit-mode');
+            document.getElementById('radio-form-title').innerHTML = "<i class='fa-solid fa-headset'></i> 새 무전법 지침 등록";
             document.getElementById('radio-title').value = ''; document.getElementById('radio-content').value = '';
 
-            document.getElementById('situation-form-title').innerText = "🚨 새 상황조치 등록 (기존형)";
-            document.getElementById('situation-submit-btn').innerText = "상황조치 저장"; document.getElementById('situation-submit-btn').classList.remove('edit-mode');
+            document.getElementById('situation-form-title').innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> 새 긴급 상황조치 등록";
             document.getElementById('situation-title').value = ''; document.getElementById('situation-step').value = '';
 
             document.getElementById('detail-form-title').innerText = "🛠️ 분류 및 세부항목 관리";
-            document.getElementById('detail-submit-btn').innerText = "항목 저장하기"; document.getElementById('detail-submit-btn').classList.remove('edit-mode');
             document.getElementById('sub-type-input').value = ''; document.getElementById('sub-title-input').value = ''; document.getElementById('sub-desc-input').value = '';
-            document.getElementById('use-desc-checkbox').checked = true; document.getElementById('sub-desc-input').style.display = 'block';
 
             document.getElementById('memo-title').value = ''; document.getElementById('memo-content').value = '';
 
@@ -496,95 +557,88 @@
             if(currentOpenSituFolder) { renderSituFolderDetails(); }
         }
 
-        // --- 1페이지: 무전 암기사항 ---
+        // --- 1페이지 기동 ---
         let radioMemos = JSON.parse(localStorage.getItem('army_radio_memos')) || [];
         function saveRadioMemos() { localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos)); renderRadioMemos(); }
         function addOrUpdateRadioMemo() {
             const title = document.getElementById('radio-memo-title').value.trim(); const content = document.getElementById('radio-memo-content').value.trim();
-            if(!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
-            if(editTargetIndex > -1 && document.getElementById('radio-memo-form-title').innerText.includes('수정')) {
+            if(!title || !content) return alert('정보 입력이 필요합니다.');
+            if(editTargetIndex > -1) {
                 const oldImg = radioMemos[editTargetIndex].image || "";
                 radioMemos[editTargetIndex] = { title, content, image: tempAttachedImageDataUrl ? tempAttachedImageDataUrl : oldImg };
             } else { radioMemos.push({ title, content, image: tempAttachedImageDataUrl }); }
-            cancelAllEdits(); saveRadioMemos();
+            closeModal('modal-page1'); cancelAllEdits(); saveRadioMemos();
         }
         function editRadioMemo(idx) {
             cancelAllEdits(); editTargetIndex = idx; const m = radioMemos[idx];
-            document.getElementById('radio-memo-form-title').innerText = "🔄 무전 암기사항 수정 중...";
+            document.getElementById('p1-type-select').value = "memo"; toggleP1Fields();
+            document.getElementById('radio-memo-form-title').innerText = "🔄 무전 암기사항 데이터 가공 중";
             document.getElementById('radio-memo-title').value = m.title; document.getElementById('radio-memo-content').value = m.content;
             if(m.image) { tempAttachedImageDataUrl = m.image; document.getElementById('radio-memo-preview-img').src = m.image; document.getElementById('radio-memo-preview-zone').style.display = 'block'; }
-            enterWritingMode('form-radio-memo');
-            const btn = document.getElementById('radio-memo-submit-btn'); btn.innerText = "✅ 수정 완료"; btn.classList.add('edit-mode');
-            renderRadioMemos();
+            openModal('modal-page1');
         }
-        function deleteRadioMemo(idx) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'radioMemos', data: radioMemos[idx] }); radioMemos.splice(idx, 1); cancelAllEdits(); saveRadioMemos(); saveTrash(); } }
+        function deleteRadioMemo(idx) { if(confirm('삭제 항목을 휴지통으로 이동합니까?')) { trashItems.push({ from: 'radioMemos', data: radioMemos[idx] }); radioMemos.splice(idx, 1); cancelAllEdits(); saveRadioMemos(); saveTrash(); } }
         function renderRadioMemos() {
             const mainList = document.getElementById('main-radio-memo-list');
-            if(radioMemos.length === 0) { mainList.innerHTML = `<li style="text-align:center; color:#999; list-style:none; border-left:none; background:none; padding:10px 0;">등록된 무전 암기사항이 없습니다.</li>`; return; }
+            if(radioMemos.length === 0) { mainList.innerHTML = `<li style="text-align:center; color:var(--text-muted); border-left:none; background:none;">등록된 핵심 암기 데이터가 존재하지 않습니다.</li>`; return; }
             mainList.innerHTML = radioMemos.map((m, idx) => {
-                const isEditingClass = (idx === editTargetIndex && document.getElementById('radio-memo-form-title').innerText.includes('수정')) ? 'is-editing' : '';
                 const imgHtml = m.image ? `<img src="${m.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
-                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadioMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteRadioMemo(${idx})">삭제</button></div><strong>⚡ ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div>${imgHtml}</li>`;
+                return `<li><div class="action-btn-group"><button class="edit-item-btn" onclick="editRadioMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteRadioMemo(${idx})">삭제</button></div><strong>⚡ ${m.title}</strong><div class="item-text">${m.content}</div>${imgHtml}</li>`;
             }).join('');
         }
 
-        // --- 1페이지: 근무 지침 ---
+        // --- 1페이지: 근무 지침 데이터 엔진 ---
         let works = JSON.parse(localStorage.getItem('army_works')) || [];
         function saveWorks() { localStorage.setItem('army_works', JSON.stringify(works)); renderWorks(); }
         function addOrUpdateWork() {
             const type = document.getElementById('work-time').value; const content = document.getElementById('work-content').value.trim();
-            if(!content) return alert('근무 내용을 입력해주세요.');
-            if(editTargetIndex > -1 && document.getElementById('form-work').querySelector('h3').innerText.includes('수정')) { works[editTargetIndex] = { type, content }; } 
-            else { works.push({ type, content }); }
-            cancelAllEdits(); saveWorks();
+            if(!content) return alert('지침 기입을 수행하세요.');
+            if(editTargetIndex > -1) { works[editTargetIndex] = { type, content }; } else { works.push({ type, content }); }
+            closeModal('modal-page1'); cancelAllEdits(); saveWorks();
         }
         function editWork(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetWork = works[idx];
-            document.getElementById('form-work').querySelector('h3').innerText = "🔄 근무 지침 수정 중...";
+            document.getElementById('p1-type-select').value = "work"; toggleP1Fields();
             document.getElementById('work-time').value = targetWork.type; document.getElementById('work-content').value = targetWork.content;
-            enterWritingMode('form-work');
-            const submitBtn = document.getElementById('work-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
-            renderWorks();
+            openModal('modal-page1');
         }
-        function deleteWork(idx) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'works', data: works[idx] }); works.splice(idx, 1); cancelAllEdits(); saveWorks(); saveTrash(); } }
+        function deleteWork(idx) { if(confirm('근무 지침을 삭제처리 합니까?')) { trashItems.push({ from: 'works', data: works[idx] }); works.splice(idx, 1); cancelAllEdits(); saveWorks(); saveTrash(); } }
         function renderWorks() {
             const amList = document.getElementById('work-list-am'); const pmList = document.getElementById('work-list-pm');
             amList.innerHTML = ''; pmList.innerHTML = '';
+            let amCount = 0; let pmCount = 0;
             works.forEach((w, idx) => {
-                const isEditingClass = (idx === editTargetIndex && document.getElementById('form-work').querySelector('h3').innerText.includes('수정')) ? 'is-editing' : '';
-                const li = `<li class="${isEditingClass}"><div class="action-btn-group"><button class="edit-item-btn" onclick="editWork(${idx})">수정</button><button class="delete-btn" onclick="deleteWork(${idx})">삭제</button></div><div class="item-text">${w.content}</div></li>`;
-                if(w.type === "오전 근무") amList.innerHTML += li; else pmList.innerHTML += li;
+                const li = `<li><div class="action-btn-group"><button class="edit-item-btn" onclick="editWork(${idx})">수정</button><button class="delete-btn" onclick="deleteWork(${idx})">삭제</button></div><div class="item-text">${w.content}</div></li>`;
+                if(w.type === "오전 근무") { amList.innerHTML += li; amCount++; } else { pmList.innerHTML += li; pmCount++; }
             });
+            if(amCount === 0) amList.innerHTML = `<li style="text-align:center; color:var(--text-muted); border-left:none; background:none;">오전 임무 사항 없음</li>`;
+            if(pmCount === 0) pmList.innerHTML = `<li style="text-align:center; color:var(--text-muted); border-left:none; background:none;">오후/야간 임무 사항 없음</li>`;
         }
 
-        // --- 2페이지: 무전법 ---
+        // --- 2페이지 무전교신 규칙 ---
         let radioProtocols = JSON.parse(localStorage.getItem('army_radios')) || [];
         function saveRadios() { localStorage.setItem('army_radios', JSON.stringify(radioProtocols)); renderRadios(); }
         function addOrUpdateRadio() {
             const title = document.getElementById('radio-title').value.trim(); const content = document.getElementById('radio-content').value.trim();
-            if(!title || !content) return alert('제목과 내용을 모두 입력해 주세요.');
-            if(editTargetIndex > -1 && document.getElementById('radio-form-title').innerText.includes('수정')) { radioProtocols[editTargetIndex] = { title, content }; } 
-            else { radioProtocols.push({ title, content }); }
-            cancelAllEdits(); saveRadios();
+            if(!title || !content) return alert('필드를 입력하세요.');
+            if(editTargetIndex > -1) { radioProtocols[editTargetIndex] = { title, content }; } else { radioProtocols.push({ title, content }); }
+            closeModal('modal-page2'); cancelAllEdits(); saveRadios();
         }
         function editRadio(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetRadio = radioProtocols[idx];
-            document.getElementById('radio-form-title').innerText = "🔄 무전법 지침 수정 중...";
             document.getElementById('radio-title').value = targetRadio.title; document.getElementById('radio-content').value = targetRadio.content;
-            enterWritingMode('form-radio');
-            const submitBtn = document.getElementById('submit-btn'); if(submitBtn) { submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode'); }
-            renderRadios();
+            openModal('modal-page2');
         }
-        function deleteRadio(idx) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'radioProtocols', data: radioProtocols[idx] }); radioProtocols.splice(idx, 1); cancelAllEdits(); saveRadios(); saveTrash(); } }
+        function deleteRadio(idx) { if(confirm('무전 규칙 매뉴얼을 휴지통으로 이동합니까?')) { trashItems.push({ from: 'radioProtocols', data: radioProtocols[idx] }); radioProtocols.splice(idx, 1); cancelAllEdits(); saveRadios(); saveTrash(); } }
         function renderRadios() {
             const container = document.getElementById('radio-container'); container.innerHTML = '';
+            if(radioProtocols.length === 0) { container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px;">등록된 무전 표준 절차가 없습니다.</div>`; return; }
             radioProtocols.forEach((r, idx) => {
-                const isEditingClass = (idx === editTargetIndex && document.getElementById('radio-form-title').innerText.includes('수정')) ? 'is-editing' : '';
-                container.innerHTML += `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button></div><h3>🗣️ ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
+                container.innerHTML += `<div class="card"><div class="action-btn-group"><button class="edit-item-btn" onclick="editRadio(${idx})">수정</button><button class="delete-btn" onclick="deleteRadio(${idx})">삭제</button></div><h3><i class="fa-solid fa-headset"></i> ${r.title}</h3><div class="item-text">${r.content}</div></div>`;
             });
         }
 
-        // --- 3페이지: 상황조치 ---
+        // --- 3페이지 위기상황대응 매뉴얼 ---
         let situations = JSON.parse(localStorage.getItem('army_situations')) || [];
         let situationFolders = JSON.parse(localStorage.getItem('army_situ_folders')) || {};
         function saveSituations() { 
@@ -593,84 +647,84 @@
         }
         function addOrUpdateSituation() {
             const title = document.getElementById('situation-title').value.trim(); const step = document.getElementById('situation-step').value.trim();
-            if(!title || !step) return alert('제목과 내용을 모두 입력해주세요.');
-            if(editTargetIndex > -1 && document.getElementById('situation-form-title').innerText.includes('수정')) { situations[editTargetIndex] = { title, step }; } 
-            else { situations.push({ title, step }); }
-            cancelAllEdits(); saveSituations();
+            if(!title || !step) return alert('누락된 정보가 있습니다.');
+            if(editTargetIndex > -1) { situations[editTargetIndex] = { title, step }; } else { situations.push({ title, step }); }
+            closeModal('modal-page3'); cancelAllEdits(); saveSituations();
         }
         function editSituation(idx) {
-            cancelAllEdits(); switchPage(3, '상황별 조치사항'); switchSituationViewMode('classic'); editTargetIndex = idx; const targetSitu = situations[idx];
-            document.getElementById('situation-form-title').innerText = "🔄 상황조치 수정 중...";
+            cancelAllEdits(); switchPage(3, '상황별 긴급조치'); switchSituationViewMode('classic'); editTargetIndex = idx; const targetSitu = situations[idx];
             document.getElementById('situation-title').value = targetSitu.title; document.getElementById('situation-step').value = targetSitu.step;
-            enterWritingMode('form-situation');
-            const submitBtn = document.getElementById('situation-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
-            renderSituations();
+            openModal('modal-page3');
         }
-        function deleteSituation(idx) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'situations', data: situations[idx] }); situations.splice(idx, 1); cancelAllEdits(); saveSituations(); saveTrash(); } }
+        function deleteSituation(idx) { if(confirm('긴급상황 데이터를 파기 대기 처리합니까?')) { trashItems.push({ from: 'situations', data: situations[idx] }); situations.splice(idx, 1); cancelAllEdits(); saveSituations(); saveTrash(); } }
         function renderSituations() {
             const container = document.getElementById('situation-container');
-            container.innerHTML = situations.map((s, idx) => {
-                const isEditingClass = (idx === editTargetIndex && document.getElementById('situation-form-title').innerText.includes('수정')) ? 'is-editing' : '';
-                return `<div class="card ${isEditingClass}"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editSituation(${idx})">수정</button><button class="delete-btn" onclick="deleteSituation(${idx})">삭제</button></div><h3>🚨 ${s.title}</h3><div class="item-text">${s.step}</div></div>`;
-            }).join('');
+            if(situations.length === 0) { container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px;">등록된 기존 단독 상황조치 카드가 없습니다.</div>`; return; }
+            container.innerHTML = situations.map((s, idx) => `
+                <div class="card" style="border-left: 4px solid var(--accent-red);"><div class="action-btn-group"><button class="edit-item-btn" onclick="editSituation(${idx})">수정</button><button class="delete-btn" onclick="deleteSituation(${idx})">삭제</button></div><h3><i class="fa-solid fa-triangle-exclamation"></i> ${s.title}</h3><div class="item-text">${s.step}</div></div>`
+            ).join('');
         }
         function renderSituationFolders() {
             const container = document.getElementById('situation-folder-grid'); container.innerHTML = '';
             for(let name in situationFolders) {
-                container.innerHTML += `<div class="folder-box" onclick="openSituFolderView('${name}')" style="border-color: var(--accent-color);"><span class="folder-icon" style="color:var(--accent-color)">📂</span>${name}<div class="folder-action-zone"><button class="delete-btn" onclick="deleteSituFolder('${name}', event)" style="width:100%; padding:3px 0;">폴더 삭제</button></div></div>`;
+                container.innerHTML += `<div class="folder-box" onclick="openSituFolderView('${name}')" style="border-color: var(--accent-red);"><span class="folder-icon" style="color:var(--accent-red)"><i class="fa-solid fa-folder-open"></i></span>${name}<div class="folder-action-zone"><button class="delete-btn" onclick="deleteSituFolder('${name}', event)">폴더 연동 해제</button></div></div>`;
             }
-            if(Object.keys(situationFolders).length === 0) { container.innerHTML = '<div style="text-align:center; color:#aaa; grid-column:span 2; padding:30px;">연동된 폴더 데이터가 없습니다.</div>'; }
+            if(Object.keys(situationFolders).length === 0) { container.innerHTML = '<div style="text-align:center; color:var(--text-muted); grid-column:span 2; padding:30px;">연동 이관된 실시간 전술 장비 데이터가 비어있습니다.</div>'; }
         }
-        function openSituFolderView(name) { currentOpenSituFolder = name; document.getElementById('view-situ-folder-title').innerText = "🚨 " + name + " 상황조치 연동방"; document.getElementById('situ-fullscreen-overlay').classList.add('active'); renderSituFolderDetails(); }
+        function openSituFolderView(name) { currentOpenSituFolder = name; document.getElementById('view-situ-folder-title').innerHTML = `<i class="fa-solid fa-folder-open"></i> ${name} 상황매뉴얼 방`; document.getElementById('situ-fullscreen-overlay').classList.add('active'); renderSituFolderDetails(); }
         function closeSituFolderView() { document.getElementById('situ-fullscreen-overlay').classList.remove('active'); currentOpenSituFolder = ""; }
-        function deleteSituFolder(name, event) { event.stopPropagation(); if(confirm(`[${name}] 폴더를 삭제하겠습니까?`)) { delete situationFolders[name]; saveSituations(); } }
+        function deleteSituFolder(name, event) { event.stopPropagation(); if(confirm(`[${name}] 상황 연동 데이터를 분리 파기합니까?`)) { delete situationFolders[name]; saveSituations(); } }
         function deleteSituFolderDetail(idx) {
-            if(confirm('삭제하시겠습니까? (휴지통 보관)')) {
+            if(confirm('이 연동 조치 항목을 제거합니까?')) {
                 trashItems.push({ from: 'situationFolders', folderName: currentOpenSituFolder, data: situationFolders[currentOpenSituFolder][idx] });
                 situationFolders[currentOpenSituFolder].splice(idx, 1); saveSituations(); saveTrash(); renderSituFolderDetails();
             }
         }
         function renderSituFolderDetails() {
             const container = document.getElementById('situ-folder-details-container'); container.innerHTML = '';
-            if(!currentOpenSituFolder || !situationFolders[currentOpenSituFolder] || situationFolders[currentOpenSituFolder].length === 0) { container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">폴더 내에 조치사항이 없습니다.</div>'; return; }
+            if(!currentOpenSituFolder || !situationFolders[currentOpenSituFolder] || situationFolders[currentOpenSituFolder].length === 0) { container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">보관된 연동 데이터 조치가 없습니다.</div>'; return; }
             const groupMap = {}; situationFolders[currentOpenSituFolder].forEach((item, originalIndex) => { if(!groupMap[item.type]) { groupMap[item.type] = []; } groupMap[item.type].push({ ...item, originalIndex }); });
             for(let typeName in groupMap) {
-                let cardHtml = `<div class="big-category-card" style="border-color:var(--accent-color);"><div class="big-category-title" style="background:#f2dede; color:var(--accent-color)">⚠️ 대분류: ${typeName}</div>`;
+                let cardHtml = `<div class="big-category-card" style="border-color:var(--accent-red);"><div class="big-category-title" style="color:var(--accent-red)"><i class="fa-solid fa-bars-staggered"></i> 대분류 파트: ${typeName}</div>`;
                 groupMap[typeName].forEach(subItem => {
                     const imgHtml = subItem.image ? `<img src="${subItem.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
-                    const descHtml = (subItem.desc && subItem.desc.trim() !== "") ? `<div class="level4-desc-text" style="border-left-color:var(--accent-color);">${subItem.desc}</div>` : ``;
-                    cardHtml += `<div class="level3-wrapper"><div class="action-btn-group"><button class="delete-btn" onclick="deleteSituFolderDetail(${subItem.originalIndex})">삭제</button></div><div class="level3-title-text">📌 조치 항목명: ${subItem.title}</div>${descHtml}${imgHtml}</div>`;
+                    const descHtml = (subItem.desc && subItem.desc.trim() !== "") ? `<div class="level4-desc-text" style="border-left-color:var(--accent-red);">${subItem.desc}</div>` : ``;
+                    cardHtml += `<div class="level3-wrapper"><div class="action-btn-group"><button class="delete-btn" onclick="deleteSituFolderDetail(${subItem.originalIndex})">삭제</button></div><div class="level3-title-text">📌 조치 타깃: ${subItem.title}</div>${descHtml}${imgHtml}</div>`;
                 });
                 cardHtml += `</div>`; container.innerHTML += cardHtml;
             }
         }
 
-        // --- 4페이지: 통신장비별 사용법 ---
+        // --- 4페이지 장비 제원 메인 모듈 ---
         let folders = JSON.parse(localStorage.getItem('army_folders')) || {};
         function saveFolders() { localStorage.setItem('army_folders', JSON.stringify(folders)); renderFolders(); }
-        function addFolder() { const name = document.getElementById('folder-name').value.trim(); if(!name) return; if(!folders[name]) { folders[name] = []; document.getElementById('folder-name').value = ''; saveFolders(); } }
-        function deleteFolder(name, event) { event.stopPropagation(); if(confirm(`[${name}] 폴더가 삭제됩니다. 정말 삭제하시겠습니까?`)) { delete folders[name]; saveFolders(); if(currentOpenFolder === name) closeFolderView(); } }
+        function addFolder() { 
+            const name = document.getElementById('folder-name').value.trim(); if(!name) return; 
+            if(!folders[name]) { folders[name] = []; document.getElementById('folder-name').value = ''; closeModal('modal-page4'); saveFolders(); } 
+        }
+        function deleteFolder(name, event) { event.stopPropagation(); if(confirm(`[${name}] 통신 장비의 모든 무전 제원이 영구 파기됩니다. 승인합니까?`)) { delete folders[name]; saveFolders(); if(currentOpenFolder === name) closeFolderView(); } }
         function moveWholeFolderToSituation(name, event) {
-            event.stopPropagation(); if(!folders[name] || folders[name].length === 0) return alert('폴더 내에 데이터가 없습니다.');
-            if(confirm(`[${name}] 폴더 내 모든 항목(${folders[name].length}개)을 상황조치 폴더로 복사하시겠습니까?`)) {
+            event.stopPropagation(); if(!folders[name] || folders[name].length === 0) return alert('폴더 데이터가 비어 있어 이관할 수 없습니다.');
+            if(confirm(`[${name}] 내 장비 매뉴얼 전체 데이터를 [상황조치] 탭으로 전송 연동하시겠습니까?`)) {
                 if(!situationFolders[name]) situationFolders[name] = [];
                 folders[name].forEach(item => { situationFolders[name].push({ type: item.type, title: item.title, desc: item.desc, image: item.image || "", starred: false }); });
-                saveSituations(); alert('🎉 상황조치 폴더방으로 사진 포함 일괄 복사 완료!');
+                saveSituations(); alert('🎉 사진 정보를 통합하여 상황조치 폴더 연동 완료!');
             }
         }
         function renderFolders() {
             const container = document.getElementById('folder-grid'); container.innerHTML = '';
+            if(Object.keys(folders).length === 0) { container.innerHTML = `<div style="text-align:center; color:var(--text-muted); grid-column:span 2; padding:40px;">생성된 장비 마스터 폴더가 없습니다.</div>`; return; }
             for(let name in folders) {
-                container.innerHTML += `<div class="folder-box" onclick="openFolderView('${name}')"><span class="folder-icon">📁</span>${name}<div class="folder-action-zone"><button class="move-btn" onclick="moveWholeFolderToSituation('${name}', event)" style="font-size:0.75rem; padding:4px 0;">🚨 상황조치로 전체이동</button><button class="delete-btn" onclick="deleteFolder('${name}', event)" style="font-size:0.75rem; padding:2px 0; background:#777; border-color:#777;">폴더삭제</button></div></div>`;
+                container.innerHTML += `<div class="folder-box" onclick="openFolderView('${name}')"><span class="folder-icon"><i class="fa-solid fa-cubes"></i></span>${name}<div class="folder-action-zone"><button class="move-btn" onclick="moveWholeFolderToSituation('${name}', event)"><i class="fa-solid fa-share-from-square"></i> 상황조치로 전체이동</button><button class="delete-btn" onclick="deleteFolder('${name}', event)">폴더삭제</button></div></div>`;
             }
         }
-        function openFolderView(name) { currentOpenFolder = name; cancelAllEdits(); document.getElementById('view-device-title').innerText = "📁 " + name; document.getElementById('fullscreen-overlay').classList.add('active'); renderDeviceDetails(); renderBigCategoryButtons(); }
+        function openFolderView(name) { currentOpenFolder = name; cancelAllEdits(); document.getElementById('view-device-title').innerHTML = `<i class='fa-solid fa-folder-open'></i> ${name} 제원창`; document.getElementById('fullscreen-overlay').classList.add('active'); renderDeviceDetails(); renderBigCategoryButtons(); }
         function closeFolderView() { document.getElementById('fullscreen-overlay').classList.remove('active'); currentOpenFolder = ""; cancelAllEdits(); }
         
         function renderBigCategoryButtons() {
             const zone = document.getElementById('tag-buttons-zone'); zone.innerHTML = ''; if(!currentOpenFolder || !folders[currentOpenFolder]) return;
             const categorySet = new Set(); folders[currentOpenFolder].forEach(item => { if(item.type) categorySet.add(item.type); });
-            if(categorySet.size === 0) { ['방식', '기능', '부속명칭', '조작법'].forEach(word => categorySet.add(word)); }
+            if(categorySet.size === 0) { ['제원', '기능 명칭', '운용 전 준비', '주파수 도약'].forEach(word => categorySet.add(word)); }
             categorySet.forEach(catName => { zone.innerHTML += `<button type="button" class="tag-btn" onclick="selectCategoryTag('${catName}')"># ${catName}</button>`; });
         }
         function selectCategoryTag(name) { document.getElementById('sub-type-input').value = name; }
@@ -679,19 +733,18 @@
             if(!currentOpenFolder) return;
             const type = document.getElementById('sub-type-input').value.trim(); const title = document.getElementById('sub-title-input').value.trim();
             const hasDesc = document.getElementById('use-desc-checkbox').checked; const desc = hasDesc ? document.getElementById('sub-desc-input').value.trim() : "";
-            if(!type || !title) return alert('대분류와 하위분류명은 필수입니다!');
+            if(!type || !title) return alert('분류 정보가 부족합니다.');
             
-            if(editTargetIndex > -1 && document.getElementById('detail-form-title').innerText.includes('수정')) { 
+            if(editTargetIndex > -1) { 
                 const isStarred = folders[currentOpenFolder][editTargetIndex].starred || false; 
                 const oldImg = folders[currentOpenFolder][editTargetIndex].image || "";
                 folders[currentOpenFolder][editTargetIndex] = { type, title, desc, image: tempAttachedImageDataUrl ? tempAttachedImageDataUrl : oldImg, starred: isStarred }; 
-            } 
-            else { folders[currentOpenFolder].push({ type, title, desc, image: tempAttachedImageDataUrl, starred: false }); }
-            cancelAllEdits(); saveFolders(); renderDeviceDetails();
+            } else { folders[currentOpenFolder].push({ type, title, desc, image: tempAttachedImageDataUrl, starred: false }); }
+            closeModal('modal-detail'); cancelAllEdits(); saveFolders(); renderDeviceDetails();
         }
         function editDeviceDetail(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetDetail = folders[currentOpenFolder][idx];
-            document.getElementById('detail-form-title').innerText = "🛠️ 항목 수정 중...";
+            document.getElementById('detail-form-title').innerText = "🛠️ 장비 운용데이터 수정 중";
             document.getElementById('sub-type-input').value = targetDetail.type; document.getElementById('sub-title-input').value = targetDetail.title || "";
             const checkbox = document.getElementById('use-desc-checkbox'); const descInput = document.getElementById('sub-desc-input');
             if(targetDetail.desc && targetDetail.desc.trim() !== "") { checkbox.checked = true; descInput.style.display = 'block'; descInput.value = targetDetail.desc; } 
@@ -702,87 +755,81 @@
                 document.getElementById('detail-preview-img').src = targetDetail.image;
                 document.getElementById('detail-preview-zone').style.display = 'block';
             }
-            enterWritingMode('form-detail');
-            const submitBtn = document.getElementById('detail-submit-btn'); submitBtn.innerText = "✅ 수정 완료"; submitBtn.classList.add('edit-mode');
-            renderDeviceDetails();
+            openModal('modal-detail');
         }
         function deleteDeviceDetail(idx) {
-            if(confirm('삭제하시겠습니까? (휴지통 보관)')) {
+            if(confirm('세부 제원 데이터를 휴지통으로 이동하겠습니까?')) {
                 trashItems.push({ from: 'folders', folderName: currentOpenFolder, data: folders[currentOpenFolder][idx] });
                 folders[currentOpenFolder].splice(idx, 1); cancelAllEdits(); saveFolders(); saveTrash(); renderDeviceDetails();
             }
         }
         function moveDetailToSituation(idx) {
             if(!currentOpenFolder || !folders[currentOpenFolder][idx]) return;
-            const item = folders[currentOpenFolder][idx]; const newTitle = `[${currentOpenFolder}] ${item.title.replace(/\n/g, ' ')}`; const newStep = item.desc && item.desc.trim() !== "" ? item.desc : "세부 설명 없음";
-            if(confirm('기존방식 상황조치 카드 리스트로 복사하시겠습니까?')) { situations.push({ title: newTitle, step: newStep }); saveSituations(); alert('🚨 전송 완료!'); }
+            const item = folders[currentOpenFolder][idx]; const newTitle = `[${currentOpenFolder}] ${item.title.replace(/\n/g, ' ')}`; const newStep = item.desc && item.desc.trim() !== "" ? item.desc : "연동 매뉴얼 지침 기술 데이터 없음";
+            if(confirm('해당 건을 단독 기존 상황조치 매뉴얼 카드로 복사 이관하겠습니까?')) { situations.push({ title: newTitle, step: newStep }); saveSituations(); alert('🚨 단독 상황실 카드로 전송 완료!'); }
         }
         function toggleStar(idx) { if(!currentOpenFolder || !folders[currentOpenFolder][idx]) return; folders[currentOpenFolder][idx].starred = !folders[currentOpenFolder][idx].starred; saveFolders(); renderDeviceDetails(); }
         function renderDeviceDetails() {
             const container = document.getElementById('device-details-container'); container.innerHTML = '';
-            if(!currentOpenFolder || !folders[currentOpenFolder] || folders[currentOpenFolder].length === 0) { container.innerHTML = '<div style="text-align:center; color:#aaa; padding:20px;">등록된 데이터가 없습니다.</div>'; return; }
+            if(!currentOpenFolder || !folders[currentOpenFolder] || folders[currentOpenFolder].length === 0) { container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">작성된 하위 디테일 지침이 전무합니다.</div>'; return; }
             const groupMap = {}; folders[currentOpenFolder].forEach((item, originalIndex) => { if(!groupMap[item.type]) { groupMap[item.type] = []; } groupMap[item.type].push({ ...item, originalIndex }); });
             for(let typeName in groupMap) {
-                let cardHtml = `<div class="big-category-card"><div class="big-category-title">📂 ${typeName}</div>`;
+                let cardHtml = `<div class="big-category-card"><div class="big-category-title"><i class="fa-solid fa-list-check"></i> 대분류 정보: ${typeName}</div>`;
                 groupMap[typeName].forEach(subItem => {
-                    const isEditingClass = (subItem.originalIndex === editTargetIndex && document.getElementById('detail-form-title').innerText.includes('수정')) ? 'is-editing' : '';
                     const starClass = subItem.starred ? 'active' : ''; const starIcon = subItem.starred ? '★' : '☆';
-                    const actionButtons = `<div class="action-btn-group"><button class="move-btn" onclick="moveDetailToSituation(${subItem.originalIndex})">🚨 전송</button><button class="star-btn ${starClass}" onclick="toggleStar(${subItem.originalIndex})">${starIcon}</button><button class="edit-item-btn" onclick="editDeviceDetail(${subItem.originalIndex})">수정</button><button class="delete-btn" onclick="deleteDeviceDetail(${subItem.originalIndex})">삭제</button></div>`;
+                    const actionButtons = `<div class="action-btn-group"><button class="move-btn" onclick="moveDetailToSituation(${subItem.originalIndex})">⚡ 조치전송</button><button class="star-btn ${starClass}" onclick="toggleStar(${subItem.originalIndex})">${starIcon}</button><button class="edit-item-btn" onclick="editDeviceDetail(${subItem.originalIndex})">수정</button><button class="delete-btn" onclick="deleteDeviceDetail(${subItem.originalIndex})">삭제</button></div>`;
                     const imgHtml = subItem.image ? `<img src="${subItem.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
                     const descHtml = (subItem.desc && subItem.desc.trim() !== "") ? `<div class="level4-desc-text">${subItem.desc}</div>` : ``;
-                    const starPrefix = subItem.starred ? `<span style="color:#f39c12; margin-right:4px;">★</span>` : `<span class="icon">📌</span>`;
-                    cardHtml += `<div class="level3-wrapper ${isEditingClass}">${actionButtons}<div class="level3-title-text">${starPrefix}${subItem.title}</div>${descHtml}${imgHtml}</div>`;
+                    const starPrefix = subItem.starred ? `<span style="color:#f59e0b; margin-right:4px;">★</span>` : ``;
+                    cardHtml += `<div class="level3-wrapper">${actionButtons}<div class="level3-title-text">${starPrefix}${subItem.title}</div>${descHtml}${imgHtml}</div>`;
                 });
                 cardHtml += `</div>`; container.innerHTML += cardHtml;
             }
         }
 
-        // --- 5페이지: 일반 암기사항 ---
+        // --- 5페이지 일반 암기 구역 ---
         let memos = JSON.parse(localStorage.getItem('army_memos')) || [];
         function saveMemos() { localStorage.setItem('army_memos', JSON.stringify(memos)); renderMemos(); }
         function addOrUpdateMemo() {
             const title = document.getElementById('memo-title').value.trim(); const content = document.getElementById('memo-content').value.trim();
-            if(!title || !content) return alert('제목과 내용을 모두 입력해주세요.');
-            
-            if(editTargetIndex > -1 && !document.getElementById('radio-memo-form-title').innerText.includes('수정') && !document.getElementById('form-work').querySelector('h3').innerText.includes('수정')) {
+            if(!title || !content) return alert('모든 필드값을 채우십시오.');
+            if(editTargetIndex > -1) {
                 const oldImg = memos[editTargetIndex].image || "";
                 memos[editTargetIndex] = { title, content, image: tempAttachedImageDataUrl ? tempAttachedImageDataUrl : oldImg };
-                alert('일반 암기사항이 수정되었습니다.');
             } else { memos.push({ title, content, image: tempAttachedImageDataUrl }); }
-            cancelAllEdits(); saveMemos();
+            closeModal('modal-page5'); cancelAllEdits(); saveMemos();
         }
         function editMemo(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetMemo = memos[idx];
             document.getElementById('memo-title').value = targetMemo.title; document.getElementById('memo-content').value = targetMemo.content;
             if(targetMemo.image) { tempAttachedImageDataUrl = targetMemo.image; document.getElementById('memo-preview-img').src = targetMemo.image; document.getElementById('memo-preview-zone').style.display = 'block'; }
-            switchPage(5, '통신 암기사항'); enterWritingMode('form-memo');
-            renderMemos();
+            openModal('modal-page5');
         }
-        function deleteMemo(index) { if(confirm('삭제하시겠습니까? (휴지통 보관)')) { trashItems.push({ from: 'memos', data: memos[index] }); memos.splice(index, 1); cancelAllEdits(); saveMemos(); saveTrash(); } }
+        function deleteMemo(index) { if(confirm('일반 암기사항 카드를 안전 삭제합니까?')) { trashItems.push({ from: 'memos', data: memos[index] }); memos.splice(index, 1); cancelAllEdits(); saveMemos(); saveTrash(); } }
         function renderMemos() {
             const list = document.getElementById('memo-list');
+            if(memos.length === 0) { list.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px;">보관된 통신 범용 암기 카드가 없습니다.</div>`; return; }
             list.innerHTML = memos.map((m, idx) => {
-                const isEditingClass = (idx === editTargetIndex && !document.getElementById('radio-memo-form-title').innerText.includes('수정')) ? 'is-editing' : '';
                 const imgHtml = m.image ? `<img src="${m.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
-                return `<li class="card ${isEditingClass}" style="box-shadow:none; margin-bottom:10px; background:white; border:1px solid #ddd; padding:10px;"><div class="action-btn-group" style="margin-top:-5px;"><button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button></div><strong>💡 일반암기: ${m.title}</strong><div class="item-text" style="margin-top:8px;">${m.content}</div>${imgHtml}</li>`;
+                return `<li class="card" style="box-shadow:none; background:var(--panel-bg);"><div class="action-btn-group"><button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button></div><strong>💡 통신암기: ${m.title}</strong><div class="item-text">${m.content}</div>${imgHtml}</li>`;
             }).join('');
         }
 
-        // --- 🗑️ 휴지통 ---
+        // --- 🗑️ 지능형 안전 복구 휴지통 커널 ---
         function renderTrash() {
             const trashList = document.getElementById('trash-list');
-            if(trashItems.length === 0) { trashList.innerHTML = `<li style="text-align:center; color:#bbb; list-style:none; background:none; border:none; padding:15px 0;">휴지통이 비어있습니다.</li>`; return; }
+            if(trashItems.length === 0) { trashList.innerHTML = `<li style="text-align:center; color:var(--text-muted); border:none; background:none; padding:10px 0;">휴지통 대기 데이터가 존재하지 않습니다.</li>`; return; }
             trashList.innerHTML = trashItems.map((item, idx) => {
                 let categoryLabel = "";
-                if(item.from === 'radioMemos') categoryLabel = "무전 암기";
-                else if(item.from === 'works') categoryLabel = "근무 지침";
-                else if(item.from === 'radioProtocols') categoryLabel = "무전법";
-                else if(item.from === 'situations') categoryLabel = "상황조치(기존)";
-                else if(item.from === 'situationFolders') categoryLabel = `상황폴더(${item.folderName})`;
+                if(item.from === 'radioMemos') categoryLabel = "무전암기";
+                else if(item.from === 'works') categoryLabel = "근무지침";
+                else if(item.from === 'radioProtocols') categoryLabel = "무전 표준";
+                else if(item.from === 'situations') categoryLabel = "위기조치";
+                else if(item.from === 'situationFolders') categoryLabel = `연동형(${item.folderName})`;
                 else if(item.from === 'folders') categoryLabel = `장비폴더(${item.folderName})`;
-                else if(item.from === 'memos') categoryLabel = "일반 암기";
-                const displayTitle = item.data.title || item.data.type || "내용 기반 데이터";
-                return `<li style="border-left-color:#aaa; background:#f0f0f0;"><div class="action-btn-group"><button class="move-btn" style="border-color:#555; color:#555;" onclick="restoreTrashItem(${idx})">복구</button><button class="delete-btn" onclick="killTrashItem(${idx})">영구삭제</button></div><span style="font-size:0.75rem; background:#ddd; padding:2px 5px; border-radius:3px; margin-right:5px; font-weight:bold; color:#666;">${categoryLabel}</span><strong>${displayTitle}</strong></li>`;
+                else if(item.from === 'memos') categoryLabel = "일반암기";
+                const displayTitle = item.data.title || item.data.type || "데이터 본문 매체";
+                return `<li style="border-left-color:var(--text-muted); background:rgba(30,41,59,0.4);"><div class="action-btn-group"><button class="move-btn" style="color:var(--text-main);" onclick="restoreTrashItem(${idx})">즉시복구</button><button class="delete-btn" onclick="killTrashItem(${idx})">영구삭제</button></div><span style="font-size:0.7rem; background:var(--panel-border); padding:2px 6px; border-radius:4px; margin-right:6px; color:var(--primary); font-weight:bold;">${categoryLabel}</span><strong>${displayTitle}</strong></li>`;
             }).join('');
         }
         function restoreTrashItem(idx) {
@@ -794,40 +841,40 @@
             else if(item.from === 'situationFolders') { if(!situationFolders[item.folderName]) situationFolders[item.folderName] = []; situationFolders[item.folderName].push(item.data); saveSituations(); }
             else if(item.from === 'folders') { if(!folders[item.folderName]) folders[item.folderName] = []; folders[item.folderName].push(item.data); saveFolders(); }
             else if(item.from === 'memos') { memos.push(item.data); saveMemos(); }
-            trashItems.splice(idx, 1); saveTrash(); alert('성공적으로 복구되었습니다!');
+            trashItems.splice(idx, 1); saveTrash(); alert('전술 데이터 복구가 성공적으로 완수되었습니다.');
         }
-        function killTrashItem(idx) { if(confirm('영구 삭제되어 복구할 수 없습니다. 계속하시겠습니까?')) { trashItems.splice(idx, 1); saveTrash(); } }
-        function clearTrashAll() { if(confirm('휴지통 내부의 모든 데이터가 영구히 소멸됩니다. 비우시겠습니까?')) { trashItems = []; saveTrash(); } }
+        function killTrashItem(idx) { if(confirm('영구 삭제 처리 시 해당 백업 미디어 정보는 복원 불가능합니다. 동의합니까?')) { trashItems.splice(idx, 1); saveTrash(); } }
+        function clearTrashAll() { if(confirm('휴지통 내에 적재된 모든 기밀 데이터를 파기합니까?')) { trashItems = []; saveTrash(); } }
 
-        // --- 데이터 백업 시스템 ---
+        // --- 보안 텍스트 코드 동기화 모듈 ---
         function exportData() {
             const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, trashItems };
             try {
                 const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
-                navigator.clipboard.writeText(encodedData).then(() => { alert('사진이 포함된 데이터 코드가 복사되었습니다!'); }).catch(() => { prompt('코드를 복사하세요:', encodedData); });
-            } catch(err) { alert("❌ 이미지 용량이 과도하여 기본 백업이 실패했습니다. 불필요한 사진을 정리하거나 휴지통을 비운 뒤 다시 시도해 주세요."); }
+                navigator.clipboard.writeText(encodedData).then(() => { alert('사진 규격을 포함한 전체 전술 백업 인계 코드가 클립보드에 바인딩되었습니다.'); }).catch(() => { prompt('수동 복사 대상 코드:', encodedData); });
+            } catch(err) { alert("❌ 이미지의 누적 용량이 초과되어 인계 코드를 빌드하지 못했습니다. 휴지통을 완전히 비우거나 불필요한 사진 원본들을 제거 후 재수행하십시오."); }
         }
         function importData() {
-            const code = document.getElementById('import-zone').value.trim(); if(!code) return alert('코드를 붙여넣어 주세요.');
-            if(confirm('데이터를 덮어쓰시겠습니까?')) {
+            const code = document.getElementById('import-zone').value.trim(); if(!code) return alert('코드가 감지되지 않았습니다.');
+            if(confirm('기존 저장소가 소멸되고 동기화 코드로 교체 덮어쓰기 됩니다. 진행합니까?')) {
                 try {
                     const importedData = JSON.parse(decodeURIComponent(atob(code)));
                     if(importedData.works) works = importedData.works; if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
                     if(importedData.situations) situations = importedData.situations; if(importedData.situationFolders) situationFolders = importedData.situationFolders;
-                    if(importedData.folders) folders = folders = importedData.folders; if(importedData.memos) memos = importedData.memos;
+                    if(importedData.folders) folders = importedData.folders; if(importedData.memos) memos = importedData.memos;
                     if(importedData.radioMemos) radioMemos = importedData.radioMemos; if(importedData.trashItems) trashItems = importedData.trashItems;
                     
                     localStorage.setItem('army_works', JSON.stringify(works)); localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
                     localStorage.setItem('army_situations', JSON.stringify(situations)); localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
                     localStorage.setItem('army_folders', JSON.stringify(folders)); localStorage.setItem('army_memos', JSON.stringify(memos));
                     localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos)); localStorage.setItem('army_trash', JSON.stringify(trashItems));
-                    document.getElementById('import-zone').value = ''; cancelAllEdits(); alert('🎉 데이터 동기화 완료!');
-                } catch(e) { alert('❌ 올바르지 않거나 손상된 코드입니다.'); }
+                    document.getElementById('import-zone').value = ''; cancelAllEdits(); alert('🎉 완벽하게 동기화 복구되었습니다!');
+                } catch(e) { alert('❌ 훼손되었거나 검증되지 않은 무효한 전술 코드 규격입니다.'); }
             }
         }
 
+        // 초기 기동 데이터 바인딩
         renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos(); renderTrash();
     </script>
 </body>
 </html>
-,
