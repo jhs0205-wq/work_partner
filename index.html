@@ -175,7 +175,7 @@
         .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--panel-border); }
         .back-btn { background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--panel-border); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; margin-bottom: 12px; }
         .tag-btn { background: rgba(2,6,23,0.4); border: 1px solid var(--panel-border); color: var(--text-muted); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
         .tag-btn:hover { border-color: var(--primary); color: var(--primary); }
 
@@ -187,7 +187,7 @@
         .level3-title-text { font-weight: 700; color: #fff; font-size: 1rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
         .level4-desc-text { background: rgba(2,6,23,0.4); border-left: 3px solid var(--primary); padding: 10px; margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); white-space: pre-wrap; border-radius: 0 6px 6px 0; }
 
-        .checkbox-container { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 0.9rem; font-weight: bold; color: var(--primary); cursor: pointer; }
+        .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 4px; margin-bottom: 12px; font-size: 0.9rem; font-weight: bold; color: var(--primary); cursor: pointer; }
         .checkbox-container input { width: auto; margin-bottom: 0; transform: scale(1.2); }
         .sync-box { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); color: var(--accent-blue); padding: 14px; border-radius: 10px; margin-bottom: 16px; font-size: 0.9rem; line-height: 1.4; }
     </style>
@@ -267,7 +267,7 @@
             </select>
 
             <div id="p1-memo-fields">
-                <textarea id="radio-memo-title" placeholder="여기에 암기할 내용을 여러 줄(4줄 등)로 바로 입력하세요..." style="min-height:90px;"></textarea>
+                <textarea id="radio-memo-title" placeholder="여기에 암기할 내용을 여러 줄(4줄 등)로 바로 입력하세요..." style="min-height:100px;"></textarea>
                 <textarea id="radio-memo-content" placeholder="보충 설명이나 추가 세부내용이 필요 없다면 비워두셔도 됩니다."></textarea>
                 <div class="image-upload-wrapper">
                     <label for="radio-memo-img-input"><i class="fa-solid fa-camera"></i> 사진 첨부 (촬영/갤러리)</label>
@@ -295,7 +295,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close-btn" onclick="closeModal('modal-page2')">✕</button>
             <h3 id="radio-form-title" style="margin-bottom:16px;"><i class="fa-solid fa-headset"></i> 새 무전교신법 등록</h3>
-            <textarea id="radio-title" placeholder="지침 제목 혹은 무전 내용을 여러 줄로 입력..." style="min-height:80px;"></textarea>
+            <textarea id="radio-title" placeholder="지침 제목 혹은 무전 내용을 여러 줄로 입력..." style="min-height:100px;"></textarea>
             <textarea id="radio-content" placeholder="표준 송신 교신문 및 수칙을 입력하세요..."></textarea>
             <button class="btn" id="radio-submit-btn" onclick="addOrUpdateRadio()">무전법 수칙 저장</button>
         </div>
@@ -305,7 +305,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close-btn" onclick="closeModal('modal-page3')">✕</button>
             <h3 id="situation-form-title" style="margin-bottom:16px;"><i class="fa-solid fa-triangle-exclamation"></i> 새 긴급 상황조치 등록</h3>
-            <textarea id="situation-title" placeholder="상황 제목 혹은 조치사항을 여러 줄로 입력..." style="min-height:80px;"></textarea>
+            <textarea id="situation-title" placeholder="상황 제목 혹은 조치사항을 여러 줄로 입력..." style="min-height:100px;"></textarea>
             <textarea id="situation-step" placeholder="조치 단계를 번호순으로 명확하게 기입..."></textarea>
             <button class="btn" id="situation-submit-btn" onclick="addOrUpdateSituation()">상황조치 매뉴얼 저장</button>
         </div>
@@ -324,7 +324,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close-btn" onclick="closeModal('modal-page5')">✕</button>
             <h3 style="margin-bottom:16px;"><i class="fa-solid fa-feather"></i> 새 일반 암기사항 추가</h3>
-            <textarea id="memo-title" placeholder="암기 내용을 여러 줄(4줄 등)로 입력..." style="min-height:80px;"></textarea>
+            <textarea id="memo-title" placeholder="암기 내용을 여러 줄(4줄 등)로 입력..." style="min-height:100px;"></textarea>
             <textarea id="memo-content" placeholder="세부 핵심 내용을 입력하세요..."></textarea>
             <div class="image-upload-wrapper">
                 <label for="memo-img-input"><i class="fa-solid fa-image"></i> 이미지 첨부</label>
@@ -342,17 +342,17 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close-btn" onclick="closeModal('modal-detail')">✕</button>
             <h3 id="detail-form-title" style="margin-bottom:16px;">🛠️ 장비 제원/조작법 등록</h3>
-            <input type="text" id="sub-type-input" placeholder="대분류 직접 입력 또는 아래 해시태그 터치 (예: 제원, 조작법 등)">
+            <input type="text" id="sub-type-input" placeholder="2단계: 대분류 직접 입력 (방식, 조작, 제원 등)">
             <div id="tag-buttons-zone" class="tag-container"></div>
             
-            <textarea id="sub-title-input" placeholder="여기에 암기사항 내용을 4줄 단위 등으로 자유롭게 기입하세요..." style="min-height:100px;"></textarea>
+            <textarea id="sub-title-input" placeholder="3단계: 여기에 암기사항 내용을 4줄 단위 등으로 자유롭게 기입하세요..." style="min-height:100px;"></textarea>
             
-            <label class="checkbox-container" style="display:none;">
+            <label class="checkbox-container">
                 <input type="checkbox" id="use-desc-checkbox" checked onchange="toggleDescInput()">
-                <span>상세설명 포함하기</span>
+                <span>4단계 세부 절차/상세설명 포함하기 (선택)</span>
             </label>
             
-            <textarea id="sub-desc-input" placeholder="추가 상세 설명 매뉴얼 데이터 기입..." style="display:none;"></textarea>
+            <textarea id="sub-desc-input" placeholder="4단계: 연동될 실제 상세 매뉴얼 조치 내용을 기입하세요..." style="min-height:100px;"></textarea>
             
             <div class="image-upload-wrapper">
                 <label for="detail-img-input"><i class="fa-solid fa-diagram-project"></i> 장비 실물/회로도 사진 첨부</label>
@@ -389,7 +389,7 @@
         <button onclick="switchPage(3, '상황별 긴급조치')" class="nav-btn"><i class="fa-solid fa-triangle-exclamation"></i>상황조치</button>
         <button onclick="switchPage(4, '통신장비별 데이터')" class="nav-btn"><i class="fa-solid fa-cubes"></i>장비사용법</button>
         <button onclick="switchPage(5, '통신 핵심 암기사항')" class="nav-btn"><i class="fa-solid fa-brain"></i>암기사항</button>
-    </nav> head
+    </nav>
 
     <script>
         let currentActivePage = 1;
@@ -542,10 +542,11 @@
 
             document.getElementById('detail-form-title').innerText = "🛠️ 분류 및 세부항목 관리";
             document.getElementById('sub-type-input').value = ''; document.getElementById('sub-title-input').value = ''; document.getElementById('sub-desc-input').value = '';
+            document.getElementById('use-desc-checkbox').checked = true; document.getElementById('sub-desc-input').style.display = 'block';
 
             document.getElementById('memo-title').value = ''; document.getElementById('memo-content').value = '';
 
-            renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderMemos(); renderTrash();
+            renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos(); renderTrash();
             if(currentOpenFolder) { renderDeviceDetails(); renderBigCategoryButtons(); }
             if(currentOpenSituFolder) { renderSituFolderDetails(); }
         }
@@ -709,12 +710,11 @@
         }
         function renderFolders() {
             const container = document.getElementById('folder-grid'); container.innerHTML = '';
-            if(Object.keys(folders).length === 0) { container.innerHTML = `<div style="text-align:center; color:var(--text-muted); grid-column:span 2; padding:40px;">생성된 장비 마스터 폴더가 없습니다.</div>`; return; }
             for(let name in folders) {
                 container.innerHTML += `<div class="folder-box" onclick="openFolderView('${name}')"><span class="folder-icon"><i class="fa-solid fa-cubes"></i></span>${name}<div class="folder-action-zone"><button class="move-btn" onclick="moveWholeFolderToSituation('${name}', event)"><i class="fa-solid fa-share-from-square"></i> 상황조치로 이동</button><button class="delete-btn" onclick="deleteFolder('${name}', event)">삭제</button></div></div>`;
             }
         }
-        function openFolderView(name) { currentOpenFolder = name; cancelAllEdits(); document.getElementById('view-device-title').innerHTML = `<i class='fa-solid fa-folder-open'></i> ${name}`; document.getElementById('fullscreen-overlay').classList.add('active'); renderDeviceDetails(); renderBigCategoryButtons(); }
+        function openFolderView(name) { currentOpenFolder = name; cancelAllEdits(); document.getElementById('view-device-title').innerText = name; document.getElementById('fullscreen-overlay').classList.add('active'); renderDeviceDetails(); renderBigCategoryButtons(); }
         function closeFolderView() { document.getElementById('fullscreen-overlay').classList.remove('active'); currentOpenFolder = ""; cancelAllEdits(); }
         
         function renderBigCategoryButtons() {
@@ -729,7 +729,8 @@
             if(!currentOpenFolder) return;
             const type = document.getElementById('sub-type-input').value.trim() || "일반 제원"; 
             const title = document.getElementById('sub-title-input').value.trim();
-            const desc = document.getElementById('sub-desc-input').value.trim();
+            const hasDesc = document.getElementById('use-desc-checkbox').checked; 
+            const desc = hasDesc ? document.getElementById('sub-desc-input').value.trim() : "";
             if(!title) return alert('내용을 기입하세요.');
             
             if(editTargetIndex > -1) { 
@@ -745,6 +746,11 @@
             document.getElementById('sub-type-input').value = targetDetail.type; 
             document.getElementById('sub-title-input').value = targetDetail.title || "";
             document.getElementById('sub-desc-input').value = targetDetail.desc || "";
+            
+            const checkbox = document.getElementById('use-desc-checkbox'); 
+            const descInput = document.getElementById('sub-desc-input');
+            if(targetDetail.desc && targetDetail.desc.trim() !== "") { checkbox.checked = true; descInput.style.display = 'block'; } 
+            else { checkbox.checked = false; descInput.style.display = 'none'; }
             
             if(targetDetail.image) {
                 tempAttachedImageDataUrl = targetDetail.image;
@@ -808,7 +814,7 @@
             list.innerHTML = memos.map((m, idx) => {
                 const imgHtml = m.image ? `<img src="${m.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
                 const contentHtml = m.content ? `<div class="item-text" style="color:var(--text-muted); border-top:1px dashed var(--panel-border); margin-top:10px; padding-top:10px;">${m.content}</div>` : '';
-                return `<li class="card" style="box-shadow:none; background:var(--panel-bg);"><div class="action-btn-group"><button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button></div><div class="level3-title-text">${m.title}</div>${contentHtml}${imgHtml}</li>`;
+                return `<li class="card" style="box-shadow:none; margin-bottom:10px; background:var(--panel-bg);"><div class="action-btn-group"><button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button></div><div class="level3-title-text">${m.title}</div>${contentHtml}${imgHtml}</li>`;
             }).join('');
         }
 
@@ -844,7 +850,7 @@
         function killTrashItem(idx) { if(confirm('영구 삭제 처리 시 복원이 불가능합니다. 파기합니까?')) { trashItems.splice(idx, 1); saveTrash(); } }
         function clearTrashAll() { if(confirm('휴지통의 모든 데이터를 영구 파기합니까?')) { trashItems = []; saveTrash(); } }
 
-        // --- 백업 코드 기능 ---
+        // --- 데이터 백업 시스템 ---
         function exportData() {
             const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, trashItems };
             try {
@@ -859,7 +865,7 @@
                     const importedData = JSON.parse(decodeURIComponent(atob(code)));
                     if(importedData.works) works = importedData.works; if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
                     if(importedData.situations) situations = importedData.situations; if(importedData.situationFolders) situationFolders = importedData.situationFolders;
-                    if(importedData.folders) folders = importedData.folders; if(importedData.memos) memos = importedData.memos;
+                    if(importedData.folders) folders = folders = importedData.folders; if(importedData.memos) memos = importedData.memos;
                     if(importedData.radioMemos) radioMemos = importedData.radioMemos; if(importedData.trashItems) trashItems = importedData.trashItems;
                     
                     localStorage.setItem('army_works', JSON.stringify(works)); localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
