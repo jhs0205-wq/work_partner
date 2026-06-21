@@ -26,22 +26,39 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', 'Urbanist', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 85px; min-height: 100vh; -webkit-text-size-adjust: none; }
         
-        /* 상단 헤더 */
+        /* 🚀 상단 헤더 우측에 데이터 복사 버튼 배치를 위한 Flex 레이아웃 적용 */
         header { 
             background: linear-gradient(135deg, var(--panel-bg), var(--bg-dark)); 
             color: var(--text-main); 
-            padding: 16px; 
-            text-align: center; 
-            font-size: 1.2rem; 
-            font-weight: 700; 
+            padding: 12px 16px; 
             position: sticky; 
             top: 0; 
             z-index: 90; 
             border-bottom: 1px solid var(--panel-border);
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            letter-spacing: -0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        header span { color: var(--primary); font-family: 'Urbanist', sans-serif; }
+        .header-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.5px; }
+        .header-title span { color: var(--primary); font-family: 'Urbanist', sans-serif; }
+        
+        /* 헤더 전용 고성능 복사 버튼 스타일 */
+        .header-copy-btn {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .header-copy-btn:hover { background: var(--primary); color: #fff; }
 
         /* 컨테이너 */
         .container { padding: 16px; max-width: 640px; margin: 0 auto; }
@@ -106,7 +123,7 @@
         button.btn:hover { background: var(--primary-hover); }
         button.btn.edit-mode { background-color: var(--accent-orange); }
 
-        /* ➕ 우측 하단 플로팅 액션 버튼 (입력창 열기 전용) */
+        /* ➕ 우측 하단 플로팅 액션 버튼 */
         .fab {
             position: fixed; bottom: 80px; right: 20px; 
             width: 56px; height: 56px; background: var(--primary); 
@@ -117,7 +134,7 @@
         }
         .fab:hover { transform: scale(1.05) rotate(90deg); background: var(--primary-hover); }
 
-        /* 모달 팝업 스타일 (지저분한 입력창 숨기기용) */
+        /* 모달 팝업 스타일 */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(4px);
@@ -159,7 +176,6 @@
         .item-list { list-style: none; }
         .item-list li { background: rgba(2,6,23,0.3); padding: 14px; margin-bottom: 10px; border-radius: 10px; border-left: 4px solid var(--primary); position: relative; }
         
-        /* 줄바꿈(엔터)이 화면에 그대로 반영되도록 만들어주는 핵심 CSS */
         .item-text { white-space: pre-wrap; word-break: break-all; margin-top: 8px; font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; clear: both; }
         
         /* 격자형 폴더 구조 디자인 */
@@ -181,8 +197,7 @@
 
         .big-category-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 14px; margin-bottom: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 4px 0; }
         
-        /* 깔끔하게 4줄을 표현하기 위해 타이틀 구역에도 줄바꿈 허용 처리 */
-        .level3-wrapper { padding: 14px; border-bottom: 1px dashed var(--panel-border); }
+        .level3-wrapper { padding: 14px; border-bottom: 1px dashed #1e293b; }
         .level3-wrapper:last-child { border-bottom: none; }
         .level3-title-text { font-weight: 700; color: #fff; font-size: 1rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
         .level4-desc-text { background: rgba(2,6,23,0.4); border-left: 3px solid var(--primary); padding: 10px; margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); white-space: pre-wrap; border-radius: 0 6px 6px 0; }
@@ -194,7 +209,10 @@
 </head>
 <body>
 
-    <header id="main-title">WORK PARTNER <span>2.0</span></header>
+    <header>
+        <div class="header-title" id="main-title">WORK PARTNER <span>2.0</span></div>
+        <button type="button" class="header-copy-btn" onclick="exportData()"><i class="fa-solid fa-copy"></i> 전체 복사</button>
+    </header>
 
     <div class="fab" id="main-fab" onclick="openCurrentPageModal()"><i class="fa-solid fa-plus"></i></div>
 
@@ -240,7 +258,7 @@
         <div id="page5" class="page">
             <div class="card" style="border-color: rgba(56,189,248,0.4);">
                 <h3><i class="fa-solid fa-box-archive"></i> 후임 데이터 인계 및 연동</h3>
-                <div class="sync-box">💾 대용량 사진 데이터까지 텍스트 코드 하나로 압축 인계할 수 있습니다.</div>
+                <div class="sync-box">💡 대용량 사진 데이터까지 텍스트 코드 하나로 압축 인계할 수 있습니다.</div>
                 <button class="btn" onclick="exportData()" style="margin-bottom:12px; background-color: var(--panel-border); border: 1px solid #334155;">📋 내 노트 데이터 복사 (내보내기)</button>
                 <textarea id="import-zone" placeholder="인계받은 복사 코드를 여기에 붙여넣으세요..."></textarea>
                 <button class="btn" onclick="importData()" style="background-color: var(--accent-blue); color: #020617;">📥 코드 가져와서 데이터 동기화</button>
@@ -260,12 +278,10 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close-btn" onclick="closeModal('modal-page1')">✕</button>
             <h3 id="radio-memo-form-title" style="margin-bottom:16px;">⚡ 무전 암기/근무 추가</h3>
-            
             <select id="p1-type-select" onchange="toggleP1Fields()">
                 <option value="memo">무전 핵심 암기사항</option>
                 <option value="work">일일 근무 지침</option>
             </select>
-
             <div id="p1-memo-fields">
                 <textarea id="radio-memo-title" placeholder="여기에 암기할 내용을 여러 줄(4줄 등)로 바로 입력하세요..." style="min-height:100px;"></textarea>
                 <textarea id="radio-memo-content" placeholder="보충 설명이나 추가 세부내용이 필요 없다면 비워두셔도 됩니다."></textarea>
@@ -279,7 +295,6 @@
                 </div>
                 <button class="btn" id="radio-memo-submit-btn" onclick="addOrUpdateRadioMemo()">무전 암기사항 저장</button>
             </div>
-
             <div id="p1-work-fields" style="display:none;">
                 <select id="work-time">
                     <option value="오전 근무">오전 근무</option>
@@ -520,7 +535,6 @@
 
         function cancelAllEdits() {
             editTargetIndex = -1; tempAttachedImageDataUrl = "";
-            document.getElementById('situ-search-input').value = "";
             
             removePreviewImage('radio-memo-img-input', 'radio-memo-preview-zone', 'radio-memo-preview-img');
             removePreviewImage('memo-img-input', 'memo-preview-zone', 'memo-preview-img');
@@ -577,7 +591,7 @@
             if(radioMemos.length === 0) { mainList.innerHTML = `<li style="text-align:center; color:var(--text-muted); border-left:none; background:none;">등록된 핵심 암기 데이터가 없습니다.</li>`; return; }
             mainList.innerHTML = radioMemos.map((m, idx) => {
                 const imgHtml = m.image ? `<img src="${m.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
-                const descHtml = m.content ? `<div class="item-text" style="color:var(--text-muted); font-size:0.85rem; border-top:1px dashed var(--panel-border); margin-top:6px; padding-top:6px;">${m.content}</div>` : '';
+                const descHtml = m.content ? `<div class="item-text" style="color:var(--text-muted); font-size:0.85rem; border-top:1px solid var(--panel-border); margin-top:6px; padding-top:6px;">${m.content}</div>` : '';
                 return `<li><div class="action-btn-group"><button class="edit-item-btn" onclick="editRadioMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteRadioMemo(${idx})">삭제</button></div><div class="level3-title-text">${m.title}</div>${descHtml}${imgHtml}</li>`;
             }).join('');
         }
@@ -748,9 +762,8 @@
             document.getElementById('sub-desc-input').value = targetDetail.desc || "";
             
             const checkbox = document.getElementById('use-desc-checkbox'); 
-            const descInput = document.getElementById('sub-desc-input');
-            if(targetDetail.desc && targetDetail.desc.trim() !== "") { checkbox.checked = true; descInput.style.display = 'block'; } 
-            else { checkbox.checked = false; descInput.style.display = 'none'; }
+            if(targetDetail.desc && targetDetail.desc.trim() !== "") { checkbox.checked = true; document.getElementById('sub-desc-input').style.display = 'block'; } 
+            else { checkbox.checked = false; document.getElementById('sub-desc-input').style.display = 'none'; }
             
             if(targetDetail.image) {
                 tempAttachedImageDataUrl = targetDetail.image;
@@ -814,7 +827,7 @@
             list.innerHTML = memos.map((m, idx) => {
                 const imgHtml = m.image ? `<img src="${m.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
                 const contentHtml = m.content ? `<div class="item-text" style="color:var(--text-muted); border-top:1px dashed var(--panel-border); margin-top:10px; padding-top:10px;">${m.content}</div>` : '';
-                return `<li class="card" style="box-shadow:none; margin-bottom:10px; background:var(--panel-bg);"><div class="action-btn-group"><button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button></div><div class="level3-title-text">${m.title}</div>${contentHtml}${imgHtml}</li>`;
+                return `<li class="card" style="box-shadow:none; background:var(--panel-bg);"><div class="action-btn-group"><button class="edit-item-btn" onclick="editMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteMemo(${idx})">삭제</button></div><div class="level3-title-text">${m.title}</div>${contentHtml}${imgHtml}</li>`;
             }).join('');
         }
 
@@ -855,7 +868,13 @@
             const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, trashItems };
             try {
                 const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
-                navigator.clipboard.writeText(encodedData).then(() => { alert('백업 인계 코드가 클립보드에 복사되었습니다.'); }).catch(() => { prompt('수동 복사 대상 코드:', encodedData); });
+                
+                // 🚀 클립보드 복사 직후 안내 멘트 제공 커스텀
+                navigator.clipboard.writeText(encodedData).then(() => { 
+                    alert('📋 전체 데이터 코드가 성공적으로 복사되었습니다!\n\n이 창을 닫고 AI(Gemini) 채팅창에 그대로 [붙여넣기]해서 전송하면 백업을 진행할 수 있습니다.'); 
+                }).catch(() => { 
+                    prompt('클립보드 차단됨. 아래 코드를 전체 선택(Ctrl+A) 후 복사해 AI에게 보내세요:', encodedData); 
+                });
             } catch(err) { alert("❌ 이미지 데이터 용량 초과로 인계 코드 생성이 어렵습니다. 휴지통 비우기 혹은 불필요한 사진 원본을 삭제한 뒤 다시 수행해 주세요."); }
         }
         function importData() {
