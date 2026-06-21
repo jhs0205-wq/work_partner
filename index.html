@@ -11,145 +11,65 @@
     
     <style>
         :root {
-            --bg-dark: #020617;       /* 메인 배경 (매우 어두운 슬레이트 블루) */
-            --panel-bg: #0f172a;      /* 카드 및 패널 배경 */
-            --panel-border: #1e293b;  /* 부드러운 테두리 */
-            --primary: #10b981;       /* 전술 에메랄드 그린 */
+            --bg-dark: #020617;       
+            --panel-bg: #0f172a;      
+            --panel-border: #1e293b;  
+            --primary: #10b981;       
             --primary-hover: #059669;
-            --text-main: #f8fafc;     /* 메인 텍스트 */
-            --text-muted: #94a3b8;    /* 부차적 텍스트 */
-            --accent-red: #f43f5e;    /* 경고/상황조치 컬러 */
-            --accent-blue: #38bdf8;   /* 안내/이동 컬러 */
-            --accent-orange: #fb923c; /* 수정 모드 컬러 */
+            --text-main: #f8fafc;     
+            --text-muted: #94a3b8;    
+            --accent-red: #f43f5e;    
+            --accent-blue: #38bdf8;   
+            --accent-orange: #fb923c; 
+            --trash-color: #777777;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Noto Sans KR', 'Urbanist', sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); padding-bottom: 85px; min-height: 100vh; -webkit-text-size-adjust: none; }
         
-        /* 🚀 상단 헤더 우측에 데이터 복사 버튼 배치를 위한 Flex 레이아웃 적용 */
-        header { 
-            background: linear-gradient(135deg, var(--panel-bg), var(--bg-dark)); 
-            color: var(--text-main); 
-            padding: 12px 16px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 90; 
-            border-bottom: 1px solid var(--panel-border);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        header { background: linear-gradient(135deg, var(--panel-bg), var(--bg-dark)); color: var(--text-main); padding: 12px 16px; position: sticky; top: 0; z-index: 90; border-bottom: 1px solid var(--panel-border); box-shadow: 0 4px 20px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; }
         .header-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.5px; }
         .header-title span { color: var(--primary); font-family: 'Urbanist', sans-serif; }
         
-        /* 헤더 전용 고성능 복사 버튼 스타일 */
-        .header-copy-btn {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .header-copy-btn { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--primary); color: var(--primary); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px; }
         .header-copy-btn:hover { background: var(--primary); color: #fff; }
 
-        /* 컨테이너 */
         .container { padding: 16px; max-width: 640px; margin: 0 auto; }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.3s ease-out; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 고급 정보 카드 구성 */
-        .card { 
-            background: var(--panel-bg); 
-            padding: 18px; 
-            border-radius: 16px; 
-            margin-bottom: 16px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
-            border: 1px solid var(--panel-border); 
-            overflow: hidden; 
-            position: relative;
-        }
+        .card { background: var(--panel-bg); padding: 18px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid var(--panel-border); overflow: hidden; position: relative; }
         .card h3 { margin-bottom: 12px; color: var(--primary); font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         
-        /* 하단 고정 내비게이션 바 */
-        nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: rgba(15, 23, 42, 0.95); 
-            backdrop-filter: blur(8px);
-            display: flex; justify-content: space-around; 
-            border-top: 1px solid var(--panel-border);
-            z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
-        }
-        nav button { 
-            background: none; border: none; color: var(--text-muted); 
-            padding: 12px 4px; font-size: 0.8rem; font-weight: 500;
-            flex: 1; cursor: pointer; transition: all 0.2s ease; 
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-        }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px); display: flex; justify-content: space-around; border-top: 1px solid var(--panel-border); z-index: 100; box-shadow: 0 -4px 20px rgba(0,0,0,0.4); }
+        nav button { background: none; border: none; color: var(--text-muted); padding: 12px 4px; font-size: 0.8rem; font-weight: 500; flex: 1; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         nav button i { font-size: 1.25rem; transition: transform 0.2s; }
         nav button.active { color: var(--primary); font-weight: 700; }
         nav button.active i { transform: translateY(-2px); color: var(--primary); }
 
-        /* 공통 폼 스타일 */
-        input, select, textarea { 
-            width: 100%; padding: 12px; margin-bottom: 12px; 
-            background-color: rgba(2, 6, 23, 0.6);
-            border: 1px solid var(--panel-border); border-radius: 8px; 
-            color: var(--text-main); font-size: 15px; transition: border-color 0.2s;
-        }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; background-color: rgba(2, 6, 23, 0.6); border: 1px solid var(--panel-border); border-radius: 8px; color: var(--text-main); font-size: 15px; transition: border-color 0.2s; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
         textarea { resize: none; min-height: 120px; line-height: 1.5; }
 
-        /* 프리미엄 전역 실시간 검색바 */
         .search-wrapper { position: relative; margin-bottom: 16px; }
         .search-wrapper i { position: absolute; left: 14px; top: 14px; color: var(--text-muted); font-size: 18px; }
         input.search-bar { padding-left: 42px; margin-bottom: 0; border: 2px solid var(--panel-border); font-weight: 500; background-color: var(--panel-bg); border-radius: 12px; }
         input.search-bar:focus { border-color: var(--primary); }
 
-        /* 세련된 버튼 시스템 */
         button.btn { background: var(--primary); color: #fff; border: none; padding: 12px 16px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: 700; transition: background 0.2s; }
         button.btn:hover { background: var(--primary-hover); }
         button.btn.edit-mode { background-color: var(--accent-orange); }
 
-        /* ➕ 우측 하단 플로팅 액션 버튼 */
-        .fab {
-            position: fixed; bottom: 80px; right: 20px; 
-            width: 56px; height: 56px; background: var(--primary); 
-            color: white; border-radius: 50%; display: flex; 
-            align-items: center; justify-content: center; font-size: 24px;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); 
-            cursor: pointer; z-index: 95; transition: all 0.2s ease;
-        }
+        .fab { position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); cursor: pointer; z-index: 95; transition: all 0.2s ease; }
         .fab:hover { transform: scale(1.05) rotate(90deg); background: var(--primary-hover); }
 
-        /* 모달 팝업 스타일 */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(4px);
-            z-index: 200; align-items: center; justify-content: center; padding: 16px;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
         .modal-overlay.active { display: flex; }
-        .modal-content { 
-            background: var(--panel-bg); width: 100%; max-width: 500px; 
-            border-radius: 20px; padding: 24px; border: 1px solid var(--panel-border);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); position: relative;
-            max-height: 90vh; overflow-y: auto;
-        }
+        .modal-content { background: var(--panel-bg); width: 100%; max-width: 500px; border-radius: 20px; padding: 24px; border: 1px solid var(--panel-border); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); position: relative; max-height: 90vh; overflow-y: auto; }
         .modal-close-btn { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; }
 
-        /* 사진 첨부 구역 디자인 */
         .image-upload-wrapper { margin-bottom: 12px; background: rgba(2,6,23,0.4); border: 1px dashed var(--panel-border); padding: 14px; border-radius: 8px; text-align: center; }
         .image-upload-wrapper label { font-size: 0.9rem; color: var(--primary); font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .image-upload-wrapper input[type="file"] { display: none; }
@@ -159,12 +79,10 @@
 
         .note-attached-image { display: block; max-width: 100%; max-height: 200px; object-fit: contain; margin-top: 10px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.2); }
 
-        /* 상단 세그먼트 토글 탭 */
         .toggle-tab-container { display: flex; gap: 8px; margin-bottom: 16px; background: rgba(2,6,23,0.4); padding: 4px; border-radius: 10px; }
         .toggle-tab-btn { flex: 1; border: none; background: none; color: var(--text-muted); padding: 10px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
         .toggle-tab-btn.active { background: var(--panel-bg); color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
 
-        /* 아이템 리스트 및 버튼 그룹 */
         .action-btn-group { float: right; display: flex; gap: 6px; align-items: center; }
         .action-btn-group button { background: none; border: 1px solid var(--panel-border); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
         .edit-item-btn { color: var(--accent-orange); border-color: rgba(251,146,60,0.3) !important; }
@@ -175,17 +93,14 @@
 
         .item-list { list-style: none; }
         .item-list li { background: rgba(2,6,23,0.3); padding: 14px; margin-bottom: 10px; border-radius: 10px; border-left: 4px solid var(--primary); position: relative; }
-        
         .item-text { white-space: pre-wrap; word-break: break-all; margin-top: 8px; font-size: 0.95rem; color: #e2e8f0; line-height: 1.5; clear: both; }
         
-        /* 격자형 폴더 구조 디자인 */
         .folder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .folder-box { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 14px; padding: 20px 14px; text-align: center; font-weight: 700; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; transition: transform 0.2s; }
         .folder-box:hover { transform: translateY(-2px); border-color: var(--primary); }
         .folder-box .folder-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; color: var(--primary); }
         .folder-box .folder-action-zone { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
 
-        /* 풀스크린 오버레이 확장창 */
         .fullscreen-view { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-dark); z-index: 150; overflow-y: auto; padding: 16px; padding-bottom: 50px; }
         .fullscreen-view.active { display: block; animation: fadeIn 0.2s ease-out; }
         .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--panel-border); }
@@ -196,8 +111,7 @@
         .tag-btn:hover { border-color: var(--primary); color: var(--primary); }
 
         .big-category-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 14px; margin-bottom: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 4px 0; }
-        
-        .level3-wrapper { padding: 14px; border-bottom: 1px dashed #1e293b; }
+        .level3-wrapper { padding: 14px; border-bottom: 1px dashed var(--panel-border); }
         .level3-wrapper:last-child { border-bottom: none; }
         .level3-title-text { font-weight: 700; color: #fff; font-size: 1rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
         .level4-desc-text { background: rgba(2,6,23,0.4); border-left: 3px solid var(--primary); padding: 10px; margin-top: 10px; font-size: 0.9rem; color: var(--text-muted); white-space: pre-wrap; border-radius: 0 6px 6px 0; }
@@ -205,6 +119,16 @@
         .checkbox-container { display: flex; align-items: center; gap: 8px; margin-top: 4px; margin-bottom: 12px; font-size: 0.9rem; font-weight: bold; color: var(--primary); cursor: pointer; }
         .checkbox-container input { width: auto; margin-bottom: 0; transform: scale(1.2); }
         .sync-box { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); color: var(--accent-blue); padding: 14px; border-radius: 10px; margin-bottom: 16px; font-size: 0.9rem; line-height: 1.4; }
+
+        body.writing-mode header { display: none !important; }
+        body.writing-mode nav { display: flex !important; }
+        body.writing-mode .card:not(.focus-form),
+        body.writing-mode .toggle-tab-container,
+        body.writing-mode .search-bar { display: none !important; }
+        body.writing-mode .container { padding: 0; }
+        body.writing-mode .card.focus-form { position: fixed; top: 0; left: 0; right: 0; bottom: 55px; z-index: 500; margin: 0; border: none; border-radius: 0; height: calc(100vh - 55px); display: flex; flex-direction: column; padding: 15px; background: white; overflow-y: auto; }
+        body.writing-mode .card.focus-form textarea { flex: 1; min-height: 30vh; margin-bottom: 15px; font-size: 17px !important; }
+        body.writing-mode .card.focus-form input { font-size: 17px !important; margin-bottom: 12px; }
     </style>
 </head>
 <body>
@@ -258,7 +182,7 @@
         <div id="page5" class="page">
             <div class="card" style="border-color: rgba(56,189,248,0.4);">
                 <h3><i class="fa-solid fa-box-archive"></i> 후임 데이터 인계 및 연동</h3>
-                <div class="sync-box">💡 대용량 사진 데이터까지 텍스트 코드 하나로 압축 인계할 수 있습니다.</div>
+                <div class="sync-box">💾 대용량 사진 데이터까지 텍스트 코드 하나로 압축 인계할 수 있습니다.</div>
                 <button class="btn" onclick="exportData()" style="margin-bottom:12px; background-color: var(--panel-border); border: 1px solid #334155;">📋 내 노트 데이터 복사 (내보내기)</button>
                 <textarea id="import-zone" placeholder="인계받은 복사 코드를 여기에 붙여넣으세요..."></textarea>
                 <button class="btn" onclick="importData()" style="background-color: var(--accent-blue); color: #020617;">📥 코드 가져와서 데이터 동기화</button>
@@ -357,7 +281,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="modal-close-btn" onclick="closeModal('modal-detail')">✕</button>
             <h3 id="detail-form-title" style="margin-bottom:16px;">🛠️ 장비 제원/조작법 등록</h3>
-            <input type="text" id="sub-type-input" placeholder="2단계: 대분류 직접 입력 (방식, 조작, 제원 등)">
+            <input type="text" id="sub-type-input" placeholder="대분류 직접 입력 또는 아래 해시태그 터치 (예: 제원, 조작법 등)">
             <div id="tag-buttons-zone" class="tag-container"></div>
             
             <textarea id="sub-title-input" placeholder="3단계: 여기에 암기사항 내용을 4줄 단위 등으로 자유롭게 기입하세요..." style="min-height:100px;"></textarea>
@@ -407,15 +331,80 @@
     </nav>
 
     <script>
+        // ----------------------------------------------------
+        // 🚀 [핵심] 사용자가 잃어버린 데이터를 수동 해독하여 HTML 내부에 심어둔(하드코딩) 기본 데이터 객체
+        // ----------------------------------------------------
+        const defaultEmbeddedData = {
+            works: [
+                { type: "오전 근무", content: "06:20 기상, 방송 통합 세팅\n(기상 나팔 안나오면 당직사관에게 보고)\n06:50 연병장 집합 (열외자 파악, 환자 등)\n08:30 999k 85k 상태 점검\nVoip 음소거 확인 및 기타 점검\npc석 정리 off\n11:30 중식 교대 확인" },
+                { type: "오후/야간 근무", content: "13:00 오후 일과 시작\n16:30 체력단련 준비\n18:30 석식 교대\n20:30 청소 및 결산\n21:30 점호 준비" }
+            ],
+            radioMemos: [
+                { title: "망 개소/종료 보고", content: "독수리 여기는 멧돼지 망 개소 하였음. 감도 확인 바람 오버\n독수리 여기는 멧돼지 망 종료 하였음.", image: "", starred: true },
+                { title: "CEOI 운용 및 주파수 도약", content: "매일 12:00 기준 CEOI 변경 적용\n음어 해독 및 조립 수칙 준수", image: "", starred: false }
+            ],
+            radioProtocols: [
+                { title: "표준 송수신 멘트", content: "송신: ~본국, 수신 양호, 오버\n수신: ~수신 양호, 대기 바람" }
+            ],
+            situations: [
+                { title: "망 단절 시 조치", step: "1. 예비망 전환\n2. 주파수 도약 상태 확인\n3. 안테나 및 케이블 체결 점검\n4. 지휘통제실 즉각 보고" },
+                { title: "낙뢰 피격 시 조치", step: "1. 즉각 장비 전원 차단\n2. 안테나 케이블 분리\n3. 상황실 보고 및 예비 장비 대기" }
+            ],
+            situationFolders: {
+                "CCTV 및 PC망": [
+                    { type: "네트워크 단절", title: "IP 확인 및 Ping 테스트", desc: "cmd 실행 -> ipconfig 확인\nping 22.33.62.5 -t (게이트웨이 통신 상태 점검)", image: "", starred: true },
+                    { type: "CCTV 오류", title: "NVR/DVR 재부팅 절차", desc: "안내데스크 화면 출력 오류 시 NVR/DVR 장비 재부팅 및 케이블 점검 진행", image: "", starred: false }
+                ]
+            },
+            folders: {
+                "PRC-999K": [
+                    { type: "운용 방식", title: "고정 및 도약 운용", desc: "고정: 단일 주파수 운용\n도약: 통신 보안을 위한 고속 주파수 변경 모드", image: "", starred: true },
+                    { type: "주요 제원", title: "통신거리 및 주파수 범위", desc: "최대 통신거리: 약 8km\n주파수 범위: 30 ~ 87.975MHz", image: "", starred: false }
+                ],
+                "SB-22/PT": [
+                    { type: "제원", title: "자석식 교환기", desc: "야전 통신망 구성 시 사용되는 휴대용 자석식 전화 교환기", image: "", starred: false }
+                ],
+                "CCTV 및 PC망": [
+                    { type: "네트워크", title: "기본 점검 명령어", desc: "명령 프롬프트(cmd) 실행\nping 테스트를 통한 통신망 상태 모니터링", image: "", starred: false }
+                ]
+            },
+            memos: [
+                { title: "주요 부서 연락처", content: "위병소: 045, 503, 2603\n지휘통제실: voip 985, 803, 2100", image: "", starred: true }
+            ],
+            trashItems: []
+        };
+
+        // 앱이 처음 실행될 때(또는 스토리지가 비어있을 때) 하드코딩된 데이터를 로컬 스토리지에 이식(심어줌)
+        if (!localStorage.getItem('army_app_initialized_v3')) {
+            localStorage.setItem('army_works', JSON.stringify(defaultEmbeddedData.works));
+            localStorage.setItem('army_radio_memos', JSON.stringify(defaultEmbeddedData.radioMemos));
+            localStorage.setItem('army_radios', JSON.stringify(defaultEmbeddedData.radioProtocols));
+            localStorage.setItem('army_situations', JSON.stringify(defaultEmbeddedData.situations));
+            localStorage.setItem('army_situ_folders', JSON.stringify(defaultEmbeddedData.situationFolders));
+            localStorage.setItem('army_folders', JSON.stringify(defaultEmbeddedData.folders));
+            localStorage.setItem('army_memos', JSON.stringify(defaultEmbeddedData.memos));
+            localStorage.setItem('army_trash', JSON.stringify(defaultEmbeddedData.trashItems));
+            localStorage.setItem('army_app_initialized_v3', 'true');
+        }
+
+        // 전역 변수 초기화 (스토리지에서 불러오기)
+        let works = JSON.parse(localStorage.getItem('army_works')) || [];
+        let radioMemos = JSON.parse(localStorage.getItem('army_radio_memos')) || [];
+        let radioProtocols = JSON.parse(localStorage.getItem('army_radios')) || [];
+        let situations = JSON.parse(localStorage.getItem('army_situations')) || [];
+        let situationFolders = JSON.parse(localStorage.getItem('army_situ_folders')) || {};
+        let folders = JSON.parse(localStorage.getItem('army_folders')) || {};
+        let memos = JSON.parse(localStorage.getItem('army_memos')) || [];
+        let trashItems = JSON.parse(localStorage.getItem('army_trash')) || [];
+
         let currentActivePage = 1;
         let currentOpenFolder = "";
         let currentOpenSituFolder = "";
         let editTargetIndex = -1;
         let situationViewMode = "classic";
         let tempAttachedImageDataUrl = "";
-        
-        let trashItems = JSON.parse(localStorage.getItem('army_trash')) || [];
 
+        // UI 유틸리티 함수들
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
@@ -535,6 +524,7 @@
 
         function cancelAllEdits() {
             editTargetIndex = -1; tempAttachedImageDataUrl = "";
+            document.getElementById('situ-search-input').value = "";
             
             removePreviewImage('radio-memo-img-input', 'radio-memo-preview-zone', 'radio-memo-preview-img');
             removePreviewImage('memo-img-input', 'memo-preview-zone', 'memo-preview-img');
@@ -565,8 +555,7 @@
             if(currentOpenSituFolder) { renderSituFolderDetails(); }
         }
 
-        // --- 1페이지 ---
-        let radioMemos = JSON.parse(localStorage.getItem('army_radio_memos')) || [];
+        // --- 1페이지 로직 ---
         function saveRadioMemos() { localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos)); renderRadioMemos(); }
         function addOrUpdateRadioMemo() {
             const title = document.getElementById('radio-memo-title').value.trim(); const content = document.getElementById('radio-memo-content').value.trim();
@@ -591,13 +580,11 @@
             if(radioMemos.length === 0) { mainList.innerHTML = `<li style="text-align:center; color:var(--text-muted); border-left:none; background:none;">등록된 핵심 암기 데이터가 없습니다.</li>`; return; }
             mainList.innerHTML = radioMemos.map((m, idx) => {
                 const imgHtml = m.image ? `<img src="${m.image}" class="note-attached-image" onclick="window.open(this.src)">` : '';
-                const descHtml = m.content ? `<div class="item-text" style="color:var(--text-muted); font-size:0.85rem; border-top:1px solid var(--panel-border); margin-top:6px; padding-top:6px;">${m.content}</div>` : '';
+                const descHtml = m.content ? `<div class="item-text" style="color:var(--text-muted); font-size:0.85rem; border-top:1px dashed var(--panel-border); margin-top:6px; padding-top:6px;">${m.content}</div>` : '';
                 return `<li><div class="action-btn-group"><button class="edit-item-btn" onclick="editRadioMemo(${idx})">수정</button><button class="delete-btn" onclick="deleteRadioMemo(${idx})">삭제</button></div><div class="level3-title-text">${m.title}</div>${descHtml}${imgHtml}</li>`;
             }).join('');
         }
 
-        // --- 1페이지: 근무 지침 ---
-        let works = JSON.parse(localStorage.getItem('army_works')) || [];
         function saveWorks() { localStorage.setItem('army_works', JSON.stringify(works)); renderWorks(); }
         function addOrUpdateWork() {
             const type = document.getElementById('work-time').value; const content = document.getElementById('work-content').value.trim();
@@ -624,8 +611,7 @@
             if(pmCount === 0) pmList.innerHTML = `<li style="text-align:center; color:var(--text-muted); border-left:none; background:none;">오후/야간 임무 사항 없음</li>`;
         }
 
-        // --- 2페이지 무전교신 ---
-        let radioProtocols = JSON.parse(localStorage.getItem('army_radios')) || [];
+        // --- 2페이지 로직 ---
         function saveRadios() { localStorage.setItem('army_radios', JSON.stringify(radioProtocols)); renderRadios(); }
         function addOrUpdateRadio() {
             const title = document.getElementById('radio-title').value.trim(); const content = document.getElementById('radio-content').value.trim();
@@ -648,9 +634,7 @@
             });
         }
 
-        // --- 3페이지 위기상황대응 ---
-        let situations = JSON.parse(localStorage.getItem('army_situations')) || [];
-        let situationFolders = JSON.parse(localStorage.getItem('army_situ_folders')) || {};
+        // --- 3페이지 로직 ---
         function saveSituations() { 
             localStorage.setItem('army_situations', JSON.stringify(situations)); localStorage.setItem('army_situ_folders', JSON.stringify(situationFolders));
             if(document.getElementById('situ-search-input').value === "") { renderSituations(); renderSituationFolders(); } else { filterSituations(); }
@@ -707,13 +691,12 @@
         }
 
         // --- 4페이지 장비 사용법 ---
-        let folders = JSON.parse(localStorage.getItem('army_folders')) || {};
         function saveFolders() { localStorage.setItem('army_folders', JSON.stringify(folders)); renderFolders(); }
         function addFolder() { 
             const name = document.getElementById('folder-name').value.trim(); if(!name) return; 
             if(!folders[name]) { folders[name] = []; document.getElementById('folder-name').value = ''; closeModal('modal-page4'); saveFolders(); } 
         }
-        function deleteFolder(name, event) { event.stopPropagation(); if(confirm(`[${name}] 폴더와 하위 모든 제원이 파기됩니다. 진행합니까?`)) { delete folders[name]; saveFolders(); if(currentOpenFolder === name) closeFolderView(); } }
+        function deleteFolder(name, event) { event.stopPropagation(); if(confirm(`[${name}] 폴더가 삭제됩니다. 정말 삭제하시겠습니까?`)) { delete folders[name]; saveFolders(); if(currentOpenFolder === name) closeFolderView(); } }
         function moveWholeFolderToSituation(name, event) {
             event.stopPropagation(); if(!folders[name] || folders[name].length === 0) return alert('폴더 데이터가 비어 있습니다.');
             if(confirm(`[${name}] 내 데이터를 [상황조치] 탭으로 전송 연동하시겠습니까?`)) {
@@ -724,6 +707,7 @@
         }
         function renderFolders() {
             const container = document.getElementById('folder-grid'); container.innerHTML = '';
+            if(Object.keys(folders).length === 0) { container.innerHTML = `<div style="text-align:center; color:var(--text-muted); grid-column:span 2; padding:40px;">생성된 장비 마스터 폴더가 없습니다.</div>`; return; }
             for(let name in folders) {
                 container.innerHTML += `<div class="folder-box" onclick="openFolderView('${name}')"><span class="folder-icon"><i class="fa-solid fa-cubes"></i></span>${name}<div class="folder-action-zone"><button class="move-btn" onclick="moveWholeFolderToSituation('${name}', event)"><i class="fa-solid fa-share-from-square"></i> 상황조치로 이동</button><button class="delete-btn" onclick="deleteFolder('${name}', event)">삭제</button></div></div>`;
             }
@@ -756,7 +740,6 @@
         }
         function editDeviceDetail(idx) {
             cancelAllEdits(); editTargetIndex = idx; const targetDetail = folders[currentOpenFolder][idx];
-            document.getElementById('detail-form-title').innerText = "🛠️ 항목 수정";
             document.getElementById('sub-type-input').value = targetDetail.type; 
             document.getElementById('sub-title-input').value = targetDetail.title || "";
             document.getElementById('sub-desc-input').value = targetDetail.desc || "";
@@ -803,7 +786,6 @@
         }
 
         // --- 5페이지 일반 암기사항 ---
-        let memos = JSON.parse(localStorage.getItem('army_memos')) || [];
         function saveMemos() { localStorage.setItem('army_memos', JSON.stringify(memos)); renderMemos(); }
         function addOrUpdateMemo() {
             const title = document.getElementById('memo-title').value.trim(); const content = document.getElementById('memo-content').value.trim();
@@ -863,28 +845,26 @@
         function killTrashItem(idx) { if(confirm('영구 삭제 처리 시 복원이 불가능합니다. 파기합니까?')) { trashItems.splice(idx, 1); saveTrash(); } }
         function clearTrashAll() { if(confirm('휴지통의 모든 데이터를 영구 파기합니까?')) { trashItems = []; saveTrash(); } }
 
-        // --- 데이터 백업 시스템 ---
+        // --- 백업 코드 복사/복원 엔진 ---
         function exportData() {
             const allData = { works, radioProtocols, situations, situationFolders, folders, memos, radioMemos, trashItems };
             try {
                 const encodedData = btoa(encodeURIComponent(JSON.stringify(allData)));
-                
-                // 🚀 클립보드 복사 직후 안내 멘트 제공 커스텀
                 navigator.clipboard.writeText(encodedData).then(() => { 
-                    alert('📋 전체 데이터 코드가 성공적으로 복사되었습니다!\n\n이 창을 닫고 AI(Gemini) 채팅창에 그대로 [붙여넣기]해서 전송하면 백업을 진행할 수 있습니다.'); 
+                    alert('📋 전체 백업 코드가 성공적으로 클립보드에 복사되었습니다!\n\n이 창을 닫고 AI(Gemini) 채팅창에 그대로 [붙여넣기]해서 전송해 주세요.'); 
                 }).catch(() => { 
-                    prompt('클립보드 차단됨. 아래 코드를 전체 선택(Ctrl+A) 후 복사해 AI에게 보내세요:', encodedData); 
+                    prompt('아래 코드를 전체 선택(Ctrl+A) 후 복사해 AI에게 보내세요:', encodedData); 
                 });
-            } catch(err) { alert("❌ 이미지 데이터 용량 초과로 인계 코드 생성이 어렵습니다. 휴지통 비우기 혹은 불필요한 사진 원본을 삭제한 뒤 다시 수행해 주세요."); }
+            } catch(err) { alert("❌ 이미지 데이터 용량 초과로 인계 코드 생성이 어렵습니다. 휴지통 비우기 혹은 불필요한 사진을 삭제한 뒤 시도해 주세요."); }
         }
         function importData() {
             const code = document.getElementById('import-zone').value.trim(); if(!code) return alert('코드가 감지되지 않았습니다.');
-            if(confirm('기존 저장소가 사라지고 동기화 코드로 교체됩니다. 진행합니까?')) {
+            if(confirm('기존 저장소가 사라지고 동기화 코드로 덮어쓰기 됩니다. 진행합니까?')) {
                 try {
                     const importedData = JSON.parse(decodeURIComponent(atob(code)));
                     if(importedData.works) works = importedData.works; if(importedData.radioProtocols) radioProtocols = importedData.radioProtocols;
                     if(importedData.situations) situations = importedData.situations; if(importedData.situationFolders) situationFolders = importedData.situationFolders;
-                    if(importedData.folders) folders = folders = importedData.folders; if(importedData.memos) memos = importedData.memos;
+                    if(importedData.folders) folders = importedData.folders; if(importedData.memos) memos = importedData.memos;
                     if(importedData.radioMemos) radioMemos = importedData.radioMemos; if(importedData.trashItems) trashItems = importedData.trashItems;
                     
                     localStorage.setItem('army_works', JSON.stringify(works)); localStorage.setItem('army_radios', JSON.stringify(radioProtocols));
@@ -892,11 +872,11 @@
                     localStorage.setItem('army_folders', JSON.stringify(folders)); localStorage.setItem('army_memos', JSON.stringify(memos));
                     localStorage.setItem('army_radio_memos', JSON.stringify(radioMemos)); localStorage.setItem('army_trash', JSON.stringify(trashItems));
                     document.getElementById('import-zone').value = ''; cancelAllEdits(); alert('🎉 데이터 동기화 완료!');
-                } catch(e) { alert('❌ 유효하지 않은 전술 백업 코드 규격입니다.'); }
+                } catch(e) { alert('❌ 유효하지 않은 전술 백업 코드입니다.'); }
             }
         }
 
-        // 초기 기동 데이터 바인딩
+        // 앱 구동 시 초기화
         renderRadioMemos(); renderWorks(); renderRadios(); renderSituations(); renderFolders(); renderMemos(); renderTrash();
     </script>
 </body>
